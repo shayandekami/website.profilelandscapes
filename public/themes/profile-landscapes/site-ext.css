@@ -1,0 +1,78 @@
+/* ============================================================
+   site-ext.css — additive styles for sections introduced in
+   the React port that didn't exist in the static prototype.
+   Loaded after site.css.
+   ============================================================ */
+
+/* Stats — wrap section + spacing (the .stats-row grid is in site.css) */
+.stats { padding: 80px 0; background: var(--bone); border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+.stats > .wrap > .eyebrow { display: block; margin-bottom: 20px; color: var(--ink-2); }
+.stats .stats-row { margin-top: 0; border: none; }
+
+/* CTA block — centered call-to-action */
+.cta-block { background: var(--ink); color: #fff; padding: 100px 0; }
+.cta-block .cta-inner { max-width: 780px; margin: 0 auto; text-align: center; }
+.cta-block .eyebrow { color: var(--cream, #e8dcb6); display: block; margin-bottom: 18px; }
+.cta-block .display { color: #fff; font-family: var(--display); font-size: clamp(34px, 4.6vw, 56px); margin: 0 0 22px; line-height: 1.05; font-weight: 400; }
+.cta-block .sub { color: #c8c2b0; font-size: 17px; line-height: 1.55; max-width: 56ch; margin: 0 auto 32px; }
+.cta-block .btn-primary { background: var(--cream, #e8dcb6); color: var(--ink); border-color: var(--cream, #e8dcb6); }
+.cta-block .btn-primary:hover { background: transparent; color: var(--cream, #e8dcb6); }
+
+/* Two-col with image — extends .twocol */
+.twocol { padding: 100px 0; }
+.twocol-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: center; }
+.twocol-grid[data-image-pos="left"] { grid-template-columns: 1.2fr 1fr; }
+.twocol-grid[data-image-pos="left"] .twocol-image { order: -1; }
+.twocol-text .eyebrow { display: block; margin-bottom: 14px; }
+.twocol-text h2 { margin: 0 0 18px; font-family: var(--display); font-size: clamp(30px, 3.5vw, 44px); font-weight: 400; letter-spacing: -0.01em; }
+.twocol-text p { color: var(--ink-2); font-size: 16.5px; line-height: 1.6; margin: 0 0 16px; max-width: 58ch; }
+.twocol-image img { width: 100%; border-radius: 4px; }
+@media (max-width: 900px) {
+  .twocol-grid, .twocol-grid[data-image-pos="left"] { grid-template-columns: 1fr; gap: 30px; }
+  .twocol-grid[data-image-pos="left"] .twocol-image { order: 0; }
+}
+
+/* Project grid — DB-backed portfolio listing */
+.proj-grid-section { padding: 80px 0; }
+.proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.proj-card { display: flex; flex-direction: column; gap: 16px; }
+.proj-card .proj-img { aspect-ratio: 4/3; overflow: hidden; border-radius: 4px; background: var(--bone); }
+.proj-card .proj-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.proj-card:hover .proj-img img { transform: scale(1.05); }
+.proj-card .proj-meta .eyebrow { display: block; margin-bottom: 6px; }
+.proj-card .proj-meta h3 { font-family: var(--display); font-size: 22px; font-weight: 400; margin: 0 0 8px; letter-spacing: -0.01em; }
+.proj-card .proj-meta p { color: var(--ink-2); font-size: 14.5px; line-height: 1.5; margin: 0 0 12px; }
+.proj-card .proj-footer { display: flex; align-items: center; justify-content: space-between; }
+.proj-card .chip { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.proj-card .val { font-size: 13.5px; color: var(--ink-2); }
+@media (max-width: 900px) { .proj-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .proj-grid { grid-template-columns: 1fr; } }
+
+/* Gallery (generic image grid) */
+.gallery-section { padding: 60px 0; }
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.gallery-item { margin: 0; }
+.gallery-item img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 4px; }
+.gallery-item figcaption { margin-top: 8px; font-size: 12.5px; color: var(--ink-2); }
+@media (max-width: 720px) { .gallery-grid { grid-template-columns: 1fr 1fr; } }
+
+/* Rich-text content section (CMS body) */
+.rich-section { padding: 60px 0; }
+.rich-section .rich-body { max-width: 780px; margin: 0 auto; font-size: 17px; line-height: 1.7; color: var(--ink); }
+.rich-section .rich-body p { margin: 0 0 18px; }
+
+/* Mobile nav drawer — matches mobile-nav-open class in the original */
+.mobile-nav { display: none; }
+.mobile-nav.open { display: block; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--line-2); padding: 24px 36px; box-shadow: 0 30px 60px -20px rgba(19,48,36,0.18); }
+.mobile-nav .mn-group { padding: 14px 0; border-bottom: 1px solid var(--line-2); }
+.mobile-nav .mn-group:last-child { border-bottom: none; }
+.mobile-nav .mn-head { display: block; font-family: var(--display); font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+.mobile-nav ul { list-style: none; margin: 0; padding: 0; }
+.mobile-nav ul li { padding: 6px 0; }
+.mobile-nav ul li a { color: var(--ink-2); font-size: 15px; }
+.mobile-nav .mn-foot { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.mobile-nav .mn-foot a { color: var(--accent); font-size: 14.5px; }
+
+/* form error state */
+.form-error { background: #fdf3eb; border: 1px solid #ecc7a5; border-radius: 4px; padding: 12px 14px; font-size: 14px; margin-bottom: 14px; }
+.form-submit:disabled { opacity: 0.6; cursor: not-allowed; }

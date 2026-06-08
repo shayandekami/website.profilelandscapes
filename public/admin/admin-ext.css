@@ -1,0 +1,98 @@
+/* ============================================================
+   admin-ext.css — additive admin styles for the React port.
+   Loaded after admin.css.
+   ============================================================ */
+
+/* Editor layout — override the prototype's 3-column grid to 2-col,
+   since the React editor has the field pane inline rather than as a
+   side panel. */
+.editor-layout { grid-template-columns: 280px 1fr; }
+@media (max-width: 900px) { .editor-layout { grid-template-columns: 1fr; } }
+
+/* Section list entries in the editor sidebar */
+.ed-tree .ent { align-items: flex-start; padding: 10px 8px; }
+.ed-tree .ent .dot { margin-top: 5px; flex-shrink: 0; }
+.iconbtn-mini {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ink-2);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.iconbtn-mini:disabled { opacity: 0.3; cursor: not-allowed; }
+.iconbtn-mini:hover:not(:disabled) { background: var(--bone); }
+
+/* Page meta mini-panel in the editor sidebar */
+.page-meta-mini { padding: 0 8px; font-size: 13px; }
+.page-meta-mini label {
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  color: var(--subtle);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* Draft chip for ed-head .status */
+.ed-head .status.drf { color: var(--ochre); }
+
+/* Save state colours */
+.ed-actions .savechip[data-state="saving"] { color: var(--ochre); }
+.ed-actions .savechip[data-state="saving"]::before { content: "◌ "; color: var(--ochre); }
+.ed-actions .savechip[data-state="err"] { color: var(--danger); }
+.ed-actions .savechip[data-state="err"]::before { content: "✕ "; color: var(--danger); }
+
+/* Collapsible SEO panel */
+.ed-collapse {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0;
+  background: #fff;
+}
+.ed-collapse summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  list-style: none;
+}
+.ed-collapse summary::before { content: "▸ "; color: var(--muted); margin-right: 6px; }
+.ed-collapse[open] summary::before { content: "▾ "; }
+.ed-collapse[open] { padding: 0 16px 16px; }
+.ed-collapse .ed-field:first-of-type { margin-top: 12px; }
+
+/* Generic .btn for actions (the prototype only has .btn-sm) */
+.btn {
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--ink);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { filter: brightness(0.97); }
+.btn.pub { background: var(--sage); color: #fff; border-color: var(--sage); }
+.btn.pri { background: var(--ink); color: #fff; border-color: var(--ink); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Status chip variants used in our pages list */
+.chip.draft { background: #faf3e6; color: var(--ochre); }
+.chip.paid { background: #e8f0eb; color: var(--sage); }

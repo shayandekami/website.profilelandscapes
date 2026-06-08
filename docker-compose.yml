@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pl-web-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pl
+      POSTGRES_PASSWORD: pl_local_dev
+      POSTGRES_DB: pl_web
+    ports:
+      - "5433:5432"
+    volumes:
+      - pl_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pl -d pl_web"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pl_pg_data:

@@ -1,0 +1,7 @@
+/* Root resets that apply to BOTH public site and admin.
+   Per-theme styles are loaded in the (public) layout from
+   /public/themes/<theme>/site.css + site-ext.css. */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
