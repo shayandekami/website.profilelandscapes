@@ -15,6 +15,7 @@ import { Clients } from "./Clients";
 import { Testimonial } from "./Testimonial";
 import { CareersMini } from "./CareersMini";
 import { CareersHub } from "./CareersHub";
+import { DirectorProfile } from "./DirectorProfile";
 
 /**
  * Maps section.type → renderer. The renderer falls back to a soft warning
@@ -38,4 +39,5 @@ export const sections: Record<string, SectionComponent> = {
   testimonial: Testimonial,
   careers_mini: CareersMini,
   careers_hub: CareersHub,
+  director_profile: DirectorProfile,
 };

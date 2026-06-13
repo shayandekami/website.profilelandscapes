@@ -180,10 +180,16 @@ export function EncyclopediaPage({
 }: EncyclopediaPageProps) {
   const [search, setSearch] = useState(searchQuery || "");
   const [activeTag, setActiveTag] = useState<string | undefined>(selectedTag);
+  const [activeLetter, setActiveLetter] = useState<string | undefined>();
+
+  // Letters that have at least one entry
+  const activeLetters = new Set(entries.map((e) => e.latinName[0]?.toUpperCase()).filter(Boolean));
+  const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   const filtered = entries.filter((e) => {
     const tags: string[] = (e.tags as string[]) || [];
     if (activeTag && !tags.includes(activeTag)) return false;
+    if (activeLetter && e.latinName[0]?.toUpperCase() !== activeLetter) return false;
     if (search) {
       const q = search.toLowerCase();
       return (
@@ -287,9 +293,57 @@ export function EncyclopediaPage({
           </div>
         </div>
 
+        {/* A–Z jump bar */}
+        <div style={{ display: "flex", gap: 3, flexWrap: "wrap", paddingTop: 20, paddingBottom: 8 }}>
+          <button
+            onClick={() => setActiveLetter(undefined)}
+            style={{
+              minWidth: 32,
+              padding: "5px 8px",
+              border: `1px solid ${!activeLetter ? T.ink : T.line}`,
+              borderRadius: 4,
+              fontSize: 12.5,
+              cursor: "pointer",
+              background: !activeLetter ? T.ink : "#fff",
+              color: !activeLetter ? "#fff" : T.ink,
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 500,
+              transition: "all 0.15s",
+            }}
+          >
+            All
+          </button>
+          {ALPHABET.map((letter) => {
+            const has = activeLetters.has(letter);
+            const on = activeLetter === letter;
+            return (
+              <button
+                key={letter}
+                onClick={() => has && setActiveLetter(on ? undefined : letter)}
+                style={{
+                  minWidth: 32,
+                  padding: "5px 8px",
+                  border: `1px solid ${on ? T.ink : has ? T.line : "transparent"}`,
+                  borderRadius: 4,
+                  fontSize: 12.5,
+                  cursor: has ? "pointer" : "default",
+                  background: on ? T.ink : "#fff",
+                  color: on ? "#fff" : has ? T.ink : "rgba(19,48,36,0.2)",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontWeight: 500,
+                  transition: "all 0.15s",
+                }}
+              >
+                {letter}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Results count */}
-        <div style={{ paddingTop: 18, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#5d7363", letterSpacing: "0.12em" }}>
+        <div style={{ paddingTop: 10, paddingBottom: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#5d7363", letterSpacing: "0.12em" }}>
           {filtered.length} {filtered.length === 1 ? "entry" : "entries"}
+          {activeLetter ? ` · ${activeLetter}…` : ""}
           {activeTag ? ` · ${activeTag}` : ""}
           {search ? ` · "${search}"` : ""}
         </div>
@@ -303,7 +357,7 @@ export function EncyclopediaPage({
               No entries found.
             </div>
             <button
-              onClick={() => { setSearch(""); setActiveTag(undefined); }}
+              onClick={() => { setSearch(""); setActiveTag(undefined); setActiveLetter(undefined); }}
               style={{ background: T.ink, color: "#fff", border: "none", padding: "12px 24px", borderRadius: 999, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}
             >
               Clear filters
