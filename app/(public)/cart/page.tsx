@@ -131,7 +131,7 @@ export default function CartPage() {
       {/* Page header */}
       <section
         style={{
-          background: "var(--color-surface, #f8f8f6)",
+          background: "var(--bone, #f4efe4)",
           padding: "40px 0 28px",
           borderBottom: "1px solid var(--line-2, #e5e7eb)",
         }}
@@ -140,8 +140,8 @@ export default function CartPage() {
           <div style={{ fontSize: 13, color: "var(--text-muted, #6b7280)", marginBottom: 10 }}>
             <a href="/">Home</a> &nbsp;&middot;&nbsp; Cart
           </div>
-          <h1 style={{ margin: 0, fontSize: 32, fontWeight: 700 }}>
-            {step === "details" ? "Checkout" : "Your Cart"}
+          <h1 style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: "clamp(36px,4vw,52px)", fontWeight: 300, letterSpacing: "-0.02em" }}>
+            {step === "details" ? "Checkout" : "Your cart"}
           </h1>
         </div>
       </section>
@@ -157,7 +157,7 @@ export default function CartPage() {
               }}
             >
               <div style={{ fontSize: 48, marginBottom: 16 }}>🛒</div>
-              <h2 style={{ fontWeight: 600, fontSize: 22, marginBottom: 12 }}>Your cart is empty</h2>
+              <h2 style={{ fontFamily: "'Fraunces', serif", fontWeight: 400, fontSize: 26, letterSpacing: "-0.01em", marginBottom: 12 }}>Your cart is empty</h2>
               <p style={{ marginBottom: 24 }}>
                 Browse our shop and nursery to find something you love.
               </p>
@@ -166,7 +166,7 @@ export default function CartPage() {
                   href="/shop"
                   style={{
                     padding: "10px 24px",
-                    background: "var(--color-accent, #2563eb)",
+                    background: "var(--ink, #133024)",
                     color: "#fff",
                     borderRadius: 8,
                     textDecoration: "none",
@@ -179,7 +179,7 @@ export default function CartPage() {
                   href="/plants"
                   style={{
                     padding: "10px 24px",
-                    background: "#16a34a",
+                    background: "var(--accent, #1f5a3d)",
                     color: "#fff",
                     borderRadius: 8,
                     textDecoration: "none",
@@ -296,7 +296,7 @@ export default function CartPage() {
                     </table>
 
                     <div style={{ marginTop: 20, display: "flex", justifyContent: "space-between" }}>
-                      <a href="/shop" style={{ color: "var(--color-accent, #2563eb)", fontSize: 14, textDecoration: "none" }}>
+                      <a href="/shop" style={{ color: "var(--ink, #133024)", fontSize: 14, textDecoration: "none" }}>
                         ← Continue shopping
                       </a>
                     </div>
@@ -385,7 +385,7 @@ export default function CartPage() {
                         type="submit"
                         style={{
                           padding: "12px 28px",
-                          background: "var(--color-accent, #2563eb)",
+                          background: "var(--ink, #133024)",
                           color: "#fff",
                           border: "none",
                           borderRadius: 8,
@@ -414,12 +414,12 @@ export default function CartPage() {
                   border: "1px solid var(--line-2, #e5e7eb)",
                   borderRadius: 12,
                   padding: 24,
-                  background: "var(--color-surface, #f8f8f6)",
+                  background: "var(--bone, #f4efe4)",
                   position: "sticky",
                   top: 80,
                 }}
               >
-                <h2 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 20px" }}>Order Summary</h2>
+                <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 400, letterSpacing: "-0.01em", margin: "0 0 20px" }}>Order summary</h2>
 
                 {/* Line items summary */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
@@ -444,7 +444,7 @@ export default function CartPage() {
                     <span style={{ color: "var(--text-muted, #6b7280)" }}>Shipping</span>
                     <span>
                       {shippingCents === 0 && subtotalCents >= SHIPPING_THRESHOLD_CENTS
-                        ? <span style={{ color: "#16a34a", fontWeight: 500 }}>Free</span>
+                        ? <span style={{ color: "var(--accent, #1f5a3d)", fontWeight: 500 }}>Free</span>
                         : shippingCents === 0
                         ? "—"
                         : centsToDisplay(shippingCents)}
@@ -478,7 +478,7 @@ export default function CartPage() {
                       marginTop: 20,
                       width: "100%",
                       padding: "13px",
-                      background: "var(--color-accent, #2563eb)",
+                      background: "var(--ink, #133024)",
                       color: "#fff",
                       border: "none",
                       borderRadius: 8,

@@ -60,8 +60,8 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
             >
               ✅
             </div>
-            <h1 style={{ fontSize: 30, fontWeight: 700, margin: "0 0 12px" }}>
-              Order Confirmed!
+            <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 40, fontWeight: 300, letterSpacing: "-0.02em", margin: "0 0 12px" }}>
+              Order <span style={{ fontStyle: "italic", color: "var(--accent, #1f5a3d)" }}>confirmed.</span>
             </h1>
             <p style={{ fontSize: 16, color: "var(--text-muted, #6b7280)", margin: 0 }}>
               Thank you for your purchase. We&apos;ve received your order and will get it ready for you.
@@ -82,7 +82,7 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
                 {/* Order header */}
                 <div
                   style={{
-                    background: "var(--color-surface, #f8f8f6)",
+                    background: "var(--bone, #f4efe4)",
                     padding: "20px 24px",
                     borderBottom: "1px solid var(--line-2, #e5e7eb)",
                     display: "flex",
@@ -140,7 +140,7 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
                 {/* Totals */}
                 <div
                   style={{
-                    background: "var(--color-surface, #f8f8f6)",
+                    background: "var(--bone, #f4efe4)",
                     padding: "16px 24px",
                     borderTop: "1px solid var(--line-2, #e5e7eb)",
                     display: "flex",
@@ -156,7 +156,7 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
                     <span style={{ color: "var(--text-muted, #6b7280)" }}>Shipping</span>
                     <span>
                       {order.shippingCents === 0 ? (
-                        <span style={{ color: "#16a34a" }}>Free</span>
+                        <span style={{ color: "var(--accent, #1f5a3d)" }}>Free</span>
                       ) : (
                         centsToDisplay(order.shippingCents)
                       )}
@@ -182,12 +182,12 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
               {/* Email + shipping notice */}
               <div
                 style={{
-                  background: "#eff6ff",
-                  border: "1px solid #bfdbfe",
+                  background: "var(--bone, #f4efe4)",
+                  border: "1px solid var(--line-2, #e5e7eb)",
                   borderRadius: 10,
                   padding: "16px 20px",
                   fontSize: 14,
-                  color: "#1d4ed8",
+                  color: "var(--ink, #133024)",
                   marginBottom: 32,
                 }}
               >
@@ -217,12 +217,12 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
             <a
               href="/shop"
               style={{
-                padding: "10px 24px",
-                background: "var(--color-accent, #2563eb)",
+                padding: "12px 26px",
+                background: "var(--ink, #133024)",
                 color: "#fff",
-                borderRadius: 8,
+                borderRadius: 999,
                 textDecoration: "none",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 14,
               }}
             >
@@ -231,12 +231,12 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
             <a
               href="/"
               style={{
-                padding: "10px 24px",
+                padding: "12px 26px",
                 background: "#fff",
-                color: "var(--text-base, #374151)",
-                borderRadius: 8,
+                color: "var(--ink, #133024)",
+                borderRadius: 999,
                 textDecoration: "none",
-                fontWeight: 600,
+                fontWeight: 500,
                 fontSize: 14,
                 border: "1px solid var(--line-2, #e5e7eb)",
               }}

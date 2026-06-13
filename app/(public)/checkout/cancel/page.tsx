@@ -19,7 +19,7 @@ export default function CheckoutCancelPage() {
         >
           ⚠️
         </div>
-        <h1 style={{ fontSize: 28, fontWeight: 700, margin: "0 0 12px" }}>
+        <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 36, fontWeight: 300, letterSpacing: "-0.02em", margin: "0 0 12px" }}>
           Checkout cancelled
         </h1>
         <p style={{ fontSize: 16, color: "var(--text-muted, #6b7280)", margin: "0 0 32px", lineHeight: 1.6 }}>
@@ -31,11 +31,11 @@ export default function CheckoutCancelPage() {
             href="/cart"
             style={{
               padding: "12px 28px",
-              background: "var(--color-accent, #2563eb)",
+              background: "var(--ink, #133024)",
               color: "#fff",
-              borderRadius: 8,
+              borderRadius: 999,
               textDecoration: "none",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: 15,
             }}
           >
@@ -46,10 +46,10 @@ export default function CheckoutCancelPage() {
             style={{
               padding: "12px 24px",
               background: "#fff",
-              color: "var(--text-base, #374151)",
-              borderRadius: 8,
+              color: "var(--ink, #133024)",
+              borderRadius: 999,
               textDecoration: "none",
-              fontWeight: 600,
+              fontWeight: 500,
               fontSize: 15,
               border: "1px solid var(--line-2, #e5e7eb)",
             }}
