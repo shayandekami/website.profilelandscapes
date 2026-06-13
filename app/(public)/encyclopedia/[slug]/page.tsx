@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db, encyclopediaEntries } from "@/lib/db";
 import { eq, and, inArray } from "drizzle-orm";
 import { DefaultEncyclopediaEntryPage } from "@/components/commerce/defaults/DefaultEncyclopediaEntryPage";
+import { theme } from "@/themes/active";
 
 export const dynamic = "force-dynamic";
 
@@ -55,5 +56,7 @@ export default async function EncyclopediaEntryPage({ params }: Params) {
           )
       : [];
 
-  return <DefaultEncyclopediaEntryPage entry={entry} companions={companions} />;
+  const EntryPage = theme.encyclopedia?.EntryPage ?? DefaultEncyclopediaEntryPage;
+
+  return <EntryPage entry={entry} companions={companions} />;
 }

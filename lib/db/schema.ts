@@ -238,6 +238,23 @@ export const products = pgTable(
     stockQty: integer("stock_qty").notNull().default(100),
     featured: boolean("featured").notNull().default(false),
     status: publishStatusEnum("status").notNull().default("live"),
+    // ---- Apparel / variant options (optional) ----
+    sizes: jsonb("sizes")
+      .$type<string[]>()
+      .notNull()
+      .default([]), // e.g. ["S","M","L","XL","2XL","3XL"]
+    colours: jsonb("colours")
+      .$type<Array<{ name: string; hex: string }>>()
+      .notNull()
+      .default([]), // e.g. [{name:"Hi-vis yellow",hex:"#e5da3a"}]
+    fits: jsonb("fits")
+      .$type<string[]>()
+      .notNull()
+      .default([]), // e.g. ["Regular","Slim"]
+    specs: jsonb("specs")
+      .$type<Array<{ key: string; value: string }>>()
+      .notNull()
+      .default([]), // [{key:"Fabric",value:"100% polyester"}, ...]
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db, plants } from "@/lib/db";
 import { eq, and, inArray } from "drizzle-orm";
 import { DefaultPlantPage } from "@/components/commerce/defaults/DefaultPlantPage";
+import { theme } from "@/themes/active";
 
 export const dynamic = "force-dynamic";
 
@@ -55,5 +56,7 @@ export default async function PlantDetailPage({ params }: Params) {
           )
       : [];
 
-  return <DefaultPlantPage plant={plant} companions={companions} />;
+  const PlantPage = theme.nursery?.PlantPage ?? DefaultPlantPage;
+
+  return <PlantPage plant={plant} companions={companions} />;
 }

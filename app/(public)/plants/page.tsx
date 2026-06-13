@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { db, plants } from "@/lib/db";
 import { eq, and, or, ilike, sql } from "drizzle-orm";
 import { DefaultNurseryPage } from "@/components/commerce/defaults/DefaultNurseryPage";
+import { theme } from "@/themes/active";
 
 export const dynamic = "force-dynamic";
 
@@ -41,8 +42,10 @@ export default async function NurseryPage({ searchParams }: PlantsPageProps) {
     .where(and(...conditions))
     .orderBy(plants.latinName);
 
+  const NurseryPage = theme.nursery?.NurseryPage ?? DefaultNurseryPage;
+
   return (
-    <DefaultNurseryPage
+    <NurseryPage
       plants={plantList}
       selectedTag={selectedTag}
       searchQuery={searchQuery}

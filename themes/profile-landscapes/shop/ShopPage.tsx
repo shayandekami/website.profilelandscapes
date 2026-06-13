@@ -321,6 +321,64 @@ const CAT_ARTWORKS = [
   </svg>,
 ];
 
+// ── Shop by trade ──────────────────────────────────────────────────────────────
+const TRADE_SETS = [
+  { n: "01", title: "Apprentice starter", body: "First-day pack: boots, gloves, white card kit, basic hand tools.", count: "12 items · from $320", slug: "workwear" },
+  { n: "02", title: "Landscaper", body: "All-season workwear, hi-vis, shovel, rake, secateurs.", count: "18 items · from $480", slug: "tools" },
+  { n: "03", title: "Horticulturist", body: "Pruning set, soil testing, plant tags, field notebook.", count: "14 items · from $260", slug: "tools" },
+  { n: "04", title: "Foreman", body: "Hi-vis polo range, clipboards, laser levels, radios.", count: "20 items · from $640", slug: "workwear" },
+  { n: "05", title: "Weekend gardener", body: "Raised-bed kit, hand tools, gloves, trug, kneeler.", count: "10 items · from $180", slug: "household" },
+];
+
+function ShopByTrade({ onPick }: { onPick: (slug: string) => void }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 16 }}>
+      {TRADE_SETS.map((set) => (
+        <div
+          key={set.n}
+          onClick={() => onPick(set.slug)}
+          style={{
+            background: "#fff",
+            border: `1px solid ${T.line}`,
+            borderRadius: 8,
+            padding: "26px 22px 22px",
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+            transition: "transform 0.2s, box-shadow 0.2s",
+          }}
+          onMouseEnter={(e) =>
+            Object.assign((e.currentTarget as HTMLElement).style, {
+              transform: "translateY(-3px)",
+              boxShadow: "0 12px 28px rgba(19,48,36,0.08)",
+            })
+          }
+          onMouseLeave={(e) =>
+            Object.assign((e.currentTarget as HTMLElement).style, {
+              transform: "translateY(0)",
+              boxShadow: "none",
+            })
+          }
+        >
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: T.ochre, letterSpacing: "0.1em" }}>
+            {set.n}
+          </div>
+          <h4 style={{ margin: 0, fontFamily: "Fraunces, serif", fontWeight: 400, fontSize: 19, letterSpacing: "-0.01em", lineHeight: 1.15, color: T.ink }}>
+            {set.title}
+          </h4>
+          <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: T.moss, flex: 1 }}>
+            {set.body}
+          </p>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: "#5d7363", letterSpacing: "0.08em", textTransform: "uppercase", paddingTop: 8, borderTop: `1px solid ${T.line}` }}>
+            {set.count}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Trust band ────────────────────────────────────────────────────────────────
 function TrustBand() {
   const items = [
@@ -676,6 +734,21 @@ export function ShopPage({
               );
             })}
           </div>
+        </section>
+      )}
+
+      {/* ── SHOP BY TRADE (home only) ─────────────────────────────────── */}
+      {isHome && (
+        <section style={{ ...wrap, marginTop: 80 }}>
+          <div style={{ marginBottom: 28 }}>
+            <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: "clamp(32px,4vw,48px)", letterSpacing: "-0.02em", margin: 0 }}>
+              Shop by <span style={{ fontStyle: "italic", color: T.sage }}>trade.</span>
+            </h2>
+            <p style={{ margin: "10px 0 0", fontSize: 15, color: T.moss }}>
+              Curated sets for the role you work in — every day, every weather.
+            </p>
+          </div>
+          <ShopByTrade onPick={(slug) => setActiveCat(slug)} />
         </section>
       )}
 

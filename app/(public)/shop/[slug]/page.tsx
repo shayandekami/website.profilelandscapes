@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db, products } from "@/lib/db";
 import { eq, and, ne } from "drizzle-orm";
 import { DefaultProductPage } from "@/components/commerce/defaults/DefaultProductPage";
+import { theme } from "@/themes/active";
 
 export const dynamic = "force-dynamic";
 
@@ -48,5 +49,7 @@ export default async function ProductDetailPage({ params }: Params) {
       })
     : [];
 
-  return <DefaultProductPage product={product} related={related} />;
+  const ProductPage = theme.commerce?.ProductPage ?? DefaultProductPage;
+
+  return <ProductPage product={product} related={related} />;
 }

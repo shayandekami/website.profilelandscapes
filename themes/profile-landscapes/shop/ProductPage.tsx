@@ -105,15 +105,27 @@ function RelatedCard({ product }: { product: Product }) {
 }
 
 interface ProductPageProps {
-  product: Product;
+  product: Product & { category?: ProductCategory | null };
   related: Product[];
   category?: ProductCategory;
 }
 
-export function ProductPage({ product, related, category }: ProductPageProps) {
+export function ProductPage({ product, related, category: categoryProp }: ProductPageProps) {
+  // The shop route passes a product with its category relation nested; fall
+  // back to that when an explicit category prop isn't provided.
+  const category = categoryProp ?? product.category ?? undefined;
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [added, setAdded] = useState(false);
+
+  const sizes = product.sizes ?? [];
+  const colours = product.colours ?? [];
+  const fits = product.fits ?? [];
+  const specs = product.specs ?? [];
+
+  const [size, setSize] = useState<string | undefined>(sizes[0]);
+  const [colour, setColour] = useState<string | undefined>(colours[0]?.name);
+  const [fit, setFit] = useState<string | undefined>(fits[0]);
 
   const inStock = product.stockQty > 0;
   const hasCompare = product.compareAtCents && product.compareAtCents > product.priceCents;
@@ -300,6 +312,97 @@ export function ProductPage({ product, related, category }: ProductPageProps) {
               </p>
             )}
 
+            {/* Colour swatches */}
+            {colours.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: "#5d7363", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>
+                  Colour: <span style={{ color: T.ink }}>{colour}</span>
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {colours.map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => setColour(c.name)}
+                      aria-label={c.name}
+                      title={c.name}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 999,
+                        background: c.hex,
+                        border: `2px solid ${colour === c.name ? T.ink : "rgba(19,48,36,0.18)"}`,
+                        outline: colour === c.name ? `2px solid #fff` : "none",
+                        outlineOffset: -4,
+                        cursor: "pointer",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Size selector */}
+            {sizes.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: "#5d7363", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10, display: "flex", justifyContent: "space-between" }}>
+                  <span>Size: <span style={{ color: T.ink }}>{size}</span></span>
+                  <a href="#" style={{ color: T.sage, textDecoration: "none" }}>Size guide</a>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {sizes.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setSize(s)}
+                      style={{
+                        minWidth: 48,
+                        padding: "10px 12px",
+                        border: `1px solid ${size === s ? T.ink : T.line}`,
+                        background: size === s ? T.ink : "#fff",
+                        color: size === s ? "#fff" : T.ink,
+                        borderRadius: 6,
+                        fontSize: 13.5,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Fit selector */}
+            {fits.length > 0 && (
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: "#5d7363", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>
+                  Fit: <span style={{ color: T.ink }}>{fit}</span>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  {fits.map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setFit(f)}
+                      style={{
+                        padding: "9px 18px",
+                        border: `1px solid ${fit === f ? T.ink : T.line}`,
+                        background: fit === f ? T.ink : "#fff",
+                        color: fit === f ? "#fff" : T.ink,
+                        borderRadius: 999,
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Qty + Add to cart */}
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 12, marginBottom: 14, alignItems: "center" }}>
               {/* Qty selector */}
@@ -419,12 +522,18 @@ export function ProductPage({ product, related, category }: ProductPageProps) {
             </div>
             <div>
               {/* Specs grid */}
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.16em", color: T.sage, textTransform: "uppercase", marginBottom: 12 }}>
+                Specifications
+              </div>
               <div style={{ borderTop: `1px solid ${T.ink}` }}>
-                {[
-                  { k: "SKU", v: product.sku || "—" },
-                  { k: "Stock", v: `${product.stockQty} units` },
-                  { k: "Status", v: product.badge || "In stock" },
-                ].map((row, i) => (
+                {(specs.length > 0
+                  ? specs.map((s) => ({ k: s.key, v: s.value }))
+                  : [
+                      { k: "SKU", v: product.sku || "—" },
+                      { k: "Stock", v: `${product.stockQty} units` },
+                      { k: "Status", v: product.badge || "In stock" },
+                    ]
+                ).map((row, i) => (
                   <div
                     key={i}
                     style={{

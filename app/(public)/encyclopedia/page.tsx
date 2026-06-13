@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { db, encyclopediaEntries } from "@/lib/db";
 import { eq, and, or, ilike, sql } from "drizzle-orm";
 import { DefaultEncyclopediaPage } from "@/components/commerce/defaults/DefaultEncyclopediaPage";
+import { theme } from "@/themes/active";
 
 export const dynamic = "force-dynamic";
 
@@ -40,8 +41,10 @@ export default async function EncyclopediaPage({ searchParams }: EncyclopediaPag
     .where(and(...conditions))
     .orderBy(encyclopediaEntries.latinName);
 
+  const IndexPage = theme.encyclopedia?.IndexPage ?? DefaultEncyclopediaPage;
+
   return (
-    <DefaultEncyclopediaPage
+    <IndexPage
       entries={entries}
       selectedTag={selectedTag}
       searchQuery={searchQuery}

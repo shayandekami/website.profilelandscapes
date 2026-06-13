@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { db, products, productCategories } from "@/lib/db";
 import { eq, and, ilike, or } from "drizzle-orm";
 import { DefaultShopPage } from "@/components/commerce/defaults/DefaultShopPage";
+import { theme } from "@/themes/active";
 
 export const dynamic = "force-dynamic";
 
@@ -51,8 +52,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     orderBy: (p, { desc }) => [desc(p.featured), p.name],
   });
 
+  const ShopPage = theme.commerce?.ShopPage ?? DefaultShopPage;
+
   return (
-    <DefaultShopPage
+    <ShopPage
       products={productList}
       categories={categories}
       selectedCategory={categorySlug}
