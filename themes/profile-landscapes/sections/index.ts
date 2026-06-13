@@ -9,6 +9,12 @@ import { ContactForm } from "./ContactForm";
 import { ProjectGrid } from "./ProjectGrid";
 import { Gallery } from "./Gallery";
 import { Rich } from "./Rich";
+import { FeaturedProjects } from "./FeaturedProjects";
+import { NurserySpotlight } from "./NurserySpotlight";
+import { Clients } from "./Clients";
+import { Testimonial } from "./Testimonial";
+import { CareersMini } from "./CareersMini";
+import { CareersHub } from "./CareersHub";
 
 /**
  * Maps section.type → renderer. The renderer falls back to a soft warning
@@ -26,4 +32,10 @@ export const sections: Record<string, SectionComponent> = {
   project_grid: ProjectGrid,
   gallery: Gallery,
   rich: Rich,
+  featured_projects: FeaturedProjects,
+  nursery_spotlight: NurserySpotlight,
+  clients: Clients,
+  testimonial: Testimonial,
+  careers_mini: CareersMini,
+  careers_hub: CareersHub,
 };
