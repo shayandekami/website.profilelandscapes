@@ -130,6 +130,15 @@ export const projects = pgTable(
     heroImage: varchar("hero_image", { length: 500 }),
     summary: text("summary"),
     body: text("body"), // markdown
+    // Sidebar case-study data (optional)
+    costBreakdown: jsonb("cost_breakdown")
+      .$type<Array<{ label: string; value: string }>>()
+      .notNull()
+      .default([]), // [{label:"Hardscape",value:"$1.1M"}, ...]
+    collaborators: jsonb("collaborators")
+      .$type<Array<{ role: string; name: string }>>()
+      .notNull()
+      .default([]), // [{role:"Architect",name:"..."}, ...]
     featured: boolean("featured").notNull().default(false),
     status: publishStatusEnum("status").notNull().default("draft"),
     createdAt: timestamp("created_at").defaultNow().notNull(),

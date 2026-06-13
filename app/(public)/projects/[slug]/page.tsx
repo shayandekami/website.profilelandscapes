@@ -104,20 +104,55 @@ export default async function ProjectDetail({ params }: Params) {
                   <p key={i} style={{ margin: "0 0 24px" }}>{para}</p>
                 ))}
               </div>
-              <aside style={{ position: "sticky", top: 88, background: "var(--bone)", borderRadius: 4, padding: "28px 24px" }}>
-                <div style={{ fontSize: 10.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-2)", marginBottom: 20 }}>Project details</div>
-                {[
-                  { k: "Suburb", v: project.suburb },
-                  { k: "Sector", v: sectorLabel[project.sector] || project.sector },
-                  { k: "Principal", v: project.principal },
-                  { k: "Package value", v: project.packageValue },
-                  { k: "Year", v: completedYear ? String(completedYear) : null },
-                ].filter((r) => r.v).map((row) => (
-                  <div key={row.k} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--line-2)", fontSize: 14, gap: 16 }}>
-                    <span style={{ color: "var(--ink-2)" }}>{row.k}</span>
-                    <span style={{ color: "var(--ink)", textAlign: "right" }}>{row.v}</span>
+              <aside style={{ position: "sticky", top: 88, display: "flex", flexDirection: "column", gap: 16 }}>
+                {/* Project details */}
+                <div style={{ background: "var(--bone)", borderRadius: 4, padding: "28px 24px" }}>
+                  <div style={{ fontSize: 10.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-2)", marginBottom: 20 }}>Project details</div>
+                  {[
+                    { k: "Suburb", v: project.suburb },
+                    { k: "Sector", v: sectorLabel[project.sector] || project.sector },
+                    { k: "Principal", v: project.principal },
+                    { k: "Package value", v: project.packageValue },
+                    { k: "Year", v: completedYear ? String(completedYear) : null },
+                  ].filter((r) => r.v).map((row) => (
+                    <div key={row.k} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--line-2)", fontSize: 14, gap: 16 }}>
+                      <span style={{ color: "var(--ink-2)" }}>{row.k}</span>
+                      <span style={{ color: "var(--ink)", textAlign: "right" }}>{row.v}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cost breakdown */}
+                {project.costBreakdown && project.costBreakdown.length > 0 && (
+                  <div style={{ background: "var(--bone)", borderRadius: 4, padding: "28px 24px" }}>
+                    <div style={{ fontSize: 10.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-2)", marginBottom: 20 }}>Package breakdown</div>
+                    {project.costBreakdown.map((row) => (
+                      <div key={row.label} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--line-2)", fontSize: 14, gap: 16 }}>
+                        <span style={{ color: "var(--ink-2)" }}>{row.label}</span>
+                        <span style={{ color: "var(--ink)", fontFamily: "var(--display)" }}>{row.value}</span>
+                      </div>
+                    ))}
+                    {project.packageValue && (
+                      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 14, fontSize: 14, gap: 16 }}>
+                        <span style={{ color: "var(--ink)", fontWeight: 500 }}>Total</span>
+                        <span style={{ color: "var(--accent)", fontFamily: "var(--display)", fontWeight: 500 }}>{project.packageValue}</span>
+                      </div>
+                    )}
                   </div>
-                ))}
+                )}
+
+                {/* Collaborators */}
+                {project.collaborators && project.collaborators.length > 0 && (
+                  <div style={{ background: "var(--bone)", borderRadius: 4, padding: "28px 24px" }}>
+                    <div style={{ fontSize: 10.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-2)", marginBottom: 20 }}>Project team</div>
+                    {project.collaborators.map((c, i) => (
+                      <div key={i} style={{ padding: "10px 0", borderBottom: i < project.collaborators.length - 1 ? "1px solid var(--line-2)" : "none", fontSize: 14 }}>
+                        <div style={{ fontSize: 10.5, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-2)", marginBottom: 3 }}>{c.role}</div>
+                        <div style={{ color: "var(--ink)" }}>{c.name}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </aside>
             </div>
           </div>

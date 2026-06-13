@@ -205,6 +205,7 @@ const COLLECTIONS = [
     desc: "Lillypilly, photinia, viburnum — 2–6m fast hedging.",
     count: "14 plants",
     bg: "#254a34",
+    tag: "SCREENING",
   },
   {
     label: "Collection 02",
@@ -212,6 +213,7 @@ const COLLECTIONS = [
     desc: "Grasses + succulents.",
     count: "11 plants",
     bg: "#8a6d35",
+    tag: "DROUGHT",
   },
   {
     label: "Collection 03",
@@ -219,6 +221,23 @@ const COLLECTIONS = [
     desc: "Low-water Australian natives.",
     count: "9 plants",
     bg: "#3a4a2c",
+    tag: "NATIVE",
+  },
+  {
+    label: "Collection 04",
+    name: "Tropical pool set",
+    desc: "Lush poolside planting.",
+    count: "8 plants",
+    bg: "#1d4a44",
+    tag: "TROPICAL",
+  },
+  {
+    label: "Collection 05",
+    name: "Edible garden starter",
+    desc: "Herbs, citrus & berries.",
+    count: "12 plants",
+    bg: "#5a5320",
+    tag: "EDIBLE",
   },
 ];
 
@@ -663,8 +682,9 @@ export function NurseryPage({ plants }: NurseryPageProps) {
           }}
         >
           {COLLECTIONS.map((col, i) => (
-            <div
+            <a
               key={i}
+              href={`/plants?tag=${col.tag}`}
               style={{
                 borderRadius: 8,
                 overflow: "hidden",
@@ -673,6 +693,8 @@ export function NurseryPage({ plants }: NurseryPageProps) {
                 transition: "transform 0.2s",
                 background: col.bg,
                 gridRow: i === 0 ? "span 2" : "auto",
+                textDecoration: "none",
+                display: "block",
               }}
               onMouseEnter={(e) =>
                 Object.assign((e.currentTarget as HTMLElement).style, {
@@ -720,7 +742,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
                 </h3>
                 <span style={{ fontSize: 12, opacity: 0.8 }}>{col.desc} {col.count}</span>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </section>
