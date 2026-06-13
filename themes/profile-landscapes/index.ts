@@ -26,11 +26,11 @@ export const nav: Theme["nav"] = [
   {
     key: "plants",
     label: "Plants",
-    href: "/nursery",
-    matches: ["nursery", "encyclopedia"],
+    href: "/plants",
+    matches: ["plants", "nursery", "encyclopedia"],
     tagline: "Grown at Petersham. Documented since 1999.",
     children: [
-      { href: "/nursery", label: "Nursery", description: "Retail & trade stock from our yard" },
+      { href: "/plants", label: "Nursery stock", description: "Retail & trade plants from our yard" },
       { href: "/encyclopedia", label: "Encyclopedia", description: "318 plant entries, curated by Carlo" },
     ],
   },

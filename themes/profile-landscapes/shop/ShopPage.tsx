@@ -164,15 +164,22 @@ function ProductCard({
             style={{ width: "100%", height: "100%", display: "block" }}
           >
             <rect width="100%" height="100%" fill="#e8e0c9" />
+            {/* Stylised shopping bag placeholder */}
+            <g transform="translate(160,115)" stroke="#6b7c6a" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="-34" y="-24" width="68" height="58" rx="3" fill="#d8cdb0" stroke="#6b7c6a"/>
+              <path d="M -18 -24 Q -18 -46 0 -46 Q 18 -46 18 -24" />
+              <line x1="-10" y1="6" x2="10" y2="6" strokeWidth="1.5" stroke="#8a9489"/>
+            </g>
             <text
               x="160"
-              y="140"
+              y="204"
               textAnchor="middle"
-              fontFamily="Fraunces, serif"
-              fontSize="14"
+              fontFamily="system-ui, sans-serif"
+              fontSize="12"
               fill="#8a9489"
+              letterSpacing="0.5"
             >
-              {product.name}
+              {product.name.length > 28 ? product.name.slice(0, 27) + "…" : product.name}
             </text>
           </svg>
         )}
