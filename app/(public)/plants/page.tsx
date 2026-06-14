@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 };
 
 interface PlantsPageProps {
-  searchParams: Promise<{ tag?: string; q?: string }>;
+  searchParams: Promise<{ tag?: string; q?: string; encyclopedia?: string }>;
 }
 
 export default async function NurseryPage({ searchParams }: PlantsPageProps) {
-  const { tag: selectedTag, q: searchQuery } = await searchParams;
+  const { tag: selectedTag, q: searchQuery, encyclopedia: encyclopediaSlug } = await searchParams;
 
   const conditions = [eq(plants.status, "live")];
 
@@ -25,6 +25,11 @@ export default async function NurseryPage({ searchParams }: PlantsPageProps) {
     conditions.push(
       sql`${plants.tags}::jsonb @> ${JSON.stringify([selectedTag.trim()])}::jsonb`
     );
+  }
+
+  // Cross-link from an encyclopedia entry → its in-stock nursery plants
+  if (encyclopediaSlug && encyclopediaSlug.trim()) {
+    conditions.push(eq(plants.encyclopediaSlug, encyclopediaSlug.trim()));
   }
 
   if (searchQuery && searchQuery.trim()) {
