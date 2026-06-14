@@ -343,6 +343,14 @@ export const encyclopediaEntries = pgTable(
     pestNotes: text("pest_notes"),
     propagation: text("propagation"),
     landscapeUse: text("landscape_use"),
+    cultivars: jsonb("cultivars")
+      .$type<Array<{ name: string; note: string }>>()
+      .notNull()
+      .default([]), // named varieties + a one-line note
+    references: jsonb("references")
+      .$type<Array<{ title: string; source: string; url?: string }>>()
+      .notNull()
+      .default([]), // further-reading citations
     featured: boolean("featured").notNull().default(false),
     status: publishStatusEnum("status").notNull().default("live"),
     createdAt: timestamp("created_at").defaultNow().notNull(),

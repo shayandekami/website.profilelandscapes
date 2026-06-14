@@ -150,11 +150,25 @@ interface EntryPageProps {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
+function SectionLabel({ n, title }: { n: string; title: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 14, marginBottom: 16 }}>
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: T.sage, letterSpacing: "0.14em", fontWeight: 500 }}>{n}</span>
+      <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 400, fontSize: 28, letterSpacing: "-0.015em", margin: 0, color: T.ink }}>
+        {title}
+      </h2>
+    </div>
+  );
+}
+
 export function EntryPage({ entry, companions }: EntryPageProps) {
   const tags: string[] = (entry.tags as string[]) || [];
   const care = entry.care as PlantCare | undefined;
   const seasons = entry.seasons as { flowering?: number[]; fruiting?: number[] } | undefined;
   const images = (entry.images as Array<{ url: string; alt?: string }>) || [];
+  const climateZones = (entry.climateZones as string[]) || [];
+  const cultivars = (entry.cultivars as Array<{ name: string; note: string }>) || [];
+  const references = (entry.references as Array<{ title: string; source: string; url?: string }>) || [];
   const [activeImg, setActiveImg] = useState(0);
 
   const wrap: React.CSSProperties = { maxWidth: 1400, margin: "0 auto", padding: "0 56px" };
@@ -323,15 +337,47 @@ export function EntryPage({ entry, companions }: EntryPageProps) {
         </div>
       </section>
 
+      {/* ── CLASSIFICATION ───────────────────────────────────────────── */}
+      {(entry.genus || entry.family || climateZones.length > 0) && (
+        <section style={{ ...wrap, paddingBottom: 0, marginBottom: 60 }}>
+          <SectionLabel n="02" title="Classification" />
+          <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 60, alignItems: "start" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", borderTop: `1px solid ${T.ink}` }}>
+              {[
+                { k: "Genus", v: entry.genus },
+                { k: "Family", v: entry.family },
+                { k: "Common name", v: entry.commonName },
+                { k: "Climate", v: climateZones.length ? climateZones.join(", ") : null },
+              ].map(({ k, v }) => v ? (
+                <div key={k} style={{ display: "contents" }}>
+                  <div style={{ padding: "12px 14px", fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: T.moss, letterSpacing: "0.12em", textTransform: "uppercase", background: "#fbf7ea", borderBottom: `1px solid ${T.line}` }}>
+                    {k}
+                  </div>
+                  <div style={{ padding: "12px 14px", background: "#fff", fontSize: 14, color: T.ink, borderBottom: `1px solid ${T.line}`, textTransform: k === "Climate" ? "capitalize" : "none" }}>
+                    {v}
+                  </div>
+                </div>
+              ) : null)}
+            </div>
+            <div>
+              <p style={{ fontSize: 15, lineHeight: 1.7, color: T.moss, margin: 0 }}>
+                {entry.genus ? `${entry.latinName} belongs to the ${entry.genus} genus` : entry.latinName}
+                {entry.family ? ` within the ${entry.family} family.` : "."}
+                {climateZones.length > 0 && ` It performs reliably across ${climateZones.join(", ")} zones in our experience.`}
+                {tags.includes("NATIVE") && " It is an Australian native we grow and specify regularly."}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── CARE TABLE ───────────────────────────────────────────────── */}
       {care && (
         <section style={{ ...wrap, paddingBottom: 0 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }}>
             <div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.16em", color: T.sage, textTransform: "uppercase", marginBottom: 12 }}>
-                Growing conditions
-              </div>
-              <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: 36, letterSpacing: "-0.02em", margin: "0 0 24px", color: T.ink }}>
+              <SectionLabel n="03" title="Cultivation" />
+              <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: 30, letterSpacing: "-0.02em", margin: "0 0 24px", color: T.ink }}>
                 Care <span style={{ fontStyle: "italic", color: T.sage }}>sheet.</span>
               </h2>
               <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", borderTop: `1px solid ${T.ink}` }}>
@@ -459,17 +505,60 @@ export function EntryPage({ entry, companions }: EntryPageProps) {
         </section>
       )}
 
+      {/* ── CULTIVARS ────────────────────────────────────────────────── */}
+      {cultivars.length > 0 && (
+        <section style={{ ...wrap, marginTop: 60 }}>
+          <SectionLabel n="04" title="Cultivars" />
+          <p style={{ fontSize: 14.5, color: T.moss, margin: "0 0 24px", maxWidth: "60ch" }}>
+            Selected named varieties and which job each is best suited to.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+            {cultivars.map((c, i) => (
+              <div key={i} style={{ background: "#fff", border: `1px solid ${T.line}`, borderRadius: 8, padding: "20px 22px" }}>
+                <div style={{ fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: 18, color: T.sage, marginBottom: 8, letterSpacing: "-0.005em" }}>
+                  {c.name}
+                </div>
+                <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: T.moss }}>{c.note}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── COMPANION PLANTS ─────────────────────────────────────────── */}
       {companions.length > 0 && (
-        <section style={{ ...wrap, marginTop: 60, marginBottom: 80 }}>
-          <h3 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: 32, letterSpacing: "-0.02em", margin: "0 0 24px", color: T.ink }}>
-            Companion <span style={{ fontStyle: "italic", color: T.sage }}>plants.</span>
-          </h3>
+        <section style={{ ...wrap, marginTop: 60, marginBottom: references.length > 0 ? 0 : 80 }}>
+          <SectionLabel n="05" title="Companions" />
+          <p style={{ fontSize: 14.5, color: T.moss, margin: "0 0 24px", maxWidth: "60ch" }}>
+            Species we plant alongside {entry.commonName || entry.latinName}.
+          </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
             {companions.slice(0, 4).map((e) => (
               <CompanionCard key={e.id} entry={e} />
             ))}
           </div>
+        </section>
+      )}
+
+      {/* ── FURTHER READING ──────────────────────────────────────────── */}
+      {references.length > 0 && (
+        <section style={{ ...wrap, marginTop: 60, marginBottom: 80 }}>
+          <SectionLabel n="06" title="Further reading" />
+          <ol style={{ listStyle: "none", padding: 0, margin: 0, borderTop: `1px solid ${T.line}`, maxWidth: 760 }}>
+            {references.map((r, i) => (
+              <li key={i} style={{ display: "grid", gridTemplateColumns: "32px 1fr", gap: 16, padding: "16px 0", borderBottom: `1px solid ${T.line}`, fontSize: 14 }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: T.sage }}>{String(i + 1).padStart(2, "0")}</span>
+                <div>
+                  {r.url ? (
+                    <a href={r.url} style={{ color: T.ink, textDecoration: "none", borderBottom: `1px solid ${T.line}` }}>{r.title}</a>
+                  ) : (
+                    <span style={{ color: T.ink }}>{r.title}</span>
+                  )}
+                  <span style={{ color: T.moss }}> — {r.source}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
         </section>
       )}
     </div>
