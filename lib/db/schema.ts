@@ -281,8 +281,12 @@ export const plants = pgTable(
     latinName: varchar("latin_name", { length: 200 }).notNull(),
     commonName: varchar("common_name", { length: 200 }),
     family: varchar("family", { length: 100 }),
-    priceCents: integer("price_cents").notNull(),
+    priceCents: integer("price_cents").notNull(), // representative (cheapest) variant
     size: varchar("size", { length: 100 }), // "200mm pot", "45L bag", "tree bag"
+    variants: jsonb("variants")
+      .$type<Array<{ size: string; priceCents: number }>>()
+      .notNull()
+      .default([]), // available pot sizes + price each, cheapest first
     stockQty: integer("stock_qty").notNull().default(0),
     tags: jsonb("tags")
       .$type<string[]>()

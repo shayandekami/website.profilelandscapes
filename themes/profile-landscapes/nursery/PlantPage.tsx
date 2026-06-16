@@ -163,6 +163,12 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
   const care = plant.care as PlantCare | undefined;
   const seasons = plant.seasons as { flowering?: number[]; fruiting?: number[] } | undefined;
 
+  // Pot-size variants (size → price). Falls back to the single representative price.
+  const variants = (plant.variants as Array<{ size: string; priceCents: number }>) || [];
+  const [vIdx, setVIdx] = useState(0);
+  const activePrice = variants.length ? variants[Math.min(vIdx, variants.length - 1)].priceCents : plant.priceCents;
+  const activeSize = variants.length ? variants[Math.min(vIdx, variants.length - 1)].size : plant.size;
+
   function handleAdd() {
     if (!inStock) return;
     const cart = getCart();
@@ -357,9 +363,9 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
             >
               <div>
                 <div style={{ fontFamily: "Fraunces, serif", fontSize: 40, fontWeight: 400, letterSpacing: "-0.02em", color: T.ink }}>
-                  {fmt(plant.priceCents)}{" "}
+                  {fmt(activePrice)}{" "}
                   <small style={{ fontSize: 14, color: T.moss, fontWeight: 400, fontFamily: "'Inter Tight', sans-serif" }}>
-                    / {plant.size || "per plant"} (inc. GST)
+                    / {activeSize || "per plant"} (inc. GST)
                   </small>
                 </div>
               </div>
@@ -384,6 +390,40 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                 {inStock ? `${plant.stockQty} in stock` : "Out of stock"}
               </div>
             </div>
+
+            {/* Pot size selector */}
+            {variants.length > 1 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: "#5d7363", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>
+                  Pot size: <span style={{ color: T.ink }}>{activeSize}</span>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {variants.map((v, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setVIdx(i)}
+                      style={{
+                        padding: "9px 14px",
+                        border: `1px solid ${i === vIdx ? T.ink : T.line}`,
+                        background: i === vIdx ? T.ink : "#fff",
+                        color: i === vIdx ? "#fff" : T.ink,
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                        display: "flex",
+                        gap: 8,
+                        alignItems: "baseline",
+                      }}
+                    >
+                      <span>{v.size}</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, opacity: 0.8 }}>{fmt(v.priceCents)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Qty + Add to cart */}
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr auto", gap: 12, marginBottom: 14, alignItems: "center" }}>
@@ -433,7 +473,7 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                   transition: "background 0.18s",
                 }}
               >
-                {added ? "Added ✓" : inStock ? `Add to cart · ${fmt(plant.priceCents * qty)}` : "Out of stock"}
+                {added ? "Added ✓" : inStock ? `Add to cart · ${fmt(activePrice * qty)}` : "Out of stock"}
               </button>
 
               <button

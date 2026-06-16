@@ -59,7 +59,7 @@ function PlantCard({
       <div style={{ position: "relative", overflow: "hidden" }}>
         {img ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={img.url} alt={img.alt || plant.latinName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={img.url} alt={img.alt || plant.latinName} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
           <svg viewBox="0 0 320 240" style={{ width: "100%", height: "100%", display: "block" }}>
             <rect width="100%" height="100%" fill="#e8dcb6" />

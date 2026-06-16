@@ -57,7 +57,7 @@ function EntryCard({ entry }: { entry: EncyclopediaEntry }) {
       {img && (
         <div style={{ overflow: "hidden", background: "#e8dcb6" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={img.url} alt={img.alt || entry.latinName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={img.url} alt={img.alt || entry.latinName} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       )}
       <div style={{ padding: "18px 20px" }}>
