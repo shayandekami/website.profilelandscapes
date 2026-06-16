@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { addToCart } from "@/lib/buyCart";
 import { addToQuote } from "@/lib/quoteCart";
+import { stockStatus, STOCK_COLORS } from "@/lib/stock";
 
 type Variant = { size: string; priceCents: number };
 type Row = {
@@ -26,12 +27,23 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
   const [q, setQ] = useState("");
   const [tag, setTag] = useState<string | null>(null);
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [advancedOnly, setAdvancedOnly] = useState(false);
   const [sort, setSort] = useState<"name" | "price-asc" | "price-desc">("name");
   const [flash, setFlash] = useState<string>("");
+
+  // Advanced/specimen stock = offered in a large container (≥100L or ≥400mm)
+  const isAdvanced = (r: Row) =>
+    (r.variants || []).some((v) => {
+      const m = /(\d+)(mm|L)/.exec(v.size);
+      if (!m) return false;
+      const n = parseInt(m[1]);
+      return m[2] === "L" ? n >= 100 : n >= 400;
+    });
 
   const filtered = useMemo(() => {
     let r = rows.filter((x) => {
       if (inStockOnly && x.stockQty <= 0) return false;
+      if (advancedOnly && !isAdvanced(x)) return false;
       if (tag && !(x.tags || []).includes(tag)) return false;
       if (q) {
         const s = q.toLowerCase();
@@ -49,12 +61,34 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
       return a.latinName.localeCompare(b.latinName);
     });
     return r;
-  }, [rows, q, tag, inStockOnly, sort]);
+  }, [rows, q, tag, inStockOnly, advancedOnly, sort]);
 
   function flashMsg(m: string) {
     setFlash(m);
     setTimeout(() => setFlash(""), 1600);
   }
+
+  function downloadCSV() {
+    const head = ["Botanical name", "Common name", "Family", "Sizes & rates", "Availability"];
+    const lines = filtered.map((r) => {
+      const vs = (r.variants?.length ? r.variants : [{ size: r.size || "pot", priceCents: r.priceCents }])
+        .map((v) => `${v.size} ${fmt(v.priceCents)}`)
+        .join("; ");
+      const cells = [r.latinName, r.commonName || "", r.family || "", vs, stockStatus(r.stockQty).label];
+      return cells.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",");
+    });
+    const stamp = new Date().toISOString().slice(0, 10);
+    const csv = [`Profile Landscapes Nursery — availability list (current as of ${stamp})`, "", head.join(","), ...lines].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `pl-nursery-availability-${stamp}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const stampDate = new Date().toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
 
   return (
     <div>
@@ -76,6 +110,10 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
           <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
           In stock only
         </label>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 13.5, color: T.moss, cursor: "pointer" }}>
+          <input type="checkbox" checked={advancedOnly} onChange={(e) => setAdvancedOnly(e.target.checked)} />
+          Advanced trees
+        </label>
       </div>
 
       {/* Tag chips */}
@@ -88,8 +126,19 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
         })}
       </div>
 
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#5d7363", letterSpacing: "0.1em", marginBottom: 10 }}>
-        {filtered.length} lines{flash && <span style={{ color: T.sage, marginLeft: 14 }}>{flash}</span>}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#5d7363", letterSpacing: "0.1em" }}>
+          {filtered.length} lines · current as of {stampDate}
+          {flash && <span style={{ color: T.sage, marginLeft: 14 }}>{flash}</span>}
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={downloadCSV} style={{ ...btnSm("transparent"), color: T.ink, border: `1px solid ${T.line}` }} title="Download this list as a spreadsheet">
+            ⤓ Download CSV
+          </button>
+          <button onClick={() => window.print()} style={{ ...btnSm("transparent"), color: T.ink, border: `1px solid ${T.line}` }} title="Print or save as PDF">
+            ⎙ Print / PDF
+          </button>
+        </div>
       </div>
 
       {/* Table */}
@@ -124,11 +173,15 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
                     </div>
                   </td>
                   <td style={{ ...td, textAlign: "center" }}>
-                    {inStock ? (
-                      <span style={{ color: T.sage, fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>✓</span>
-                    ) : (
-                      <span style={{ color: T.ochre, fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, letterSpacing: "0.06em" }}>QUOTE</span>
-                    )}
+                    {(() => {
+                      const s = stockStatus(r.stockQty); const sc = STOCK_COLORS[s.tone];
+                      return (
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, color: sc.fg, background: sc.bg, padding: "3px 9px", borderRadius: 999, fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap" }}>
+                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: sc.dot, display: "inline-block" }} />
+                          {s.short}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td style={{ ...td, textAlign: "right", whiteSpace: "nowrap" }}>
                     {inStock && (

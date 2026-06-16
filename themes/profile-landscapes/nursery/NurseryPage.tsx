@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { stockStatus, STOCK_COLORS } from "@/lib/stock";
 
 type NurseryPlant = typeof import("@/lib/db/schema").plants.$inferSelect;
 
@@ -27,6 +28,8 @@ function PlantCard({
   const img = plant.images?.[0];
   const tags: string[] = (plant.tags as string[]) || [];
   const inStock = (plant.stockQty ?? 0) > 0;
+  const status = stockStatus(plant.stockQty);
+  const sc = STOCK_COLORS[status.tone];
 
   return (
     <a
@@ -129,12 +132,13 @@ function PlantCard({
             borderTop: `1px solid ${T.line}`,
           }}
         >
-          <span style={{ fontSize: 11.5, color: "#5d7363", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em" }}>
-            {inStock ? `from ${plant.size || "pot"}` : "Enquire"}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 10.5, color: sc.fg, background: sc.bg, padding: "3px 8px", borderRadius: 999, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: sc.dot, display: "inline-block" }} />
+            {status.short}
           </span>
           {inStock ? (
             <span style={{ fontWeight: 600, fontSize: 16, color: T.ink }}>
-              {fmt(plant.priceCents)}
+              <span style={{ fontSize: 11, color: "#5d7363", fontWeight: 400 }}>from </span>{fmt(plant.priceCents)}
             </span>
           ) : (
             <span style={{ fontWeight: 600, fontSize: 12.5, color: T.ochre, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em" }}>
@@ -891,6 +895,39 @@ export function NurseryPage({ plants }: NurseryPageProps) {
               <PlantCard key={p.id} plant={p} />
             ))
           )}
+        </div>
+      </section>
+
+      {/* ── DELIVERY, ORDERING & GUARANTEE ───────────────────────────── */}
+      <section style={{ ...wrap, marginTop: 90, marginBottom: 90 }}>
+        <div style={{ background: "#0a1e15", borderRadius: 10, padding: "48px 44px", color: "#e8e5db" }}>
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "#a3b8ac", marginBottom: 12 }}>
+            Ordering · delivery · guarantee
+          </div>
+          <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: "clamp(28px,3.4vw,42px)", letterSpacing: "-0.02em", margin: "0 0 32px", color: "#fff" }}>
+            How we supply.
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 28 }}>
+            {[
+              { h: "Delivery zones", b: "Flat-rate delivery across Sydney metro; Central Coast, Newcastle, Wollongong & ACT by quote. Yard pickup from Petersham, Mon–Sat." },
+              { h: "Trade ordering", b: "Tube stock sold by the tray; pots by the each. Minimum order $150 for delivery. Advanced stock over 100L needs two-person or machine offload on site." },
+              { h: "Grown to order", b: "Advanced trees & large quantities are contract-grown — send species, sizes and a required-by date and we'll confirm rates and lead time." },
+              { h: "Plant guarantee", b: "We guarantee plant health at supply, and for 60 days on nursery purchases when our care guidance is followed. Establishment on site depends on watering & drainage." },
+            ].map((c, i) => (
+              <div key={i}>
+                <h3 style={{ fontFamily: "Fraunces, serif", fontWeight: 400, fontSize: 18, color: "#e8dcb6", margin: "0 0 10px" }}>{c.h}</h3>
+                <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#c8c2b0" }}>{c.b}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 34, display: "flex", gap: 14, flexWrap: "wrap" }}>
+            <a href="/plants/pricelist" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: 999, background: "#e8dcb6", color: "#0a1e15", fontSize: 14, fontWeight: 500, textDecoration: "none" }}>
+              Trade pricelist →
+            </a>
+            <a href="/quote-cart" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: 999, background: "transparent", color: "#e8dcb6", fontSize: 14, fontWeight: 500, textDecoration: "none", border: "1px solid rgba(255,255,255,0.25)" }}>
+              Request a quote
+            </a>
+          </div>
         </div>
       </section>
     </div>

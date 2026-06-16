@@ -5,6 +5,20 @@ import { useState } from "react";
 import type { PlantCare } from "@/lib/db/schema";
 import { addToCart } from "@/lib/buyCart";
 import { addToQuote } from "@/lib/quoteCart";
+import { stockStatus, STOCK_COLORS } from "@/lib/stock";
+
+// Indicative grown height by container size — trade buys to a spec.
+const SIZE_HEIGHT: Record<string, string> = {
+  "tube": "≈ 0.1–0.2m", "100mm": "≈ 0.2–0.3m", "140mm": "≈ 0.2–0.4m",
+  "150mm": "≈ 0.3–0.5m", "175mm": "≈ 0.4–0.6m", "180mm": "≈ 0.4–0.6m",
+  "200mm": "≈ 0.4–0.8m", "250mm": "≈ 0.6–1.0m", "300mm": "≈ 0.8–1.5m",
+  "400mm": "≈ 1.5–2.5m", "500mm": "≈ 2.0–3.0m", "600mm": "≈ 2.5–3.5m",
+  "800mm": "≈ 3.5–4.5m", "900mm": "≈ 4.0–5.0m",
+  "25L": "≈ 0.8–1.5m", "45L": "≈ 1.5–2.0m", "70L": "≈ 2.0–2.5m", "75L": "≈ 2.0–3.0m",
+  "90L": "≈ 2.5–3.0m", "100L": "≈ 3.0–4.0m", "150L": "≈ 3.5–4.5m",
+  "200L": "≈ 4.0–5.0m", "300L": "≈ 4.5–5.5m", "400L": "≈ 5.0–6.0m",
+  "500L": "≈ 5.5–6.5m", "750L": "≈ 6.0–7.0m", "1500L": "≈ 7.0m+",
+};
 
 type NurseryPlant = typeof import("@/lib/db/schema").plants.$inferSelect;
 
@@ -373,26 +387,15 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                   </small>
                 </div>
               </div>
-              <div
-                style={{
-                  color: inStock ? T.sage : T.ochre,
-                  fontSize: 13,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: inStock ? T.sage : T.ochre,
-                    display: "inline-block",
-                  }}
-                />
-                {inStock ? `${plant.stockQty} in stock` : "Out of stock"}
-              </div>
+              {(() => {
+                const s = stockStatus(plant.stockQty); const sc = STOCK_COLORS[s.tone];
+                return (
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 12.5, color: sc.fg, background: sc.bg, padding: "5px 12px", borderRadius: 999 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: sc.dot, display: "inline-block" }} />
+                    {s.label}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Pot size selector */}
@@ -400,6 +403,11 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
               <div style={{ marginBottom: 20 }}>
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: "#5d7363", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 10 }}>
                   Pot size: <span style={{ color: T.ink }}>{activeSize}</span>
+                  {activeSize && SIZE_HEIGHT[activeSize] && (
+                    <span style={{ color: T.sage, marginLeft: 8, textTransform: "none", letterSpacing: 0 }}>
+                      grown height {SIZE_HEIGHT[activeSize]}
+                    </span>
+                  )}
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {variants.map((v, i) => (
