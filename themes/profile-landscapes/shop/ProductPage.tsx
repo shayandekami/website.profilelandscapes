@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { addToCart } from "@/lib/buyCart";
 
 type Product = typeof import("@/lib/db/schema").products.$inferSelect;
 type ProductCategory =
@@ -18,23 +19,6 @@ const T = {
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
-}
-
-function getCart(): Record<number, number> {
-  if (typeof window === "undefined") return {};
-  try {
-    return JSON.parse(localStorage.getItem("pl_cart") || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function setCart(cart: Record<number, number>) {
-  localStorage.setItem("pl_cart", JSON.stringify(cart));
-  const total = Object.values(cart).reduce((s, q) => s + q, 0);
-  document.querySelectorAll("#cart-count").forEach((el) => {
-    el.textContent = String(total);
-  });
 }
 
 function RelatedCard({ product }: { product: Product }) {
@@ -133,9 +117,14 @@ export function ProductPage({ product, related, category: categoryProp }: Produc
 
   function handleAdd() {
     if (!inStock) return;
-    const cart = getCart();
-    cart[product.id] = (cart[product.id] || 0) + qty;
-    setCart(cart);
+    addToCart({
+      type: "product",
+      id: product.id,
+      name: product.name,
+      image: images[0]?.url,
+      priceCents: product.priceCents,
+      quantity: qty,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   }

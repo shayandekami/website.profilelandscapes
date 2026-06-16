@@ -21,17 +21,16 @@ function fmt(cents: number) {
 // ── Plant card ────────────────────────────────────────────────────────────────
 function PlantCard({
   plant,
-  onClick,
 }: {
   plant: NurseryPlant;
-  onClick?: () => void;
 }) {
   const img = plant.images?.[0];
   const tags: string[] = (plant.tags as string[]) || [];
+  const inStock = (plant.stockQty ?? 0) > 0;
 
   return (
-    <div
-      onClick={onClick}
+    <a
+      href={`/plants/${plant.slug}`}
       style={{
         background: "#fff",
         border: `1px solid ${T.line}`,
@@ -42,6 +41,8 @@ function PlantCard({
         display: "grid",
         gridTemplateRows: "240px auto",
         position: "relative",
+        textDecoration: "none",
+        color: "inherit",
       }}
       onMouseEnter={(e) =>
         Object.assign((e.currentTarget as HTMLElement).style, {
@@ -129,14 +130,20 @@ function PlantCard({
           }}
         >
           <span style={{ fontSize: 11.5, color: "#5d7363", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.08em" }}>
-            {plant.size || "—"}
+            {inStock ? `from ${plant.size || "pot"}` : "Enquire"}
           </span>
-          <span style={{ fontWeight: 600, fontSize: 16, color: T.ink }}>
-            {fmt(plant.priceCents)}
-          </span>
+          {inStock ? (
+            <span style={{ fontWeight: 600, fontSize: 16, color: T.ink }}>
+              {fmt(plant.priceCents)}
+            </span>
+          ) : (
+            <span style={{ fontWeight: 600, fontSize: 12.5, color: T.ochre, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em" }}>
+              QUOTE
+            </span>
+          )}
         </div>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -394,7 +401,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
                 Browse the nursery →
               </button>
               <a
-                href="#finder"
+                href="/plants/pricelist"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -409,8 +416,18 @@ export function NurseryPage({ plants }: NurseryPageProps) {
                   textDecoration: "none",
                 }}
               >
-                Use the plant finder
+                Trade pricelist →
               </a>
+            </div>
+            <div style={{ marginTop: 14, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+              Trade buyer?{" "}
+              <a href="/plants/pricelist" style={{ color: "#e8dcb6", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                See all {plants.length} lines &amp; rates
+              </a>{" "}
+              or{" "}
+              <a href="/quote-cart" style={{ color: "#e8dcb6", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                request a quote
+              </a>.
             </div>
           </div>
 

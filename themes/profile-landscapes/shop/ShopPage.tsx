@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { addToCart } from "@/lib/buyCart";
 
 // ── Types inferred from schema ──────────────────────────────────────────────
 type Product = typeof import("@/lib/db/schema").products.$inferSelect;
@@ -25,23 +26,6 @@ function formatPrice(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function getCart(): Record<number, number> {
-  if (typeof window === "undefined") return {};
-  try {
-    return JSON.parse(localStorage.getItem("pl_cart") || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function setCart(cart: Record<number, number>) {
-  localStorage.setItem("pl_cart", JSON.stringify(cart));
-  const total = Object.values(cart).reduce((s, q) => s + q, 0);
-  document.querySelectorAll("#cart-count").forEach((el) => {
-    el.textContent = String(total);
-  });
-}
-
 // ── Add-to-cart button ──────────────────────────────────────────────────────
 function AddToCartButton({
   product,
@@ -53,9 +37,14 @@ function AddToCartButton({
   const [added, setAdded] = useState(false);
 
   function handleAdd() {
-    const cart = getCart();
-    cart[product.id] = (cart[product.id] || 0) + 1;
-    setCart(cart);
+    addToCart({
+      type: "product",
+      id: product.id,
+      name: product.name,
+      image: product.images?.[0]?.url,
+      priceCents: product.priceCents,
+      quantity: 1,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   }

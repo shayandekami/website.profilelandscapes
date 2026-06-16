@@ -2,6 +2,7 @@ import { theme } from "@/themes/active";
 import { getSiteSettings } from "@/lib/content";
 import { auth } from "@/lib/auth";
 import { AdminBar } from "@/components/admin/AdminBar";
+import { QuoteBar } from "@/components/commerce/QuoteBar";
 
 // CMS-backed: render per request, not at build time
 export const dynamic = "force-dynamic";
@@ -44,6 +45,7 @@ export default async function PublicLayout({
         legal={settings.legal}
       />
       {session?.user && <AdminBar userName={session.user.name || session.user.email || "Admin"} />}
+      <QuoteBar />
     </>
   );
 }

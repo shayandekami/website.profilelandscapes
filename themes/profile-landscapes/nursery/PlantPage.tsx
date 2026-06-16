@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import type { PlantCare } from "@/lib/db/schema";
+import { addToCart } from "@/lib/buyCart";
+import { addToQuote } from "@/lib/quoteCart";
 
 type NurseryPlant = typeof import("@/lib/db/schema").plants.$inferSelect;
 
@@ -18,23 +20,6 @@ const T = {
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
-}
-
-function getCart(): Record<number, number> {
-  if (typeof window === "undefined") return {};
-  try {
-    return JSON.parse(localStorage.getItem("pl_cart") || "{}");
-  } catch {
-    return {};
-  }
-}
-
-function setCart(cart: Record<number, number>) {
-  localStorage.setItem("pl_cart", JSON.stringify(cart));
-  const total = Object.values(cart).reduce((s, q) => s + q, 0);
-  document.querySelectorAll("#cart-count").forEach((el) => {
-    el.textContent = String(total);
-  });
 }
 
 // ── Season chart ──────────────────────────────────────────────────────────────
@@ -155,6 +140,7 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [added, setAdded] = useState(false);
+  const [quoted, setQuoted] = useState(false);
   const [favoured, setFavoured] = useState(false);
 
   const inStock = plant.stockQty > 0;
@@ -171,11 +157,29 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
 
   function handleAdd() {
     if (!inStock) return;
-    const cart = getCart();
-    cart[plant.id] = (cart[plant.id] || 0) + qty;
-    setCart(cart);
+    addToCart({
+      type: "plant",
+      id: plant.id,
+      name: plant.commonName ? `${plant.commonName} (${plant.latinName})` : plant.latinName,
+      image: images[0]?.url,
+      priceCents: activePrice,
+      quantity: qty,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
+  }
+
+  function handleQuote() {
+    addToQuote({
+      kind: "plant",
+      slug: plant.slug,
+      name: plant.commonName ? `${plant.commonName} (${plant.latinName})` : plant.latinName,
+      size: activeSize || undefined,
+      priceCents: inStock ? activePrice : 0,
+      qty,
+    });
+    setQuoted(true);
+    setTimeout(() => setQuoted(false), 1600);
   }
 
   const wrap: React.CSSProperties = { maxWidth: 1400, margin: "0 auto", padding: "0 56px" };
@@ -457,24 +461,43 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                 </button>
               </div>
 
-              <button
-                onClick={handleAdd}
-                disabled={!inStock}
-                style={{
-                  background: added ? T.sage : inStock ? T.ink : "#a0a8a0",
-                  color: "#fff",
-                  border: "none",
-                  padding: 17,
-                  borderRadius: 999,
-                  fontSize: 15,
-                  fontWeight: 500,
-                  cursor: inStock ? "pointer" : "not-allowed",
-                  fontFamily: "inherit",
-                  transition: "background 0.18s",
-                }}
-              >
-                {added ? "Added ✓" : inStock ? `Add to cart · ${fmt(activePrice * qty)}` : "Out of stock"}
-              </button>
+              {inStock ? (
+                <button
+                  onClick={handleAdd}
+                  style={{
+                    background: added ? T.sage : T.ink,
+                    color: "#fff",
+                    border: "none",
+                    padding: 17,
+                    borderRadius: 999,
+                    fontSize: 15,
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    transition: "background 0.18s",
+                  }}
+                >
+                  {added ? "Added to cart ✓" : `Add to cart · ${fmt(activePrice * qty)}`}
+                </button>
+              ) : (
+                <button
+                  onClick={handleQuote}
+                  style={{
+                    background: quoted ? T.sage : T.ochre,
+                    color: "#fff",
+                    border: "none",
+                    padding: 17,
+                    borderRadius: 999,
+                    fontSize: 15,
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    transition: "background 0.18s",
+                  }}
+                >
+                  {quoted ? "Added to quote ✓" : "Request a quote — grown to order"}
+                </button>
+              )}
 
               <button
                 onClick={() => setFavoured((f) => !f)}
@@ -496,6 +519,26 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                 </svg>
               </button>
             </div>
+
+            {/* Trade quote option (in-stock items) */}
+            {inStock && (
+              <button
+                onClick={handleQuote}
+                style={{
+                  marginBottom: 4,
+                  background: "transparent",
+                  border: "none",
+                  color: quoted ? T.sage : T.moss,
+                  fontSize: 13.5,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 3,
+                }}
+              >
+                {quoted ? "Added to quote ✓" : "Trade or bulk order? Add to a quote request instead →"}
+              </button>
+            )}
 
             {/* Shipping info */}
             <div
