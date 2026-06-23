@@ -4,6 +4,7 @@ import { products, plants, orders } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { calcShipping, generateOrderNumber } from "@/lib/commerce";
 import type { OrderLineItem } from "@/lib/db/schema";
+import { getTradeAccount, tierMultiplier } from "@/lib/tradeAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No items provided" }, { status: 400 });
   }
 
+  // Trade pricing: apply the logged-in account's tier server-side (authoritative)
+  const tradeAcct = await getTradeAccount();
+  const mult = tradeAcct ? tierMultiplier(tradeAcct.tier) : 1;
+  const priced = (cents: number) => Math.round(cents * mult);
+
   // Re-validate and re-fetch prices from DB — never trust client prices
   const lineItems: OrderLineItem[] = [];
 
@@ -61,7 +67,7 @@ export async function POST(req: Request) {
         id: row.id,
         name: row.name,
         image: (row.images as Array<{ url: string }>)[0]?.url,
-        priceCents: row.priceCents,
+        priceCents: priced(row.priceCents),
         quantity: item.quantity,
       });
     } else if (item.type === "plant") {
@@ -82,7 +88,7 @@ export async function POST(req: Request) {
         id: row.id,
         name: row.commonName ?? row.latinName,
         image: (row.images as Array<{ url: string }>)[0]?.url,
-        priceCents: row.priceCents,
+        priceCents: priced(row.priceCents),
         quantity: item.quantity,
       });
     } else {

@@ -42,6 +42,13 @@ export default async function PricelistPage() {
           per pot size. In-stock lines can be bought directly; everything can be added to a quote
           request for trade rates, bulk pricing and lead times. Prices include GST.
         </p>
+        <p style={{ fontSize: 14, color: "var(--ink-2, #3c554a)", marginTop: 10 }}>
+          Landscaper or builder?{" "}
+          <a href="/trade/login" style={{ color: "var(--ink, #133024)", textDecoration: "underline", textUnderlineOffset: 3 }}>Log in</a>{" "}
+          or{" "}
+          <a href="/trade/register" style={{ color: "var(--ink, #133024)", textDecoration: "underline", textUnderlineOffset: 3 }}>open a trade account</a>{" "}
+          to see your rates applied.
+        </p>
       </div>
       <PricelistTable rows={rows} />
     </div>

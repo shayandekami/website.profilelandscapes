@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { addToCart } from "@/lib/buyCart";
 import { addToQuote } from "@/lib/quoteCart";
 import { stockStatus, STOCK_COLORS } from "@/lib/stock";
+import { getTier, applyTier, tierDiscountPct, type Tier } from "@/lib/tradePricing";
 
 type Variant = { size: string; priceCents: number };
 type Row = {
@@ -30,6 +31,9 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
   const [advancedOnly, setAdvancedOnly] = useState(false);
   const [sort, setSort] = useState<"name" | "price-asc" | "price-desc">("name");
   const [flash, setFlash] = useState<string>("");
+  const [tier, setTier] = useState<Tier>("retail");
+  useEffect(() => setTier(getTier()), []);
+  const tp = (cents: number) => applyTier(cents, tier);
 
   // Advanced/specimen stock = offered in a large container (≥100L or ≥400mm)
   const isAdvanced = (r: Row) =>
@@ -167,7 +171,7 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 10px" }}>
                       {vs.slice(0, 6).map((v, i) => (
                         <span key={i} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, color: T.moss, whiteSpace: "nowrap" }}>
-                          {v.size} <b style={{ color: T.ink }}>{fmt(v.priceCents)}</b>
+                          {v.size} <b style={{ color: tier !== "retail" ? T.sage : T.ink }}>{fmt(tp(v.priceCents))}</b>
                         </span>
                       ))}
                     </div>
@@ -186,14 +190,14 @@ export function PricelistTable({ rows }: { rows: Row[] }) {
                   <td style={{ ...td, textAlign: "right", whiteSpace: "nowrap" }}>
                     {inStock && (
                       <button
-                        onClick={() => { addToCart({ type: "plant", id: r.id, name: r.commonName ? `${r.commonName} (${r.latinName})` : r.latinName, priceCents: r.priceCents, quantity: 1 }); flashMsg(`Added ${r.latinName} to cart`); }}
+                        onClick={() => { addToCart({ type: "plant", id: r.id, name: r.commonName ? `${r.commonName} (${r.latinName})` : r.latinName, priceCents: tp(r.priceCents), quantity: 1 }); flashMsg(`Added ${r.latinName} to cart`); }}
                         style={btnSm(T.ink)}
                       >
                         + Cart
                       </button>
                     )}
                     <button
-                      onClick={() => { addToQuote({ kind: "plant", slug: r.slug, name: r.commonName ? `${r.commonName} (${r.latinName})` : r.latinName, size: vs[0].size, priceCents: inStock ? r.priceCents : 0, qty: 1 }); flashMsg(`Added ${r.latinName} to quote`); }}
+                      onClick={() => { addToQuote({ kind: "plant", slug: r.slug, name: r.commonName ? `${r.commonName} (${r.latinName})` : r.latinName, size: vs[0].size, priceCents: inStock ? tp(r.priceCents) : 0, qty: 1 }); flashMsg(`Added ${r.latinName} to quote`); }}
                       style={{ ...btnSm("transparent"), color: T.ink, border: `1px solid ${T.line}`, marginLeft: 6 }}
                     >
                       + Quote

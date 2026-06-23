@@ -20,6 +20,7 @@ export default function NotFound() {
         padding: "80px 0",
       }}
     >
+      <style>{`.nf-quicklink:hover{background:rgba(255,255,255,0.06)!important}`}</style>
       <div className="wrap">
         <div style={{ marginBottom: 64 }}>
           <span
@@ -78,18 +79,13 @@ export default function NotFound() {
             <a
               key={link.href}
               href={link.href}
+              className="nf-quicklink"
               style={{
                 display: "block",
                 padding: "28px 24px",
                 background: "rgba(255,255,255,0.02)",
                 textDecoration: "none",
                 transition: "background 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)";
               }}
             >
               <div

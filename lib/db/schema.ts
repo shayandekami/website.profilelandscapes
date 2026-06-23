@@ -469,3 +469,34 @@ export const productsRelations = relations(products, ({ one }) => ({
     references: [productCategories.id],
   }),
 }));
+
+// ---------- Trade accounts (wholesale/landscape buyers) ----------
+export const tradeStatusEnum = pgEnum("trade_status", ["pending", "approved", "suspended"]);
+export const tradeTierEnum = pgEnum("trade_tier", ["retail", "trade", "contract"]);
+
+export const tradeAccounts = pgTable(
+  "trade_accounts",
+  {
+    id: serial("id").primaryKey(),
+    email: varchar("email", { length: 255 }).notNull(),
+    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+    company: varchar("company", { length: 200 }),
+    contactName: varchar("contact_name", { length: 200 }),
+    phone: varchar("phone", { length: 60 }),
+    status: tradeStatusEnum("status").notNull().default("pending"),
+    priceTier: tradeTierEnum("price_tier").notNull().default("trade"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({ emailIdx: uniqueIndex("trade_accounts_email_idx").on(t.email) })
+);
+
+// ---------- Plant reviews ----------
+export const plantReviews = pgTable("plant_reviews", {
+  id: serial("id").primaryKey(),
+  plantSlug: varchar("plant_slug", { length: 200 }).notNull(),
+  author: varchar("author", { length: 120 }).notNull(),
+  rating: integer("rating").notNull(), // 1–5
+  body: text("body"),
+  approved: boolean("approved").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});

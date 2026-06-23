@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import type { PlantCare } from "@/lib/db/schema";
 import { addToCart } from "@/lib/buyCart";
 import { addToQuote } from "@/lib/quoteCart";
 import { stockStatus, STOCK_COLORS } from "@/lib/stock";
+import { getTier, applyTier, tierDiscountPct, type Tier } from "@/lib/tradePricing";
+import { toggleSchedule, inSchedule } from "@/lib/scheduleList";
+import { PlantReviews } from "@/components/commerce/PlantReviews";
 
 // Indicative grown height by container size — trade buys to a spec.
 const SIZE_HEIGHT: Record<string, string> = {
@@ -160,14 +163,33 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
   const inStock = plant.stockQty > 0;
   const images = plant.images?.length ? plant.images : [];
   const tags: string[] = (plant.tags as string[]) || [];
+
+  useEffect(() => { setFavoured(inSchedule(plant.slug)); }, [plant.slug]);
+
+  function handleSchedule() {
+    const c = plant.care as PlantCare | undefined;
+    const added = toggleSchedule({
+      slug: plant.slug,
+      latin: plant.latinName,
+      common: plant.commonName || undefined,
+      image: images[0]?.url,
+      size: activeSize || undefined,
+      priceCents: inStock ? activePrice : 0,
+      water: c?.water, light: c?.light, growthRate: c?.growthRate, matureSize: c?.matureSize,
+    });
+    setFavoured(added);
+  }
   const care = plant.care as PlantCare | undefined;
   const seasons = plant.seasons as { flowering?: number[]; fruiting?: number[] } | undefined;
 
   // Pot-size variants (size → price). Falls back to the single representative price.
   const variants = (plant.variants as Array<{ size: string; priceCents: number }>) || [];
   const [vIdx, setVIdx] = useState(0);
-  const activePrice = variants.length ? variants[Math.min(vIdx, variants.length - 1)].priceCents : plant.priceCents;
+  const listPrice = variants.length ? variants[Math.min(vIdx, variants.length - 1)].priceCents : plant.priceCents;
   const activeSize = variants.length ? variants[Math.min(vIdx, variants.length - 1)].size : plant.size;
+  const [tier, setTier] = useState<Tier>("retail");
+  useEffect(() => setTier(getTier()), []);
+  const activePrice = applyTier(listPrice, tier);
 
   function handleAdd() {
     if (!inStock) return;
@@ -386,6 +408,11 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                     / {activeSize || "per plant"} (inc. GST)
                   </small>
                 </div>
+                {tier !== "retail" && (
+                  <div style={{ fontSize: 12, color: T.sage, marginTop: 4, fontFamily: "'JetBrains Mono', monospace" }}>
+                    Trade price · {tierDiscountPct(tier)}% off list ({fmt(listPrice)})
+                  </div>
+                )}
               </div>
               {(() => {
                 const s = stockStatus(plant.stockQty); const sc = STOCK_COLORS[s.tone];
@@ -430,7 +457,7 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                       }}
                     >
                       <span>{v.size}</span>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, opacity: 0.8 }}>{fmt(v.priceCents)}</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11.5, opacity: 0.8 }}>{fmt(applyTier(v.priceCents, tier))}</span>
                     </button>
                   ))}
                 </div>
@@ -508,8 +535,9 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
               )}
 
               <button
-                onClick={() => setFavoured((f) => !f)}
-                aria-label="Save"
+                onClick={handleSchedule}
+                aria-label="Add to plant schedule"
+                title={favoured ? "In your schedule" : "Add to plant schedule"}
                 style={{
                   width: 50,
                   height: 50,
@@ -527,6 +555,12 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                 </svg>
               </button>
             </div>
+
+            {favoured && (
+              <a href="/schedule" style={{ display: "inline-block", marginBottom: 6, fontSize: 13, color: T.sage, textDecoration: "underline", textUnderlineOffset: 3 }}>
+                Saved to your plant schedule — compare &amp; export →
+              </a>
+            )}
 
             {/* Trade quote option (in-stock items) */}
             {inStock && (
@@ -699,6 +733,8 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
           </div>
         </section>
       )}
+
+      <PlantReviews slug={plant.slug} />
     </div>
   );
 }

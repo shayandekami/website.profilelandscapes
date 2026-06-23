@@ -3,6 +3,8 @@ import { getSiteSettings } from "@/lib/content";
 import { auth } from "@/lib/auth";
 import { AdminBar } from "@/components/admin/AdminBar";
 import { QuoteBar } from "@/components/commerce/QuoteBar";
+import { ScheduleBar } from "@/components/commerce/ScheduleBar";
+import { TradePricingBanner } from "@/components/commerce/TradePricingBanner";
 
 // CMS-backed: render per request, not at build time
 export const dynamic = "force-dynamic";
@@ -34,6 +36,7 @@ export default async function PublicLayout({
         <style dangerouslySetInnerHTML={{ __html: `:root{${tokenStyle}}` }} />
       )}
 
+      <TradePricingBanner />
       <Header studioName={settings.studio_name} nav={theme.nav} />
       <main>{children}</main>
       <Footer
@@ -46,6 +49,7 @@ export default async function PublicLayout({
       />
       {session?.user && <AdminBar userName={session.user.name || session.user.email || "Admin"} />}
       <QuoteBar />
+      <ScheduleBar />
     </>
   );
 }

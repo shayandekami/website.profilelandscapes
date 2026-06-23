@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { products, plants } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { calcShipping } from "@/lib/commerce";
+import { getTradeAccount, tierMultiplier } from "@/lib/tradeAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,9 @@ export async function POST(req: Request) {
 
   const errors: string[] = [];
   const validated: ValidatedItem[] = [];
+  const tradeAcct = await getTradeAccount();
+  const mult = tradeAcct ? tierMultiplier(tradeAcct.tier) : 1;
+  const priced = (cents: number) => Math.round(cents * mult);
 
   for (const item of items) {
     if (!item.id || !item.type || item.quantity < 1) {
@@ -65,7 +69,7 @@ export async function POST(req: Request) {
         id: row.id,
         name: row.name,
         image: (row.images as Array<{ url: string }>)[0]?.url,
-        priceCents: row.priceCents,
+        priceCents: priced(row.priceCents),
         quantity: item.quantity,
       });
     } else if (item.type === "plant") {
@@ -90,7 +94,7 @@ export async function POST(req: Request) {
         id: row.id,
         name: row.commonName ?? row.latinName,
         image: (row.images as Array<{ url: string }>)[0]?.url,
-        priceCents: row.priceCents,
+        priceCents: priced(row.priceCents),
         quantity: item.quantity,
       });
     } else {
