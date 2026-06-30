@@ -1470,6 +1470,10 @@ async function main() {
       });
   }
 
+  // Full nursery + encyclopedia catalog (528 plants, 384 species) + product/project extras
+  const { seedCatalog } = await import("./seed-catalog");
+  await seedCatalog();
+
   console.log("✓ seed complete");
   console.log("   admin login: admin@profilelandscapes.com.au / pl-admin-2026");
   process.exit(0);

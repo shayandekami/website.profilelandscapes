@@ -55,6 +55,20 @@ export async function POST(req: Request) {
             updatedAt: new Date(),
           })
           .where(eq(orders.id, order.id));
+
+        // Confirmation email (graceful — never fail the webhook)
+        try {
+          const { notifyOrder } = await import("@/lib/email");
+          await notifyOrder({
+            orderNumber: order.orderNumber,
+            name: order.customerName,
+            email: order.customerEmail,
+            totalCents: order.totalCents,
+            lines: (order.lineItems as Array<{ name: string; quantity: number; priceCents: number }>) || [],
+          });
+        } catch (e) {
+          console.error("[stripe webhook] order email failed", e);
+        }
       } else {
         console.warn(
           `[stripe webhook] No order found for session ${session.id}`

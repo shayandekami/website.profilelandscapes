@@ -52,6 +52,13 @@ export async function POST(req: Request) {
     })
     .returning();
 
+  try {
+    const { notifyTradeWelcome } = await import("@/lib/email");
+    await notifyTradeWelcome({ email: acct.email, company: acct.company });
+  } catch (e) {
+    console.error("[trade register] welcome email failed", e);
+  }
+
   const token = makeToken({ id: acct.id, email: acct.email, tier: "trade", company: acct.company });
   const res = NextResponse.json({ ok: true, tier: "trade", tierLabel: tierLabel("trade") });
   res.cookies.set(SESSION_COOKIE, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: SESSION_MAX_AGE });

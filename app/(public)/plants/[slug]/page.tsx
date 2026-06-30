@@ -4,6 +4,7 @@ import { db, plants } from "@/lib/db";
 import { eq, and, inArray } from "drizzle-orm";
 import { DefaultPlantPage } from "@/components/commerce/defaults/DefaultPlantPage";
 import { theme } from "@/themes/active";
+import { JsonLd, productLd, breadcrumbLd } from "@/components/JsonLd";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,23 @@ export default async function PlantDetailPage({ params }: Params) {
       : [];
 
   const PlantPage = theme.nursery?.PlantPage ?? DefaultPlantPage;
+  const img = (plant.images as Array<{ url: string }>)?.[0]?.url;
 
-  return <PlantPage plant={plant} companions={companions} />;
+  return (
+    <>
+      <JsonLd data={productLd({
+        name: plant.commonName ? `${plant.commonName} (${plant.latinName})` : plant.latinName,
+        description: plant.shortDescription || plant.description,
+        image: img,
+        url: `/plants/${plant.slug}`,
+        priceCents: plant.priceCents,
+        inStock: (plant.stockQty ?? 0) > 0,
+      })} />
+      <JsonLd data={breadcrumbLd([
+        { name: "Nursery", url: "/plants" },
+        { name: plant.commonName || plant.latinName, url: `/plants/${plant.slug}` },
+      ])} />
+      <PlantPage plant={plant} companions={companions} />
+    </>
+  );
 }

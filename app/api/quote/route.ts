@@ -103,5 +103,13 @@ export async function POST(req: Request) {
     }).catch((e) => console.error("[quote] email failed", e));
   }
 
+  // Customer acknowledgement (graceful — never blocks the response)
+  try {
+    const { notifyCustomerQuoteAck } = await import("@/lib/email");
+    await notifyCustomerQuoteAck({ ref, name: parsed.data.name, email: parsed.data.email });
+  } catch (e) {
+    console.error("[quote] customer ack failed", e);
+  }
+
   return NextResponse.json({ ok: true, id: inserted[0]?.id, referenceCode: ref });
 }

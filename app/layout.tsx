@@ -1,11 +1,28 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+const siteName = "Profile Landscapes";
+const defaultTitle = "Profile Landscapes — Commercial landscape contractors, Sydney since 1999";
+const defaultDescription =
+  "Sydney-based landscape contractor, nursery and design studio. Design, construction, maintenance, 4,800+ plants in stock, and a trade pricelist. Since 1999.";
+
 export const metadata: Metadata = {
-  title: "Profile Landscapes — Commercial landscape contractors, Sydney since 1999",
-  description:
-    "Sydney-based landscape contractor, nursery and design studio. Since 1999.",
+  metadataBase: new URL(siteUrl),
+  title: { default: defaultTitle, template: `%s — ${siteName}` },
+  description: defaultDescription,
+  applicationName: siteName,
   icons: { icon: "/favicon.svg" },
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName,
+    title: defaultTitle,
+    description: defaultDescription,
+    locale: "en_AU",
+    url: siteUrl,
+  },
+  twitter: { card: "summary_large_image", title: defaultTitle, description: defaultDescription },
 };
 
 export default function RootLayout({

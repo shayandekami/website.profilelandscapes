@@ -22,6 +22,7 @@ const NAV: NavGroup[] = [
     items: [
       { id: "quotes", label: "Quote Inbox", href: "/admin/quotes", icon: "✉" },
       { id: "orders", label: "Orders", href: "/admin/orders", icon: "◈" },
+      { id: "trade", label: "Trade Accounts", href: "/admin/trade-accounts", icon: "❖" },
     ],
   },
   {
@@ -30,6 +31,7 @@ const NAV: NavGroup[] = [
       { id: "shop", label: "Shop Products", href: "/admin/shop", icon: "◳" },
       { id: "nursery", label: "Nursery Stock", href: "/admin/nursery", icon: "✿" },
       { id: "encyclopedia", label: "Encyclopedia", href: "/admin/encyclopedia", icon: "❦" },
+      { id: "reviews", label: "Plant Reviews", href: "/admin/reviews", icon: "★" },
     ],
   },
   {

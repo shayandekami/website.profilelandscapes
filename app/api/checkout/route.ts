@@ -121,6 +121,12 @@ export async function POST(req: Request) {
       stripeSessionId: "dev",
       status: "pending",
     });
+    try {
+      const { notifyOrder } = await import("@/lib/email");
+      await notifyOrder({ orderNumber: devOrderNumber, name: customerName, email: customerEmail, totalCents, lines: lineItems });
+    } catch (e) {
+      console.error("[checkout dev] order email failed", e);
+    }
     return NextResponse.json({
       sessionId: "dev",
       url: `/checkout/success?session_id=dev&order=${devOrderNumber}`,
