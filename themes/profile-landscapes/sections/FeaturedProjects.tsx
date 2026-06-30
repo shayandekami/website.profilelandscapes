@@ -10,12 +10,13 @@ export async function FeaturedProjects({ props }: { props: Record<string, unknow
     limit?: number;
   };
 
+  const limit = Number(p.limit) > 0 ? Number(p.limit) : 6;
   const rows = await db
     .select()
     .from(projects)
     .where(eq(projects.status, "live"))
     .orderBy(desc(projects.featured), desc(projects.completedAt))
-    .limit(p.limit ?? 6);
+    .limit(limit);
 
   return (
     <section className="featured-work">

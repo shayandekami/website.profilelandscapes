@@ -78,3 +78,47 @@ export async function savePage(input: unknown): Promise<SaveResult> {
 
   return { ok: true, updatedAt: now.toISOString() };
 }
+
+export type RestoreResult = { ok: true } | { ok: false; error: string };
+
+/** Restore a page to a saved revision. Snapshots the current state first, so a
+ *  restore is itself undoable. */
+export async function restoreRevision(input: unknown): Promise<RestoreResult> {
+  const session = await auth();
+  if (!session?.user) return { ok: false, error: "Not signed in" };
+  const parsed = z.object({ pageId: z.number(), revisionId: z.number() }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Invalid input" };
+
+  const rev = await db.query.pageRevisions.findFirst({ where: eq(pageRevisions.id, parsed.data.revisionId) });
+  const current = await db.query.pages.findFirst({ where: eq(pages.id, parsed.data.pageId) });
+  if (!rev || !current || rev.pageId !== current.id) return { ok: false, error: "Revision not found" };
+
+  // Snapshot current before overwriting (restore is undoable).
+  await db.insert(pageRevisions).values({
+    pageId: current.id,
+    sections: current.sections as Section[],
+    title: current.title,
+    lede: current.lede,
+    authorId: Number(session.user.id),
+  });
+
+  await db.update(pages).set({
+    title: rev.title,
+    lede: rev.lede,
+    sections: rev.sections as Section[],
+    updatedAt: new Date(),
+    updatedById: Number(session.user.id),
+  }).where(eq(pages.id, current.id));
+
+  await db.insert(auditLog).values({
+    userId: Number(session.user.id),
+    action: "pages.restore",
+    resource: "page",
+    resourceId: String(current.id),
+    meta: { revisionId: rev.id },
+  });
+
+  revalidatePath(current.slug);
+  revalidatePath(`/admin/pages/${current.id}`);
+  return { ok: true };
+}

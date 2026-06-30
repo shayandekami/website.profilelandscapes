@@ -2,10 +2,17 @@ type ServiceBlock = {
   number: string;
   title: string;
   body: string;
-  activities?: string[];
+  activities?: string[] | string;
   team?: string;
   cta?: { label: string; href: string };
 };
+
+// Activities may arrive as a string[] (defaults) or a newline string (admin editor).
+function toActivities(a?: string[] | string): string[] {
+  if (Array.isArray(a)) return a;
+  if (typeof a === "string") return a.split("\n").map((s) => s.trim()).filter(Boolean);
+  return [];
+}
 
 type Props = {
   services?: ServiceBlock[];
@@ -138,7 +145,7 @@ export function ServiceBlocks({ props }: { props: Record<string, unknown> }) {
             </div>
 
             {/* Right: activities */}
-            {service.activities && service.activities.length > 0 && (
+            {(() => { const acts = toActivities(service.activities); return acts.length > 0 && (
               <div>
                 <div
                   style={{
@@ -152,7 +159,7 @@ export function ServiceBlocks({ props }: { props: Record<string, unknown> }) {
                   Key activities
                 </div>
                 <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-                  {service.activities.map((activity, j) => (
+                  {acts.map((activity, j) => (
                     <li
                       key={j}
                       style={{
@@ -172,7 +179,7 @@ export function ServiceBlocks({ props }: { props: Record<string, unknown> }) {
                   ))}
                 </ul>
               </div>
-            )}
+            ); })()}
           </div>
         ))}
       </div>
