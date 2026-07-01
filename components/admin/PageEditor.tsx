@@ -5,6 +5,7 @@ import type { Section } from "@/lib/db";
 import { sectionSchemas, ALL_SECTION_TYPES, type Field } from "./section-schemas";
 import type { SaveResult } from "@/app/admin/(chrome)/pages/[id]/actions";
 import { MediaPicker } from "./MediaPicker";
+import { RichTextEditor } from "./RichTextEditor";
 
 type PageInput = {
   id: number;
@@ -405,6 +406,15 @@ function FieldEditor({
           placeholder={"placeholder" in field ? field.placeholder : undefined}
           onChange={(e) => onChange(e.target.value)}
         />
+        {field.help && <div className="helpt">{field.help}</div>}
+      </div>
+    );
+  }
+  if (field.type === "richtext") {
+    return (
+      <div className="ed-field">
+        <label>— {field.label}</label>
+        <RichTextEditor value={(value as string) || ""} onChange={(v) => onChange(v)} />
         {field.help && <div className="helpt">{field.help}</div>}
       </div>
     );

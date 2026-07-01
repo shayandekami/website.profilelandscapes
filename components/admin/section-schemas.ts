@@ -9,6 +9,7 @@
 export type Field =
   | { key: string; label: string; type: "text"; help?: string; placeholder?: string }
   | { key: string; label: string; type: "textarea"; rows?: number; help?: string; placeholder?: string }
+  | { key: string; label: string; type: "richtext"; help?: string }
   | { key: string; label: string; type: "image"; help?: string }
   | { key: string; label: string; type: "url"; help?: string }
   | { key: string; label: string; type: "list"; itemFields: Field[]; help?: string }
@@ -144,9 +145,9 @@ export const sectionSchemas: Record<
   },
   rich: {
     label: "Rich text",
-    description: "Free-form text. Use sparingly — prefer structured sections.",
+    description: "Free-form formatted text. Prefer structured sections where possible.",
     fields: [
-      { key: "html", label: "HTML body", type: "textarea", rows: 10 },
+      { key: "html", label: "Body", type: "richtext", help: "Formatting is sanitised on save." },
     ],
   },
   gallery: {

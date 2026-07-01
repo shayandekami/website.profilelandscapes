@@ -5,6 +5,22 @@ import { revalidatePath } from "next/cache";
 import { db, pages, pageRevisions, auditLog, type Section } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { sectionSchemas } from "@/components/admin/section-schemas";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
+
+/** Sanitise every richtext field in the sections before persisting. */
+function sanitizeSections(sections: { type: string; props: Record<string, unknown> }[]) {
+  for (const s of sections) {
+    const schema = sectionSchemas[s.type];
+    if (!schema) continue;
+    for (const f of schema.fields) {
+      if (f.type === "richtext" && typeof s.props[f.key] === "string") {
+        s.props[f.key] = sanitizeHtml(s.props[f.key] as string);
+      }
+    }
+  }
+  return sections;
+}
 
 const Body = z.object({
   id: z.number(),
@@ -34,7 +50,8 @@ export async function savePage(input: unknown): Promise<SaveResult> {
     return { ok: false, error: parsed.error.issues[0]?.message || "Invalid input" };
   }
 
-  const { id, title, lede, seoTitle, seoDescription, status, sections } = parsed.data;
+  const { id, title, lede, seoTitle, seoDescription, status } = parsed.data;
+  const sections = sanitizeSections(parsed.data.sections);
 
   // Snapshot current state into revisions before we overwrite.
   const current = await db.query.pages.findFirst({ where: eq(pages.id, id) });
