@@ -24,6 +24,11 @@ const entraConfigured =
   !!process.env.AZURE_CLIENT_SECRET &&
   !!process.env.AZURE_TENANT_ID;
 
+const allowedMicrosoftDomains = (process.env.AZURE_ALLOWED_EMAIL_DOMAINS || "profilelandscapes.com.au")
+  .split(",")
+  .map((domain) => domain.trim().toLowerCase().replace(/^@/, ""))
+  .filter(Boolean);
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
@@ -84,6 +89,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (account?.provider !== "microsoft-entra-id") return true;
       const email = user.email?.toLowerCase();
       if (!email) return false;
+      const emailDomain = email.split("@").at(-1);
+      if (!emailDomain || !allowedMicrosoftDomains.includes(emailDomain)) {
+        return false;
+      }
 
       const { db, users, auditLog } = await import("@/lib/db");
       const { eq } = await import("drizzle-orm");

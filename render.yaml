@@ -42,6 +42,8 @@ services:
         sync: false
       - key: AZURE_CLIENT_SECRET
         sync: false
+      - key: AZURE_ALLOWED_EMAIL_DOMAINS
+        value: profilelandscapes.com.au
       - key: STRIPE_SECRET_KEY
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
