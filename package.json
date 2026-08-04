@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "render-build": "npm run db:push && SEED_RELEASE_VERSION=2026-08-04 npm run db:seed && npm run build",
+    "render-build": "npm run build",
     "start": "next start",
     "lint": "eslint .",
     "db:up": "docker compose up -d",
