@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getPublicSiteUrl } from "@/lib/content";
 
-const siteUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 const siteName = "Profile Landscapes";
 const defaultTitle = "Profile Landscapes — Commercial landscape contractors, Sydney since 1999";
 const defaultDescription =
   "Sydney-based landscape contractor, nursery and design studio. Design, construction, maintenance, 4,800+ plants in stock, and a trade pricelist. Since 1999.";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const siteUrl = await getPublicSiteUrl();
+  return {
   metadataBase: new URL(siteUrl),
   title: { default: defaultTitle, template: `%s — ${siteName}` },
   description: defaultDescription,
   applicationName: siteName,
-  icons: { icon: "/favicon.svg" },
+  icons: {
+    icon: [{ url: "/favicon-brand.png", type: "image/png", sizes: "512x512" }],
+    shortcut: "/favicon-brand.png",
+    apple: "/favicon-brand.png",
+  },
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -23,7 +29,8 @@ export const metadata: Metadata = {
     url: siteUrl,
   },
   twitter: { card: "summary_large_image", title: defaultTitle, description: defaultDescription },
-};
+  };
+}
 
 export default function RootLayout({
   children,

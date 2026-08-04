@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { db, plants } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { PricelistTable } from "./PricelistTable";
+import { getSiteSettings } from "@/lib/content";
+import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +13,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PricelistPage() {
+  const settings = await getSiteSettings();
+  if (!settings.commerce_features.nursery) {
+    return <FeatureUnavailable eyebrow="Trade nursery" title="The online pricelist is currently unavailable." body="Contact the nursery team for current stock, trade rates, bulk pricing and lead times." />;
+  }
   const rows = await db
     .select({
       id: plants.id,

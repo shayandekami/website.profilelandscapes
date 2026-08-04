@@ -22,8 +22,7 @@ export function Header({ studioName, nav }: Props) {
         <div className="nav-inner">
           <a href="/" className="brand">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/logo.png" alt="" />
-            <span>{studioName}</span>
+            <img src="/assets/header-brand-lockup-v2.png" alt={studioName} />
           </a>
 
           <nav className="primary-nav">

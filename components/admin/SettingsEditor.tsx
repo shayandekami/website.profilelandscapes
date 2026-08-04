@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import type { SaveResult } from "@/app/admin/(chrome)/settings/actions";
 
 type Settings = {
+  public_url: string;
   studio_name: string;
   tagline: string;
   phone: string;
@@ -12,6 +13,11 @@ type Settings = {
   address: string;
   legal: { acn: string; abn: string; licence: string; founded: number };
   theme_tokens: Record<string, string>;
+  commerce_features: {
+    shop: boolean;
+    nursery: boolean;
+    encyclopedia: boolean;
+  };
 };
 
 type TeamMember = {
@@ -28,6 +34,12 @@ type Props = {
   team: TeamMember[];
   currentUserEmail: string;
   changePassword: (formData: FormData) => Promise<void>;
+  emailHealth: {
+    delivery: boolean;
+    quotes: boolean;
+    careers: boolean;
+    publicUrl: boolean;
+  };
 };
 
 export function SettingsEditor({
@@ -36,6 +48,7 @@ export function SettingsEditor({
   team,
   currentUserEmail,
   changePassword,
+  emailHealth,
 }: Props) {
   const [s, setS] = useState(initial);
   const [msg, setMsg] = useState<{ text: string; kind: "idle" | "ok" | "err" | "saving" }>({
@@ -99,6 +112,12 @@ export function SettingsEditor({
           <div className="dtl-sub">PUBLIC-FACING CONFIG</div>
 
           <div className="ed-field">
+            <label>— Public website URL</label>
+            <input type="url" value={s.public_url} onChange={(e) => patch("public_url", e.target.value)} placeholder="https://profilelandscapes.com.au" />
+            <div className="helpt">Used for canonical URLs, sitemap entries, checkout returns and secure links in customer emails. Do not include a trailing slash.</div>
+          </div>
+
+          <div className="ed-field">
             <label>— Studio name</label>
             <input value={s.studio_name} onChange={(e) => patch("studio_name", e.target.value)} />
             <div className="helpt">Shown in the header, footer, and email signatures.</div>
@@ -160,6 +179,32 @@ export function SettingsEditor({
               />
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="dtl-card" style={{ marginTop: 24 }}>
+        <h4>Commerce visibility</h4>
+        <div className="dtl-sub">PUBLIC MODULES &amp; NAVIGATION</div>
+        <p className="admin-card-intro">
+          Switch off a module when it is not ready or temporarily unavailable. Its navigation links will disappear and direct visitors will see a designed availability page.
+        </p>
+        <div className="feature-switch-grid">
+          {([
+            ["shop", "Online shop", "Products, cart entry points and the Shop navigation item."],
+            ["nursery", "Nursery stock", "Live plant stock, trade pricelist entry points and nursery links."],
+            ["encyclopedia", "Plant encyclopedia", "Botanical profiles and encyclopedia navigation links."],
+          ] as const).map(([key, label, description]) => (
+            <label className={`feature-switch ${s.commerce_features[key] ? "is-on" : ""}`} key={key}>
+              <span className="feature-switch-copy"><strong>{label}</strong><small>{description}</small></span>
+              <input
+                type="checkbox"
+                checked={s.commerce_features[key]}
+                onChange={(e) => patch("commerce_features", { ...s.commerce_features, [key]: e.target.checked })}
+              />
+              <span className="feature-switch-track" aria-hidden="true"><i /></span>
+              <b>{s.commerce_features[key] ? "Live" : "Hidden"}</b>
+            </label>
+          ))}
         </div>
       </div>
 
@@ -300,12 +345,34 @@ export function SettingsEditor({
           </tbody>
         </table>
         <div className="helpt" style={{ marginTop: 12 }}>
-          Inviting teammates lands in Phase 3 (needs email verification).
-          For now, add users by editing the DB directly via{" "}
-          <code style={{ fontFamily: "JetBrains Mono, monospace" }}>
-            npm run db:studio
-          </code>
-          .
+          Access is restricted to approved company accounts. Ask the system
+          owner to provision or remove a team member and assign the appropriate role.
+        </div>
+      </div>
+
+      <div className="dtl-card" style={{ marginTop: 24 }}>
+        <h4>Form &amp; email health</h4>
+        <div className="dtl-sub">LIVE CONFIGURATION CHECK</div>
+        <div className="ed-grid" style={{ marginTop: 14 }}>
+          {[
+            ["Email delivery", emailHealth.delivery, "Resend key and sender"],
+            ["Quote alerts", emailHealth.quotes, "Internal quote recipient"],
+            ["Career alerts", emailHealth.careers, "Internal candidate recipient"],
+            ["Public links", emailHealth.publicUrl, "Tracking-link base URL"],
+          ].map(([label, ready, detail]) => (
+            <div className="ed-field" key={String(label)}>
+              <label>— {label}</label>
+              <div>
+                <span className="chip" style={{ background: ready ? "#dcebdd" : "#f7dfd8", color: ready ? "#24513b" : "#8c382d" }}>
+                  {ready ? "Configured" : "Needs attention"}
+                </span>
+              </div>
+              <div className="helpt">{detail}</div>
+            </div>
+          ))}
+        </div>
+        <div className="helpt">
+          This check never displays credentials. Missing items must be configured in the application environment before customer emails can be relied on.
         </div>
       </div>
 

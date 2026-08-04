@@ -9,6 +9,7 @@ import { stockStatus, STOCK_COLORS } from "@/lib/stock";
 import { getTier, applyTier, tierDiscountPct, type Tier } from "@/lib/tradePricing";
 import { toggleSchedule, inSchedule } from "@/lib/scheduleList";
 import { PlantReviews } from "@/components/commerce/PlantReviews";
+import { plantPlaceholder } from "./plantPlaceholder";
 
 // Indicative grown height by container size — trade buys to a spec.
 const SIZE_HEIGHT: Record<string, string> = {
@@ -119,16 +120,8 @@ function CompanionCard({ plant }: { plant: NurseryPlant }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={img.url} alt={img.alt || plant.latinName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
-          <svg viewBox="0 0 320 180" style={{ width: "100%", height: "100%", display: "block" }}>
-            <rect width="100%" height="100%" fill="#e8dcb6" />
-            <rect y="150" width="320" height="30" fill="#c2a875" />
-            <g transform="translate(160,150)" stroke="#4a6b3a" strokeWidth="2" fill="none" strokeLinecap="round">
-              <path d="M 0 0 Q -8 -40 -15 -100" />
-              <path d="M 0 0 Q 2 -45 5 -110" />
-              <path d="M 0 0 Q -18 -35 -35 -80" />
-              <path d="M 0 0 Q 18 -35 35 -80" />
-            </g>
-          </svg>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={plantPlaceholder(plant)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         )}
       </div>
       <div style={{ padding: "14px 16px" }}>
@@ -254,21 +247,8 @@ export function PlantPage({ plant, companions }: PlantPageProps) {
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               ) : (
-                <svg viewBox="0 0 500 625" style={{ width: "100%", height: "100%", display: "block" }}>
-                  <rect width="100%" height="100%" fill="#e8dcb6" />
-                  <rect y="560" width="500" height="65" fill="#c2a875" />
-                  <g transform="translate(250,550)" stroke="#4a6b3a" strokeWidth="3.5" fill="none" strokeLinecap="round" opacity="0.95">
-                    <path d="M 0 0 Q -20 -150 -45 -340" />
-                    <path d="M 0 0 Q -10 -160 -15 -360" />
-                    <path d="M 0 0 Q 5 -170 15 -370" />
-                    <path d="M 0 0 Q 25 -150 50 -340" />
-                    <path d="M 0 0 Q -35 -140 -75 -300" />
-                    <path d="M 0 0 Q 35 -140 70 -310" />
-                  </g>
-                  <text x="250" y="610" textAnchor="middle" fontFamily="Fraunces, serif" fontStyle="italic" fontSize="16" fill="#5d7363">
-                    {plant.latinName}
-                  </text>
-                </svg>
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={plantPlaceholder(plant)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               )}
               <div
                 style={{

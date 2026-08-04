@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { stockStatus, STOCK_COLORS } from "@/lib/stock";
+import { plantPlaceholder } from "./plantPlaceholder";
 
 type NurseryPlant = typeof import("@/lib/db/schema").plants.$inferSelect;
 
@@ -65,17 +66,8 @@ function PlantCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={img.url} alt={img.alt || plant.latinName} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
-          <svg viewBox="0 0 320 240" style={{ width: "100%", height: "100%", display: "block" }}>
-            <rect width="100%" height="100%" fill="#e8dcb6" />
-            <rect y="210" width="320" height="30" fill="#c2a875" />
-            <g transform="translate(160,210)" stroke="#4a6b3a" strokeWidth="2" fill="none" strokeLinecap="round">
-              <path d="M 0 0 Q -10 -60 -20 -140" />
-              <path d="M 0 0 Q 0 -65 5 -150" />
-              <path d="M 0 0 Q 10 -60 25 -140" />
-              <path d="M 0 0 Q -25 -50 -50 -110" />
-              <path d="M 0 0 Q 25 -50 50 -110" />
-            </g>
-          </svg>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={plantPlaceholder(plant)} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         )}
         {/* Tags */}
         {tags.length > 0 && (
@@ -216,6 +208,7 @@ const COLLECTIONS = [
     desc: "Lillypilly, photinia, viburnum — 2–6m fast hedging.",
     count: "9 plants",
     bg: "#254a34",
+    image: "/assets/generated/plants-screening.webp",
     tag: "SCREEN",
   },
   {
@@ -224,6 +217,7 @@ const COLLECTIONS = [
     desc: "Grasses + succulents.",
     count: "11 plants",
     bg: "#8a6d35",
+    image: "/assets/generated/plants-drought.webp",
     tag: "DROUGHT",
   },
   {
@@ -232,6 +226,7 @@ const COLLECTIONS = [
     desc: "Low-water Australian natives.",
     count: "10 plants",
     bg: "#3a4a2c",
+    image: "/assets/generated/plants-groundcover.webp",
     tag: "NATIVE",
   },
   {
@@ -240,6 +235,7 @@ const COLLECTIONS = [
     desc: "Dense screens & clipped form.",
     count: "9 plants",
     bg: "#1d4a44",
+    image: "/assets/generated/plants-hedging.webp",
     tag: "HEDGE",
   },
   {
@@ -248,6 +244,7 @@ const COLLECTIONS = [
     desc: "Scented feature plants.",
     count: "4 plants",
     bg: "#5a5320",
+    image: "/assets/generated/plants-fragrant.webp",
     tag: "FRAGRANT",
   },
 ];
@@ -339,8 +336,9 @@ export function NurseryPage({ plants }: NurseryPageProps) {
     <div style={{ background: "#faf6eb", color: T.ink, fontFamily: "'Inter Tight', sans-serif" }}>
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
-      <section style={{ ...wrap, marginTop: 28 }}>
+      <section className="commerce-hero-section" style={{ ...wrap, marginTop: 28 }}>
         <div
+          className="commerce-hero-grid"
           style={{
             background: "#1a3a28",
             color: "#fff",
@@ -352,6 +350,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
           }}
         >
           <div
+            className="commerce-hero-copy"
             style={{
               padding: "64px 60px",
               display: "flex",
@@ -366,6 +365,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
                 Open Wed–Sun · Petersham yard
               </div>
               <h1
+                className="commerce-hero-title"
                 style={{
                   fontFamily: "Fraunces, serif",
                   fontWeight: 300,
@@ -435,45 +435,22 @@ export function NurseryPage({ plants }: NurseryPageProps) {
             </div>
           </div>
 
-          {/* Hero art */}
+          {/* Nursery photography */}
           <div
-            style={{ background: "radial-gradient(circle at 70% 40%,#2c4a34,#0e2418)", overflow: "hidden" }}
-            aria-hidden="true"
+            className="commerce-hero-photo"
+            style={{ background: "#0e2418", overflow: "hidden", position: "relative" }}
           >
-            <svg viewBox="0 0 600 480" style={{ width: "100%", height: "100%", display: "block" }}>
-              <defs>
-                <radialGradient id="nSun" cx="70%" cy="25%" r="40%">
-                  <stop offset="0%" stopColor="#f7e574" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#f7e574" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#nSun)" />
-              {/* tree silhouette */}
-              <g opacity="0.5">
-                <path d="M 80 260 Q 40 180 80 130 Q 120 80 160 130 Q 200 180 160 260 Z" fill="#0a2418" />
-                <rect x="115" y="260" width="10" height="40" fill="#0a2418" />
-              </g>
-              {/* palm */}
-              <g transform="translate(400,200)">
-                <rect x="-4" y="0" width="8" height="200" fill="#5d4a2a" />
-                <g stroke="#5d7363" strokeWidth="3" fill="none" strokeLinecap="round">
-                  <path d="M 0 0 Q -40 -30 -90 -20" />
-                  <path d="M 0 0 Q 40 -30 90 -20" />
-                  <path d="M 0 0 Q -30 -50 -60 -70" />
-                  <path d="M 0 0 Q 30 -50 60 -70" />
-                </g>
-              </g>
-              {/* grass tufts */}
-              <g stroke="#9ba67b" strokeWidth="1.8" fill="none" strokeLinecap="round">
-                <g transform="translate(220,380)">
-                  <path d="M 0 0 Q -4 -30 -8 -60" /><path d="M 4 0 Q 2 -25 0 -55" /><path d="M 8 0 Q 10 -28 14 -58" />
-                </g>
-                <g transform="translate(300,390)">
-                  <path d="M 0 0 Q -3 -28 -6 -55" /><path d="M 4 0 Q 4 -22 6 -50" />
-                </g>
-              </g>
-              <rect y="440" width="600" height="40" fill="#0a1f14" />
-            </svg>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/assets/generated/nursery-hero.webp"
+              alt="Rows of advanced native plants at a working Sydney nursery"
+              fetchPriority="high"
+              style={{ width: "100%", height: "100%", minHeight: 480, objectFit: "cover", objectPosition: "58% center" }}
+            />
+            <div
+              aria-hidden="true"
+              style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(14,36,24,.18),transparent 42%)" }}
+            />
           </div>
         </div>
       </section>
@@ -533,7 +510,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
           </div>
 
           {currentStep.type === "cards" && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 20 }}>
+            <div className="responsive-grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 20 }}>
               {currentStep.options.map((opt) => {
                 const on = isSelected(currentStep.id, opt.value);
                 return (
@@ -695,6 +672,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
           </a>
         </div>
         <div
+          className="nursery-collections-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "2fr 1fr 1fr",
@@ -728,6 +706,8 @@ export function NurseryPage({ plants }: NurseryPageProps) {
                 })
               }
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={col.image} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               {/* gradient overlay */}
               <div
                 style={{
@@ -782,7 +762,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
               Browse all {plants.length} plants →
             </button>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
+          <div className="responsive-grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
             {featured.slice(0, 4).map((p) => (
               <PlantCard key={p.id} plant={p} />
             ))}
@@ -810,6 +790,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
       )}
 
       <section
+        className="responsive-sidebar-grid"
         style={{
           ...wrap,
           marginTop: finderResults ? 0 : 80,
@@ -885,7 +866,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
         </aside>
 
         {/* Plant grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18 }}>
+        <div className="responsive-grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18 }}>
           {displayedPlants.length === 0 ? (
             <div style={{ gridColumn: "1/-1", padding: "60px 0", textAlign: "center", color: T.moss }}>
               No plants match these filters.
@@ -907,7 +888,7 @@ export function NurseryPage({ plants }: NurseryPageProps) {
           <h2 style={{ fontFamily: "Fraunces, serif", fontWeight: 300, fontSize: "clamp(28px,3.4vw,42px)", letterSpacing: "-0.02em", margin: "0 0 32px", color: "#fff" }}>
             How we supply.
           </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 28 }}>
+          <div className="responsive-grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 28 }}>
             {[
               { h: "Delivery zones", b: "Flat-rate delivery across Sydney metro; Central Coast, Newcastle, Wollongong & ACT by quote. Yard pickup from Petersham, Mon–Sat." },
               { h: "Trade ordering", b: "Tube stock sold by the tray; pots by the each. Minimum order $150 for delivery. Advanced stock over 100L needs two-person or machine offload on site." },

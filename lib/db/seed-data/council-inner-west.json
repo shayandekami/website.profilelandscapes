@@ -1,0 +1,1159 @@
+[
+  {
+    "scientific_name": "Acacia binervia",
+    "common_name": "Coast Myall",
+    "type": "MT",
+    "height": "12 -14m",
+    "water": "LW",
+    "soil": "any- clay",
+    "sun": "FS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "Typically growing 5-8m as a shrub. It has sickle shaped leaves and flowers in spring with rod shaped bright yellow flowers. Followed by long seed pods.",
+    "source_page": 10
+  },
+  {
+    "scientific_name": "Acacia decurrens",
+    "common_name": "Sydney Green Wattle",
+    "type": "MT",
+    "height": "6 -8m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "WC"
+    ],
+    "description": "A fast growing and short lived tree with feathery leaves and bright yellow ball shaped flowers in July \u2013 November. Followed by seed pods.",
+    "source_page": 10
+  },
+  {
+    "scientific_name": "Acacia falcata",
+    "common_name": "Hickory Wattle",
+    "type": "",
+    "height": "5m",
+    "water": "MW",
+    "soil": "any - clay",
+    "sun": "PS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "An open shrub with grey green foliage like a miniature Eucalyptus tree. It has cream flowers in winter.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Acacia fimbriata",
+    "common_name": "Fringed Wattle",
+    "type": "Shrub -ST",
+    "height": "4 -8m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "Small tree or rounded shrub. Lots of yellow ball shaped flowers in spring.",
+    "source_page": 10
+  },
+  {
+    "scientific_name": "Acacia implexa",
+    "common_name": "Hickory",
+    "type": "MT",
+    "height": "8 -10m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A fast-growing tree with pale yellow ball shaped flowers in December\u2013April. Followed by seed pods.",
+    "source_page": 10
+  },
+  {
+    "scientific_name": "Acacia linifolia",
+    "common_name": "Flax- leafed Wattle",
+    "type": "",
+    "height": "2m",
+    "water": "",
+    "soil": "any",
+    "sun": "FS-S SSFW",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A graceful shrub to 2m high with cream flowers in summer or early autumn.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Acacia longifolia",
+    "common_name": "Sydney Golden Wattle",
+    "type": "",
+    "height": "3-4m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS-S SSFW, STIF",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "An attractive screening shrub 3-4m high, with golden yellow flowers late winter - early spring.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Acacia myrtifolia",
+    "common_name": "Myrtle Wattle",
+    "type": "",
+    "height": "0.5-1m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-S SSFW",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A small shrub with red tinged foliage and pale yellow flowers in winter.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Acacia suaveolens",
+    "common_name": "Sweet Wattle",
+    "type": "",
+    "height": "2m",
+    "water": "LW",
+    "soil": "any - sand",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A leggy, open shrub with blue green foliage and cream flowers in winter.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Acacia terminalis",
+    "common_name": "Sunshine Wattle",
+    "type": "",
+    "height": "1.5m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW STIF"
+    ],
+    "description": "An open shrub to 1.5m with bright yellow flowers late summer and winter.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Acacia ulicifolia",
+    "common_name": "Prickly Moses",
+    "type": "",
+    "height": "1.5m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS-PS SSFW",
+    "vegetation_zones": [
+      "SSFW STIF"
+    ],
+    "description": "A prickly shrub around with cream flowers autumn and winter.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Allocasuarina littoralis",
+    "common_name": "Black She-oak",
+    "type": "MT",
+    "height": "10 -12m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A hardy, fast growing medium sized tree with dark bark and needle-like leaves. It has red flowers in spring.",
+    "source_page": 10
+  },
+  {
+    "scientific_name": "Alternanthera denticulata",
+    "common_name": "",
+    "type": "",
+    "height": "20cm",
+    "water": "HW",
+    "soil": "any - damp",
+    "sun": "PS - S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A compact spreading groundcover plant with straw coloured flowers.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Angophora hispida",
+    "common_name": "Dwarf Apple",
+    "type": "ST",
+    "height": "6 -8m",
+    "water": "LW",
+    "soil": "any - sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A small tree or large shrub with an open, spreading and twisting growth habit. Flowers in summer with cream fluffy flowers.",
+    "source_page": 11
+  },
+  {
+    "scientific_name": "Banksia integrifolia",
+    "common_name": "Coast Banksia",
+    "type": "Shrub- MT",
+    "height": "10 -15m",
+    "water": "LW",
+    "soil": "any - sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "WC"
+    ],
+    "description": "Typically growing 4-15m, this hardy tree has rough bark and large pale yellow flowers in January\u2013 June. Followed by ornamental seed pods.",
+    "source_page": 11
+  },
+  {
+    "scientific_name": "Banksia serrata",
+    "common_name": "Old man Banksia",
+    "type": "MT",
+    "height": "10 -12m",
+    "water": "LW",
+    "soil": "any - sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "Typically growing to 10m, this hardy tree has gnarled bark, serrated leaves and large creamy yellow in January\u2013June. Followed by or- namental seed pods.",
+    "source_page": 11
+  },
+  {
+    "scientific_name": "Banksia spinulosa",
+    "common_name": "Hairpin Banksia",
+    "type": "",
+    "height": "2m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A rounded shrub with yellow orange flowers in winter.",
+    "source_page": 7
+  },
+  {
+    "scientific_name": "Billardiera scandens",
+    "common_name": "Apple Berry",
+    "type": "",
+    "height": "",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS - S",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A scrambling plant with slender stems and cream flowers in September\u2013 December. Followed by purple fruits.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Bursaria spinosa",
+    "common_name": "Sweet Bursaria",
+    "type": "",
+    "height": "2-3m",
+    "water": "MW",
+    "soil": "any- clay",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "An erect shrub 2-3m tall with masses of white flowers in late summer.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Callicoma serratifolia",
+    "common_name": "Black wattle",
+    "type": "Shrub- MT",
+    "height": "12 -14m",
+    "water": "MW",
+    "soil": "any - sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A large, spreading, screening shrub often growing to 4-5m (but occasionally taller). It has creamy yellow flowers in late spring.",
+    "source_page": 11
+  },
+  {
+    "scientific_name": "Callistemon linearis",
+    "common_name": "Narow- leaved Bottlebrush",
+    "type": "",
+    "height": "2m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "An erect shrub with red flowers in spring.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Carex appressa",
+    "common_name": "Tall Sedge",
+    "type": "",
+    "height": "0.5m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A tussocky plant with tough strap-like leaves and brown seed heads in October\u2013 January.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Carex fascicularis",
+    "common_name": "Tassel Sedge",
+    "type": "",
+    "height": "0.5m",
+    "water": "HW",
+    "soil": "any - damp",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A tussocky plant with bright green strap-like leaves and green seed heads in October\u2013 Jan- uary.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Carpobrotus glaucescens",
+    "common_name": "Pig Face",
+    "type": "",
+    "height": "20cm",
+    "water": "LW",
+    "soil": "",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A robust ground cover with succulent leaves and pinky purple flowers for most of the year.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Centella asiatica",
+    "common_name": "Asiatic Penny- wort",
+    "type": "",
+    "height": "15cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "STIF",
+      "WC"
+    ],
+    "description": "An evergreen perennial forming a dense mat of leaves with clusters of tiny flowers in November \u2013 May.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Ceratopetalum gummiferum",
+    "common_name": "Christmas Bush",
+    "type": "Shrub- ST",
+    "height": "8 -10m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "Typically growing to 5m, this tree or large shrub has clusters of white, pink and red flowers in September \u2013 December.",
+    "source_page": 12
+  },
+  {
+    "scientific_name": "Clematis aristata",
+    "common_name": "Old Man\u2019s Beard",
+    "type": "",
+    "height": "",
+    "water": "MW",
+    "soil": "any- clay",
+    "sun": "PS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A vigorous, woody climb- er with masses of del- icate white flowers in August\u2013November.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Clematis glycinoides",
+    "common_name": "Headache Vine",
+    "type": "",
+    "height": "",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS -S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A woody dense vine which produces lots of cream-white flowers in spring. The species is dioecious meaning the plants have either male or female flowers.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Commelina cyanea",
+    "common_name": "Scurvey Weed",
+    "type": "",
+    "height": "20cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS - S",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF",
+      "WC"
+    ],
+    "description": "Often confused with the exotic weed Tradescantia, a hardy groundcover with blue flowers in December\u2013 May.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Correa alba",
+    "common_name": "White Correa",
+    "type": "",
+    "height": "1m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A bun shaped shrub with white flowers autumn/winter.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Correa reflexa",
+    "common_name": "Native Fuchsia",
+    "type": "",
+    "height": "1.5m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A bun shaped shrub with green and red flowers autumn to spring (long flowering season).",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Cymbopogon refractus",
+    "common_name": "Barbed Wire Grass",
+    "type": "",
+    "height": "60cm",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A tufted grass with tall wiry stems.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Dianella caerulea",
+    "common_name": "Blue Flax- lily",
+    "type": "",
+    "height": "50cm",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "An erect, tufted plant with strappy leaves and rich blue flowers in September\u2013 February. Followed by purple berries.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Dichelachne crinita",
+    "common_name": "Longhair Plume- grass",
+    "type": "",
+    "height": "60cm",
+    "water": "LW",
+    "soil": "any - sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A tufted perennial with yellow and reddish brown flowers in spring.",
+    "source_page": 3
+  },
+  {
+    "scientific_name": "Dichondra repens",
+    "common_name": "Kidney Weed",
+    "type": "",
+    "height": "5cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A creeping perennial forming a dense mat of kidney shaped leaves with tiny white flowers in September -February.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Dillwynia retorta",
+    "common_name": "Heathy Parrot Pea",
+    "type": "",
+    "height": "1m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A fine leaved open shrub with yellow and reddish brown flowers in spring.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Dodonaea triquetra",
+    "common_name": "Hop Bush",
+    "type": "",
+    "height": "2m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF",
+      "WC"
+    ],
+    "description": "A soft leaved shrub with lime green paper lantern like fruits in spring and summer.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Echinopogon caespitosus",
+    "common_name": "Tufted Hedgehog Grass",
+    "type": "",
+    "height": "50cm",
+    "water": "MW",
+    "soil": "any - clay",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A tufted grass with round green seeed heads.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Einadia hastata",
+    "common_name": "Berry Saltbush",
+    "type": "",
+    "height": "60cm",
+    "water": "LW",
+    "soil": "any - clay",
+    "sun": "FS-S",
+    "vegetation_zones": [],
+    "description": "Low shrubby perennial with dark green triangular leaves. It has very small green or yellow flowers followed by small succulent red berries.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Eucalyptus haemastoma",
+    "common_name": "Scribbly Gum",
+    "type": "MT",
+    "height": "10 -14m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A small tree to 14m with white and grey mottled bark with scribble patterns on it. Creamy coloured flowers autumn to spring.",
+    "source_page": 12
+  },
+  {
+    "scientific_name": "Eucalyptus piperita",
+    "common_name": "Sydney Peppermint",
+    "type": "MT",
+    "height": "16 -18m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A graceful tree typical- ly 15m high, with rough grey bark at trunk level and white smooth bark above. Creamy coloured flowers in early summer.",
+    "source_page": 12
+  },
+  {
+    "scientific_name": "Eucalyptus punctata",
+    "common_name": "Grey Gum",
+    "type": "TT",
+    "height": "18 -20m",
+    "water": "LW",
+    "soil": "any- clay",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "Typically growing up to 20m, this tall open crowned tree is often found on infertile soils. Clusters of white flowers in December\u2013 February.",
+    "source_page": 12
+  },
+  {
+    "scientific_name": "Eucalyptus robusta",
+    "common_name": "Swamp Mahogany",
+    "type": "MT",
+    "height": "10 -15m",
+    "water": "MW",
+    "soil": "any- sand",
+    "sun": "FS",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A large tree with a thick trunk with deeply fissured grey brown bark and spreading branches that form a dense rounded crown. It has dark glossy green lanced shaped leaves and the cream coloured flowers appear in a cluster during winter.",
+    "source_page": 13
+  },
+  {
+    "scientific_name": "Eustrephus latifolius",
+    "common_name": "Wombat Berry",
+    "type": "",
+    "height": "",
+    "water": "LW",
+    "soil": "any",
+    "sun": "PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A fast growing vine that will clump and can be used as a groundcover. Has pink to mauve or white flowers and small orange berries.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Ficinia nodosa",
+    "common_name": "Knobby Club Rush",
+    "type": "",
+    "height": "60cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A tussocky plant with tough needle-like leaves and brown ball-shaped seed heads in October\u2013 January.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Geranium homeanum",
+    "common_name": "Northern Cranesbill",
+    "type": "",
+    "height": "50cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A creeping groundcover with pale pink flowers in spring and summer.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Glycine clandestina",
+    "common_name": "Love Creeper",
+    "type": "",
+    "height": "",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS -S",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A slender twiner with mauve pea-flowers throughout the year.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Goodenia ovata",
+    "common_name": "Hop Goodenia",
+    "type": "",
+    "height": "2m",
+    "water": "MW",
+    "soil": "any- sand",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF",
+      "WC"
+    ],
+    "description": "A dense bun shaped shrub with yellow flowers over the warmer months.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Grevillea buxifolia",
+    "common_name": "Grey Spider Flower",
+    "type": "",
+    "height": "2m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A dense bun shaped shrub with grey felty flowers over the warmer months.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Grevillea linearifolia",
+    "common_name": "White Spider Flower",
+    "type": "",
+    "height": "2m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "An open shrub with pinkish white flowers winter to spring.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Hakea sericea",
+    "common_name": "Needlebush",
+    "type": "",
+    "height": "2-3m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A dense, prickly shrub with cream flowers in winter.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Hardenbergia violacea",
+    "common_name": "Purple Coral Pea",
+    "type": "",
+    "height": "",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A hardy evergreen scrambler with clusters of rich purple peaflowers in September \u2013 November.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Hibbertia scandens",
+    "common_name": "Climbing Guinea Flower",
+    "type": "",
+    "height": "",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A climber with bright yel- low flowers in spring and summer. Can also be used as a groundcover.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Hovea linearis",
+    "common_name": "Common Hovea",
+    "type": "",
+    "height": "1.5m",
+    "water": "MW",
+    "soil": "any- sand",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "An open shrub with mauve flowers spring.",
+    "source_page": 8
+  },
+  {
+    "scientific_name": "Hydrocotyle peduncularis",
+    "common_name": "Small Leaved Pennywort",
+    "type": "",
+    "height": "15cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A creeping perennial forming a dense mat of ivy-shaped leaves with tiny white flowers in September\u2013 February.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Indigofera australis",
+    "common_name": "Austral Indigo",
+    "type": "",
+    "height": "1.5m",
+    "water": "MW",
+    "soil": "any- clay",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "An umbrella shaped shrub with grey/green foliage and pink flowers in spring.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Juncus usitatus",
+    "common_name": "Common Rush",
+    "type": "",
+    "height": "1m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A tussocky plant with tough needle-like leaves and straw coloured seed heads in October\u2013 January.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Kennedia rubicunda",
+    "common_name": "Dusky Coral Pea",
+    "type": "",
+    "height": "",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A robust woody scrambler with red peaflowers in August \u2013 November.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Kunzea ambigua",
+    "common_name": "Tick Bush",
+    "type": "",
+    "height": "3m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A dense, spreading shrub with white, honey scented flowers in late spring.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Leptospermum polygalifolium",
+    "common_name": "Lemon- scented Teatree",
+    "type": "",
+    "height": "3m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS-PS",
+    "vegetation_zones": [
+      "SSFW",
+      "WC"
+    ],
+    "description": "A graceful open shrub with white flowers in late spring.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Leucopogon juniperinus",
+    "common_name": "Prickly Beard-heath",
+    "type": "",
+    "height": "1m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A spikey dense shrub with white flowers in spring followed by berries.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Lomandra longifolia",
+    "common_name": "Mat Rush",
+    "type": "",
+    "height": "1m",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A tufted plant with tough strap like leaves and tiny yellow flowers in October \u2013 January.",
+    "source_page": 4
+  },
+  {
+    "scientific_name": "Melaleuca decora",
+    "common_name": "White Feather Honey- myrtle",
+    "type": "ST",
+    "height": "6 -7m",
+    "water": "MW",
+    "soil": "any- clay",
+    "sun": "FS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A tall shrub or small tree. It has sweetly scented, white flowers and flowers in late spring and early summer.",
+    "source_page": 13
+  },
+  {
+    "scientific_name": "Melaleuca linariifolia",
+    "common_name": "Snow-in- Summer",
+    "type": "ST",
+    "height": "8 -10m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "WC"
+    ],
+    "description": "A small tree with honey scented cream flowers in September \u2013 February.",
+    "source_page": 13
+  },
+  {
+    "scientific_name": "Microlaena stipoides",
+    "common_name": "Weeping Grass",
+    "type": "",
+    "height": "30cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS- S SSFW",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A soft, slender grass with weeping seedheads throughout the year.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Oplismenus aemulus",
+    "common_name": "Basket Grass",
+    "type": "",
+    "height": "20cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS- S SSFW",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A creeping perennial forming a dense mat of arrow shaped leaves.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Pandorea pandorana",
+    "common_name": "Wonga Wonga Vine",
+    "type": "",
+    "height": "",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS - PS",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "A fast-growing woody twiner with prolific clusters of small white flowers in June- December.",
+    "source_page": 2
+  },
+  {
+    "scientific_name": "Pelargonium inodorum",
+    "common_name": "Wild Geranium",
+    "type": "",
+    "height": "30cm",
+    "water": "LW",
+    "soil": "any - sand",
+    "sun": "FS- PS",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "Low shrubby perennial with fuzzy leaves. It has pink flowers in the warmer months.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Persicaria decipiens",
+    "common_name": "Slender Knotweed",
+    "type": "",
+    "height": "50cm",
+    "water": "HW",
+    "soil": "any - damp",
+    "sun": "FS- PS",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "Low open perennial with pink flowers in the warmer months. Disappears in dry or cold periods but comes back next season.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Pittosporum revolutum",
+    "common_name": "Rough Fruit Pittosporum",
+    "type": "",
+    "height": "1-3m",
+    "water": "MW",
+    "soil": "any- sand",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "SSFW",
+      "STIF"
+    ],
+    "description": "An open shrub with scented creamy flowers in spring.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Pomaderris intermedia",
+    "common_name": "Pomaderris",
+    "type": "",
+    "height": "2m",
+    "water": "MW",
+    "soil": "any- sand",
+    "sun": "FS-S",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A bushy shrub with masses of pale yellow flowers in spring.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Rytidosperma species",
+    "common_name": "Wallaby Grass",
+    "type": "",
+    "height": "60cm",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS- PS SSFW",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A tufted perennial grass with compact flower heads which appear bleached and fluffy when mature.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Scaevola albida",
+    "common_name": "Fan- flower",
+    "type": "",
+    "height": "30cm",
+    "water": "MW",
+    "soil": "any",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "SSFW"
+    ],
+    "description": "A creeping perennial forming a dense mat with mauve flowers in the warmer months.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Schoenus apogon",
+    "common_name": "Common Bog-rush",
+    "type": "",
+    "height": "20cm",
+    "water": "MW",
+    "soil": "any - clay",
+    "sun": "FS- S",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A creeping tussocky plant with soft needle like leaves.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Solanum aviculare",
+    "common_name": "Kangaroo Apple",
+    "type": "",
+    "height": "2m",
+    "water": "MW",
+    "soil": "any",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "Any"
+    ],
+    "description": "A fast growing umbrella shaped open shrub with mauve flowers and orange fruits.",
+    "source_page": 9
+  },
+  {
+    "scientific_name": "Syncarpia glomulifera",
+    "common_name": "Turpetine",
+    "type": "TT",
+    "height": "18 -20m",
+    "water": "LW",
+    "soil": "any- clay",
+    "sun": "FS",
+    "vegetation_zones": [
+      "STIF"
+    ],
+    "description": "A slow growing tree with rough fibrous bark and clusters of white flowers in September \u2013 November.",
+    "source_page": 13
+  },
+  {
+    "scientific_name": "Tetragonia tetragonioides",
+    "common_name": "Warrigal Greens",
+    "type": "",
+    "height": "20cm",
+    "water": "MW",
+    "soil": "any - sand",
+    "sun": "PS- S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A big fleshy-leaved groundcover.",
+    "source_page": 5
+  },
+  {
+    "scientific_name": "Themeda triandra",
+    "common_name": "Kangaroo Grass",
+    "type": "",
+    "height": "75cm",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS- PS",
+    "vegetation_zones": [
+      "SSFW STIF"
+    ],
+    "description": "A tufted perennial grass with purplish seed heads in the warmer months.",
+    "source_page": 6
+  },
+  {
+    "scientific_name": "Viola hederacea",
+    "common_name": "Native Violet",
+    "type": "",
+    "height": "15cm",
+    "water": "MW",
+    "soil": "any - sand",
+    "sun": "PS- S",
+    "vegetation_zones": [
+      "WC"
+    ],
+    "description": "A creeping perennial forming a dense mat of kidney shaped leaves with white and purple flowers in September \u2013 February.",
+    "source_page": 6
+  },
+  {
+    "scientific_name": "Wahlenbergia gracilis",
+    "common_name": "Australian Bluebell",
+    "type": "",
+    "height": "30cm",
+    "water": "LW",
+    "soil": "any",
+    "sun": "FS- PS SSFW",
+    "vegetation_zones": [
+      "STIF WC"
+    ],
+    "description": "A slender tufted perennial with sky blue flowers throughout the year.",
+    "source_page": 6
+  },
+  {
+    "scientific_name": "Westringia fruticosa",
+    "common_name": "Coastal Rosemary",
+    "type": "",
+    "height": "1.5m",
+    "water": "LW",
+    "soil": "any- sand",
+    "sun": "PS-S",
+    "vegetation_zones": [
+      "Any"
+    ],
+    "description": "A dense shrub to around 1.5m high with grey green foliage and white flowers for most of the year.",
+    "source_page": 9
+  }
+]

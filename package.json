@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
+    "render-build": "npm run db:push && SEED_RELEASE_VERSION=2026-08-04 npm run db:seed && npm run build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:push": "drizzle-kit push --force",
@@ -33,6 +34,8 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "eslint": "^9.0.0",
+    "eslint-config-next": "15.5.18",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.9.3",
     "@types/react": "^19.0.0",

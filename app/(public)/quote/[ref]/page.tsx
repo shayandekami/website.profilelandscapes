@@ -31,16 +31,20 @@ export async function generateMetadata({
 
 export default async function QuoteTrackerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ ref: string }>;
+  searchParams: Promise<{ token?: string }>;
 }) {
   const { ref } = await params;
+  const { token } = await searchParams;
 
   const row = await db.query.quotes.findFirst({
     where: eq(quotes.referenceCode, ref.toUpperCase()),
   }).catch(() => null);
 
   if (!row) notFound();
+  if (row.accessToken && token !== row.accessToken) notFound();
 
   const status = STATUS_LABELS[row.status] ?? STATUS_LABELS.new;
   const received = new Date(row.receivedAt);
@@ -174,6 +178,14 @@ export default async function QuoteTrackerPage({
           {row.budget && <>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>Budget</span>
             <span>{row.budget}</span>
+          </>}
+          {row.siteAddress && <>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>Site</span>
+            <span>{row.siteAddress}{row.postcode ? ` ${row.postcode}` : ""}</span>
+          </>}
+          {row.projectStage && <>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>Stage</span>
+            <span>{row.projectStage}</span>
           </>}
         </div>
       </div>

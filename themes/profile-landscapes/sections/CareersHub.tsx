@@ -26,6 +26,15 @@ type Props = {
   roles?: Role[];
   benefits?: Benefit[];
   pathway?: PathStage[];
+  jobs?: Array<{
+    id: number;
+    title: string;
+    team: string;
+    location: string;
+    employmentType: string;
+    summary: string;
+    requirements: string[];
+  }>;
 };
 
 const roleColors: Record<string, { bg: string; fg: string }> = {
@@ -69,6 +78,7 @@ export function CareersHub({ props }: { props: Record<string, unknown> }) {
   ];
 
   const roles = p.roles ?? defaultRoles;
+  const jobs = p.jobs;
   const pathway = p.pathway ?? defaultPathway;
   const benefits = p.benefits ?? defaultBenefits;
 
@@ -130,20 +140,38 @@ export function CareersHub({ props }: { props: Record<string, unknown> }) {
             <div>
               <span className="eyebrow" style={{ display: "block", marginBottom: 8 }}>Open roles</span>
               <h3 className="display" style={{ margin: 0, fontSize: "clamp(28px,3vw,40px)", fontWeight: 400, letterSpacing: "-0.02em" }}>
-                {roles.length} positions available
+                {jobs ? `${jobs.length} ${jobs.length === 1 ? "position" : "positions"} available` : `${roles.length} positions available`}
               </h3>
             </div>
-            <a href="/contact" style={{ fontSize: 13.5, color: "var(--ink)", borderBottom: "1px solid var(--line)", paddingBottom: 2, textDecoration: "none" }}>
+            <a href="/careers/apply" style={{ fontSize: 13.5, color: "var(--ink)", borderBottom: "1px solid var(--line)", paddingBottom: 2, textDecoration: "none" }}>
               Apply directly →
             </a>
           </div>
           <ul style={{ listStyle: "none", margin: 0, padding: 0, borderTop: "1px solid var(--line-2)" }}>
-            {roles.map((role, i) => {
+            {(jobs ?? roles).map((role, i) => {
+              if ("employmentType" in role) {
+                return (
+                  <li key={role.id} style={{ borderBottom: "1px solid var(--line-2)" }}>
+                    <a href={`/careers/apply?job=${role.id}`} className="role-link careers-role-grid" style={{ display: "grid", gridTemplateColumns: "minmax(220px,1fr) minmax(260px,1.4fr) auto", gap: 24, alignItems: "center", padding: "24px 4px", textDecoration: "none", color: "var(--ink)" }}>
+                      <div>
+                        <span style={{ display: "inline-block", padding: "4px 10px", borderRadius: 999, fontSize: 10.5, letterSpacing: ".06em", textTransform: "uppercase", background: "#e8f4f0", color: "#1f5a3d", marginBottom: 8 }}>{role.employmentType}</span>
+                        <div style={{ fontFamily: "var(--display)", fontSize: 21 }}>{role.title}</div>
+                        <div style={{ fontSize: 12.5, color: "var(--ink-2)", marginTop: 5 }}>{role.team} · {role.location}</div>
+                      </div>
+                      <div style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-2)" }}>
+                        {role.summary}
+                        {role.requirements[0] && <div style={{ marginTop: 7, fontSize: 12.5 }}><strong>Key requirement:</strong> {role.requirements[0]}</div>}
+                      </div>
+                      <span style={{ fontSize: 13, whiteSpace: "nowrap" }}>View & apply →</span>
+                    </a>
+                  </li>
+                );
+              }
               const colors = roleColors[role.type] ?? roleColors.office;
               return (
                 <li key={i} style={{ borderBottom: "1px solid var(--line-2)" }}>
                   <a
-                    href={role.href ?? "/contact"}
+                    href={role.href ?? `/careers/apply?role=${encodeURIComponent(role.title)}`}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",

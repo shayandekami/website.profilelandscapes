@@ -37,6 +37,12 @@ export const nav: Theme["nav"] = [
     ],
   },
   {
+    key: "shop",
+    label: "Shop",
+    href: "/shop",
+    matches: ["shop", "cart"],
+  },
+  {
     key: "about",
     label: "About",
     href: "/about",

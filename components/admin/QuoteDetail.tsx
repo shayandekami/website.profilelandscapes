@@ -5,13 +5,23 @@ import type { SaveResult } from "@/app/admin/(chrome)/quotes/actions";
 
 type Quote = {
   id: number;
+  referenceCode: string;
   name: string;
   company: string;
   email: string;
   phone: string;
   sector: string;
   budget: string;
+  siteAddress: string;
+  postcode: string;
+  projectStage: string;
+  services: string[];
+  desiredStart: string;
+  tenderDue: string;
+  contactPreference: string;
+  architect: string;
   brief: string;
+  attachments: Array<{ id: number; filename: string; mimeType: string; sizeBytes: number }>;
   status: "new" | "in_reply" | "site_visit" | "won" | "lost" | "out_of_scope";
   notes: string;
   receivedAt: string;
@@ -55,16 +65,19 @@ export function QuoteDetail({
   }
 
   const mailtoBody = encodeURIComponent(
-    `Hi ${q.name.split(" ")[0]},\n\nThanks for getting in touch about your project.\n\n— Carlo`
+    `Hi ${q.name.split(" ")[0]},\n\nThanks for getting in touch about your project. We are reviewing the information supplied under reference ${q.referenceCode}.\n\n— Carlo`
   );
-  const mailto = `mailto:${q.email}?subject=${encodeURIComponent("Re: your enquiry — Profile Landscapes")}&body=${mailtoBody}`;
+  const mailto = `mailto:${q.email}?subject=${encodeURIComponent(`Re: ${q.referenceCode} — your Profile Landscapes enquiry`)}&body=${mailtoBody}`;
+  const formatSize = (bytes: number) => bytes < 1024 * 1024
+    ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+    : `${(bytes / 1024 / 1024).toFixed(2)} MB`;
 
   return (
     <>
       <div className="page-head-a">
         <div>
           <div className="sub" style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--subtle)" }}>
-            — Quote #{q.id} · received {new Date(q.receivedAt).toLocaleString("en-AU")}
+            — {q.referenceCode} · received {new Date(q.receivedAt).toLocaleString("en-AU")}
           </div>
           <h1>
             {q.name}
@@ -97,10 +110,18 @@ export function QuoteDetail({
           <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: 12, fontSize: 14, marginTop: 12 }}>
             <span style={{ color: "var(--muted)" }}>Sector</span><span>{q.sector || "—"}</span>
             <span style={{ color: "var(--muted)" }}>Budget</span><span>{q.budget || "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Site</span><span>{q.siteAddress ? `${q.siteAddress} ${q.postcode}` : "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Stage</span><span>{q.projectStage || "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Services</span><span>{q.services.join(", ") || "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Preferred start</span><span>{q.desiredStart || "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Tender due</span><span>{q.tenderDue ? new Date(q.tenderDue).toLocaleDateString("en-AU") : "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Architect</span><span>{q.architect || "—"}</span>
+            <span style={{ color: "var(--muted)" }}>Contact by</span><span>{q.contactPreference || "—"}</span>
           </div>
           <div style={{ marginTop: 18, padding: 14, background: "#faf8f0", borderRadius: 6, whiteSpace: "pre-wrap", fontSize: 14.5, lineHeight: 1.55 }}>
             {q.brief}
           </div>
+          {q.attachments.length > 0 && <div style={{ marginTop: 18 }}><h4>Project documents</h4>{q.attachments.map((file) => <a key={file.id} href={`/api/admin/quotes/${q.id}/attachments/${file.id}`} className="quote-admin-file"><span>{file.filename}</span><small>{formatSize(file.sizeBytes)} · Download</small></a>)}</div>}
         </div>
 
         <div className="dtl-card">

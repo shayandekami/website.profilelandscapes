@@ -28,6 +28,8 @@ export function PageEditor({ page: initial, save }: Props) {
   const [page, setPage] = useState<PageInput>(initial);
   const [openIdx, setOpenIdx] = useState<number | null>(0);
   const [showAdd, setShowAdd] = useState(false);
+  const [viewMode, setViewMode] = useState<"edit" | "split" | "preview">("edit");
+  const [previewKey, setPreviewKey] = useState(0);
   const [saveState, setSaveState] = useState<{
     msg: string;
     kind: "idle" | "saving" | "ok" | "err";
@@ -99,6 +101,7 @@ export function PageEditor({ page: initial, save }: Props) {
         setSaveState({ msg: "Saved just now", kind: "ok" });
         if (status) patchPage("status", status);
         patchPage("updatedAt", result.updatedAt);
+        setPreviewKey((key) => key + 1);
       } else {
         setSaveState({ msg: result.error, kind: "err" });
       }
@@ -106,7 +109,7 @@ export function PageEditor({ page: initial, save }: Props) {
   }
 
   return (
-    <div className="editor-layout">
+    <div className="editor-layout" data-view={viewMode}>
       {/* Left rail — section list */}
       <aside className="ed-tree">
         <h6>— SECTIONS</h6>
@@ -119,7 +122,11 @@ export function PageEditor({ page: initial, save }: Props) {
               onClick={() => setOpenIdx(i)}
               style={{ cursor: "pointer" }}
             >
-              <div className="dot"></div>
+              {firstImage(s) ? (
+                <img className="ed-section-thumb" src={firstImage(s)} alt="" />
+              ) : (
+                <div className="ed-section-placeholder">{sectionInitial(schema?.label || s.type)}</div>
+              )}
               <span style={{ flex: 1 }}>
                 {schema?.label || s.type}
                 <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 2 }}>
@@ -223,6 +230,18 @@ export function PageEditor({ page: initial, save }: Props) {
             >
               {saveState.msg}
             </span>
+            <div className="ed-view-toggle" aria-label="Editor view">
+              {(["edit", "split", "preview"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  className={viewMode === mode ? "on" : ""}
+                  onClick={() => setViewMode(mode)}
+                  type="button"
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
             <a
               className="btn"
               href={page.slug === "/" ? "/" : page.slug}
@@ -306,6 +325,20 @@ export function PageEditor({ page: initial, save }: Props) {
           />
         )}
       </section>
+
+      <aside className="ed-preview" aria-label="Live page preview">
+        <div className="ed-preview-bar">
+          <div><strong>Page preview</strong><span>{page.slug}</span></div>
+          <div>
+            <button className="iconbtn-mini" onClick={() => setPreviewKey((key) => key + 1)} title="Refresh preview">↻</button>
+            <a className="btn-sm" href={page.slug} target="_blank" rel="noreferrer">Open</a>
+          </div>
+        </div>
+        <div className="ed-preview-frame">
+          <iframe key={previewKey} src={page.slug} title={`${page.title} preview`} />
+        </div>
+        <p className="ed-preview-note">Save your changes to refresh the preview with the latest content.</p>
+      </aside>
     </div>
   );
 }
@@ -342,8 +375,10 @@ function SectionEditor({
     );
   }
 
+  const groupedFields = groupFields(section.type, schema.fields);
+
   return (
-    <div>
+    <div className="ed-section-editor">
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <div>
           <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 11, letterSpacing: "0.14em", color: "var(--muted)", textTransform: "uppercase" }}>
@@ -362,13 +397,23 @@ function SectionEditor({
         </p>
       )}
 
-      {schema.fields.map((f) => (
-        <FieldEditor
-          key={f.key}
-          field={f}
-          value={(section.props as Record<string, unknown>)[f.key]}
-          onChange={(v) => onChangeProps(f.key, v)}
-        />
+      {groupedFields.map((group) => (
+        <section className="ed-field-group" key={group.label}>
+          <header>
+            <span>{group.index}</span>
+            <div><h3>{group.label}</h3><p>{group.description}</p></div>
+          </header>
+          <div className="ed-field-group-body">
+            {group.fields.map((f) => (
+              <FieldEditor
+                key={f.key}
+                field={f}
+                value={(section.props as Record<string, unknown>)[f.key]}
+                onChange={(v) => onChangeProps(f.key, v)}
+              />
+            ))}
+          </div>
+        </section>
       ))}
     </div>
   );
@@ -515,6 +560,70 @@ function previewFirstField(s: Section): string {
     if (typeof v === "string" && v.trim()) return v.slice(0, 50);
   }
   return "";
+}
+
+function firstImage(section: Section): string {
+  const visit = (value: unknown): string => {
+    if (typeof value === "string" && /\.(avif|jpe?g|png|webp|svg)(\?.*)?$/i.test(value)) return value;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const found = visit(item);
+        if (found) return found;
+      }
+    }
+    if (value && typeof value === "object") {
+      for (const item of Object.values(value as Record<string, unknown>)) {
+        const found = visit(item);
+        if (found) return found;
+      }
+    }
+    return "";
+  };
+  return visit(section.props);
+}
+
+function sectionInitial(label: string): string {
+  return label.replace(/[^a-z0-9 ]/gi, "").trim().charAt(0).toUpperCase() || "S";
+}
+
+function groupFields(type: string, fields: Field[]) {
+  const definitions: Array<[string, string, readonly string[]]> = type === "home_studio"
+    ? [
+        ["Hero", "The first impression and primary call to action.", ["eyebrow", "headline", "primary", "secondary", "hero"]],
+        ["Studio", "Introduction, positioning and supporting studio content.", ["intro", "studio", "statement"]],
+        ["Projects", "Featured work and portfolio transition.", ["work", "project"]],
+        ["Capabilities", "Service disciplines and practice cards.", ["capability", "practice", "service"]],
+        ["Nursery", "Plant and nursery merchandising.", ["nursery", "plant"]],
+        ["Knowledge", "Resources, encyclopedia and editorial content.", ["knowledge", "resource", "journal"]],
+        ["Tender", "Closing enquiry and tender invitation.", ["tender", "quote", "contact"]],
+      ]
+    : [];
+
+  if (!definitions.length || fields.length < 5) {
+    return [{ label: "Content", description: "Text, imagery and links shown in this section.", index: "01", fields }];
+  }
+
+  const used = new Set<string>();
+  const groups = definitions.map(([label, description, prefixes], index) => {
+    const matches = fields.filter((field) => {
+      const key = field.key.toLowerCase();
+      const matched = prefixes.some((prefix) => key.startsWith(prefix) || key.includes(prefix));
+      if (matched) used.add(field.key);
+      return matched;
+    });
+    return { label, description, index: String(index + 1).padStart(2, "0"), fields: matches };
+  }).filter((group) => group.fields.length);
+
+  const remaining = fields.filter((field) => !used.has(field.key));
+  if (remaining.length) {
+    groups.push({
+      label: "Additional content",
+      description: "Other settings used by this section.",
+      index: String(groups.length + 1).padStart(2, "0"),
+      fields: remaining,
+    });
+  }
+  return groups;
 }
 
 function relTime(iso: string): string {

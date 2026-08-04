@@ -1,13 +1,19 @@
+import type { NavGroup } from "../types";
+
 type Props = {
   studioName: string;
   phone: string;
   email: string;
   address: string;
-  nav?: unknown[];
+  nav?: NavGroup[];
   legal: { acn: string; abn: string; licence: string; founded: number };
 };
 
-export function Footer({ studioName, phone, email, address, legal }: Props) {
+export function Footer({ studioName, phone, email, address, legal, nav = [] }: Props) {
+  const publicLinks = nav.flatMap((group) => [group.href, ...(group.children?.map((item) => item.href) || [])]);
+  const showNursery = publicLinks.includes("/plants");
+  const showEncyclopedia = publicLinks.includes("/encyclopedia");
+  const showShop = publicLinks.includes("/shop");
   return (
     <footer>
       <div className="wrap">
@@ -15,8 +21,7 @@ export function Footer({ studioName, phone, email, address, legal }: Props) {
           <div>
             <div className="foot-brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/logo.png" alt="" />
-              <span>{studioName}</span>
+              <img src="/assets/footer-brand-lockup-v2.png" alt={studioName} />
             </div>
             <p className="foot-lede">
               Commercial landscape contractors, nursery &amp; design studio.
@@ -40,9 +45,10 @@ export function Footer({ studioName, phone, email, address, legal }: Props) {
           <div>
             <h5>Plants &amp; shop</h5>
             <ul>
-              <li><a href="/nursery">Nursery</a></li>
-              <li><a href="/encyclopedia">Encyclopedia</a></li>
-              <li><a href="/shop">Shop</a></li>
+              {showNursery && <li><a href="/plants">Nursery</a></li>}
+              {showEncyclopedia && <li><a href="/encyclopedia">Encyclopedia</a></li>}
+              {showShop && <li><a href="/shop">Shop</a></li>}
+              {!showNursery && !showEncyclopedia && !showShop && <li><a href="/resources">Plant guides</a></li>}
             </ul>
           </div>
           <div>

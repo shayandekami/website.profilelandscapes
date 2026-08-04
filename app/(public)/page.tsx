@@ -7,9 +7,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("/");
   if (!page) return { title: "Profile Landscapes" };
   return {
-    title: page.seoTitle || page.title,
+    title: { absolute: page.seoTitle || page.title },
     description: page.seoDescription || page.lede || undefined,
-    openGraph: page.heroImage ? { images: [page.heroImage] } : undefined,
+    alternates: { canonical: "/" },
+    openGraph: page.heroImage ? {
+      title: page.seoTitle || page.title,
+      description: page.seoDescription || page.lede || undefined,
+      images: [{ url: page.heroImage, alt: "Profile Landscapes — landscape design, construction and horticulture in Sydney" }],
+    } : undefined,
   };
 }
 

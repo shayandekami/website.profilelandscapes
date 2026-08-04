@@ -1,3 +1,5 @@
+import { getPublicSiteUrl } from "@/lib/content";
+
 /**
  * Tiny Resend wrapper. If RESEND_API_KEY is unset, falls back to console.log
  * so local dev still works without an account.
@@ -43,7 +45,6 @@ export async function sendEmail(opts: {
 
 // ---- HTML notifications (a failed email must never break a flow) ----
 const esc = (s: string) => String(s).replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]!));
-const SITE = process.env.NEXT_PUBLIC_URL || "";
 const shell = (title: string, body: string) => `
   <div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;color:#1f2937">
     <div style="background:#133024;color:#fff;padding:18px 24px;border-radius:8px 8px 0 0"><strong style="font-size:18px">Profile Landscapes</strong></div>
@@ -52,7 +53,9 @@ const shell = (title: string, body: string) => `
       <p style="font-size:12px;color:#6b7280;margin-top:24px;border-top:1px solid #eee;padding-top:14px">Profile Landscapes · 16 New Canterbury Rd, Petersham NSW 2049 · (02) 9568 5868</p>
     </div></div>`;
 
-export async function notifyCustomerQuoteAck(opts: { ref: string; name: string; email: string }) {
+export async function notifyCustomerQuoteAck(opts: { ref: string; name: string; email: string; token?: string; origin?: string }) {
+  const base = await getPublicSiteUrl(opts.origin);
+  const tracker = `${base}/quote/${encodeURIComponent(opts.ref)}${opts.token ? `?token=${encodeURIComponent(opts.token)}` : ""}`;
   await sendEmail({
     to: opts.email,
     subject: `We've received your enquiry — ${opts.ref}`,
@@ -60,7 +63,7 @@ export async function notifyCustomerQuoteAck(opts: { ref: string; name: string; 
       <p>Hi ${esc(opts.name.split(" ")[0] || "there")},</p>
       <p>We've received your enquiry and will be in touch within two business days. Your reference is
       <strong>${esc(opts.ref)}</strong> — track it any time at
-      <a href="${SITE}/quote/${esc(opts.ref)}">our quote tracker</a>.</p>
+      <a href="${tracker}">our quote tracker</a>.</p>
       <p>If it's urgent, call (02) 9568 5868.</p>`),
   });
 }
@@ -77,13 +80,48 @@ export async function notifyOrder(opts: { orderNumber: string; name: string; ema
   if (staff) await sendEmail({ to: staff, subject: `New order ${opts.orderNumber} — $${(opts.totalCents / 100).toFixed(2)}`, html });
 }
 
-export async function notifyTradeWelcome(opts: { email: string; company?: string | null }) {
+export async function notifyTradeWelcome(opts: { email: string; company?: string | null; origin?: string }) {
+  const base = await getPublicSiteUrl(opts.origin);
   await sendEmail({
     to: opts.email,
     subject: "Your Profile Landscapes trade account",
     html: shell("Welcome to trade", `
       <p>Your trade account${opts.company ? ` for <strong>${esc(opts.company)}</strong>` : ""} is active.</p>
       <p>Trade rates now apply across the nursery, pricelist and checkout when you're logged in.
-      <a href="${SITE}/plants/pricelist">Browse the pricelist →</a></p>`),
+      <a href="${base}/plants/pricelist">Browse the pricelist →</a></p>`),
+  });
+}
+
+export async function notifyCareerApplication(opts: { name: string; email: string; reference: string; role: string; token: string; origin?: string }) {
+  const base = await getPublicSiteUrl(opts.origin);
+  const tracker = `${base}/careers/application/${encodeURIComponent(opts.token)}`;
+  const html = shell("Application received", `
+    <p>Hi ${esc(opts.name)},</p>
+    <p>Thank you for applying for <strong>${esc(opts.role)}</strong>. Your reference is <strong>${esc(opts.reference)}</strong>.</p>
+    <p>A member of our team will review your application within five business days. If there is a potential fit, the next step is usually a short phone conversation followed by a practical or team interview.</p>
+    <p><a href="${tracker}">Track your application →</a></p>
+    <p>Please keep that link private. It lets you view progress without creating an account.</p>`);
+  await sendEmail({ to: opts.email, subject: `Application received — ${opts.reference}`, html });
+  const staff = process.env.CAREERS_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL;
+  if (staff) {
+    await sendEmail({
+      to: staff,
+      subject: `New career application: ${opts.role} — ${opts.name}`,
+      html: shell("New career application", `<p><strong>${esc(opts.name)}</strong> applied for ${esc(opts.role)}.</p><p>Reference: ${esc(opts.reference)}</p><p><a href="${base}/admin/applicants">Open candidate inbox →</a></p>`),
+      replyTo: opts.email,
+    });
+  }
+}
+
+export async function notifyCareerStatus(opts: { name: string; email: string; reference: string; statusLabel: string; message?: string | null; token: string; origin?: string }) {
+  const base = await getPublicSiteUrl(opts.origin);
+  await sendEmail({
+    to: opts.email,
+    subject: `Application update — ${opts.reference}`,
+    html: shell("Your application has been updated", `
+      <p>Hi ${esc(opts.name)},</p>
+      <p>Your application status is now <strong>${esc(opts.statusLabel)}</strong>.</p>
+      ${opts.message ? `<p>${esc(opts.message)}</p>` : ""}
+      <p><a href="${base}/careers/application/${encodeURIComponent(opts.token)}">View your application progress →</a></p>`),
   });
 }

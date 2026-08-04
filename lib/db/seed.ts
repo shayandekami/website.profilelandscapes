@@ -2,6 +2,9 @@ import { config } from "dotenv";
 config({ path: ".env.local" });
 config({ path: ".env" });
 import bcrypt from "bcryptjs";
+import { eq, inArray } from "drizzle-orm";
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { db } from "./index";
 import {
   users,
@@ -13,8 +16,14 @@ import {
   products,
   plants,
   encyclopediaEntries,
+  jobPostings,
+  careerApplications,
+  applicationEvents,
+  quotes,
   type Section,
 } from "./schema";
+import { homeSections } from "./seed-data/homepage";
+import { aboutSections as carloAboutSections, servicesSections as carloServicesSections } from "./seed-data/carlo-content";
 
 /**
  * Seeds the database with:
@@ -29,6 +38,14 @@ import {
 
 async function main() {
   console.log("→ seeding…");
+  const releaseVersion = process.env.SEED_RELEASE_VERSION;
+  if (releaseVersion) {
+    const [applied] = await db.select().from(siteSettings).where(eq(siteSettings.key, "seed_release_version")).limit(1);
+    if (applied?.value === releaseVersion) {
+      console.log(`✓ release seed ${releaseVersion} already applied; preserving CMS and admin changes`);
+      process.exit(0);
+    }
+  }
 
   // Owner user
   const passwordHash = await bcrypt.hash("pl-admin-2026", 10);
@@ -46,6 +63,7 @@ async function main() {
   // Site settings — these are the brand-level fields the admin can edit
   // and any theme can read.
   const settings: { key: string; value: unknown }[] = [
+    { key: "public_url", value: "https://profilelandscapes.com.au" },
     { key: "studio_name", value: "Profile Landscapes" },
     { key: "tagline", value: "Landscape craft, at scale." },
     { key: "phone", value: "(02) 9568 5868" },
@@ -80,7 +98,7 @@ async function main() {
   }
 
   // ---------- Home page ----------
-  const homeSections: Section[] = [
+  const legacyHomeSections: Section[] = [
     {
       type: "hero",
       props: {
@@ -88,8 +106,8 @@ async function main() {
         title: "Landscape",
         titleItalic: "craft, at scale.",
         body: "A Sydney landscape practice — contractor, nursery and design studio under one roof. Twenty-seven years of hard and soft works, grown and built by the same team.",
-        image: "/assets/project-bench-terrace.png",
-        imageAlt: "Commercial landscape — 333 George Street, Sydney",
+        image: "/assets/projects/kinghorn-cancer-centre-restored.webp",
+        imageAlt: "Timber seating and courtyard planting at The Kinghorn Cancer Centre, Darlinghurst",
         ctaPrimary: { label: "Invite us to tender →", href: "/contact" },
         ctaSecondary: { label: "See our work", href: "/projects" },
         badge: { value: "$20K — $11M", label: "Project range" },
@@ -163,7 +181,7 @@ async function main() {
       title: "Profile Landscapes — Commercial landscape contractors, Sydney since 1999",
       lede: "Sydney-based landscape contractor, nursery and design studio. Since 1999.",
       sections: homeSections,
-      heroImage: "/assets/project-bench-terrace.png",
+      heroImage: "/assets/projects/kinghorn-cancer-centre-restored.webp",
       seoTitle: "Profile Landscapes — Commercial landscape contractors, Sydney since 1999",
       seoDescription:
         "Sydney-based landscape contractor, nursery and design studio. Design, construction and maintenance for developers, builders and public bodies across NSW. Since 1999.",
@@ -181,25 +199,7 @@ async function main() {
     });
 
   // ---------- About page ----------
-  const aboutSections: Section[] = [
-    {
-      type: "page_head",
-      props: {
-        crumbs: [{ label: "Home", href: "/" }, { label: "About" }],
-        title: "A landscape practice,",
-        titleItalic: "in three parts.",
-        lede: "Contractor, nursery, design studio — under one roof in Petersham since 1999. Twenty-seven years on, the same family still answers the phone.",
-      },
-    },
-    {
-      type: "two_col",
-      props: {
-        eyebrow: "Our story",
-        title: "We started with one yard, one ute, and a plan to grow what we plant.",
-        body: "Carlo Capogreco founded Profile Landscapes in 1999 on the conviction that the best commercial landscapes are built by people who also grow the plants. A quarter-century later, that conviction is still our edge: from 333 George Street to a Hunters Hill courtyard, the same team is on the ground from concept to handover.",
-      },
-    },
-  ];
+  const aboutSections = carloAboutSections;
   await db
     .insert(pages)
     .values({
@@ -212,6 +212,115 @@ async function main() {
     })
     .onConflictDoNothing({ target: pages.slug });
 
+  const careerJobs = [
+    {
+      slug: "landscape-foreman", title: "Landscape Foreman", team: "Construction", location: "Sydney Metro", employmentType: "Full-time",
+      summary: "Lead landscape construction crews delivering high-quality commercial and residential projects.",
+      description: "Own daily site delivery, coordinate people and subcontractors, and maintain Profile Landscapes' standards for safety, programme and finish.",
+      responsibilities: ["Lead daily pre-starts and allocate crew work", "Read plans, coordinate materials and track programme", "Maintain quality, safety and client communication"],
+      requirements: ["Qualified landscaper with 5+ years' construction experience", "Demonstrated crew leadership", "Current driver licence and White Card"],
+      desirable: ["Cert IV in Landscape Construction", "Excavator or skid-steer tickets"], salaryRange: "$95,000–$115,000 + super + vehicle", status: "live" as const, sortOrder: 1,
+    },
+    {
+      slug: "horticulturist", title: "Horticulturist", team: "Nursery", location: "Petersham", employmentType: "Full-time",
+      summary: "Care for nursery stock, advise customers and support plant selection for our project teams.",
+      description: "A practical nursery role combining plant care, stock presentation and knowledgeable customer service.",
+      responsibilities: ["Maintain plant health and presentation", "Receive and organise stock", "Advise retail, trade and internal project teams"],
+      requirements: ["Cert III Horticulture or equivalent experience", "Strong plant identification skills", "Able to safely perform physical nursery work"],
+      desirable: ["Retail nursery experience", "MR licence or forklift ticket"], status: "live" as const, sortOrder: 2,
+    },
+    {
+      slug: "apprentice-landscaper", title: "Apprentice Landscaper", team: "Construction", location: "Various Sydney sites", employmentType: "Apprenticeship",
+      summary: "Learn landscape construction on real projects with structured TAFE and on-site support.",
+      description: "Build core trade skills across softscape, paving, drainage, irrigation and site safety.",
+      responsibilities: ["Work safely with the site team", "Learn tools, materials and construction methods", "Attend and complete required TAFE study"],
+      requirements: ["Genuine interest in landscape construction", "Reliable transport or ability to reach site", "Willingness to learn and work outdoors"],
+      desirable: ["White Card", "Previous labouring or horticulture exposure"], status: "live" as const, sortOrder: 3,
+    },
+  ];
+  for (const job of careerJobs) {
+    await db.insert(jobPostings).values(job).onConflictDoNothing({ target: jobPostings.slug });
+  }
+  const seededJobs = await db.select().from(jobPostings);
+  const jobBySlug = new Map(seededJobs.map((job) => [job.slug, job]));
+  const candidateDir = join(process.cwd(), "storage", "applications");
+  await mkdir(candidateDir, { recursive: true });
+  const seededCandidates = [
+    { ref: "APP-SEED-001", token: "seed-candidate-maya-chen-private-tracker", job: "landscape-foreman", first: "Maya", last: "Chen", email: "maya.chen@example.com", phone: "0412 555 014", suburb: "Marrickville NSW", exp: "6–10 years", rights: "Australian citizen", status: "shortlisted" as const, rating: 5, linkedin: "https://www.linkedin.com/in/maya-chen", statement: "I have eight years of landscape construction experience, including four years leading crews across commercial streetscape and high-end residential projects. I enjoy building clear site systems, mentoring apprentices and delivering difficult finishes well." },
+    { ref: "APP-SEED-002", token: "seed-candidate-liam-oconnor-private-tracker", job: "horticulturist", first: "Liam", last: "O'Connor", email: "liam.oconnor@example.com", phone: "0433 555 027", suburb: "Dulwich Hill NSW", exp: "3–5 years", rights: "Permanent resident", status: "screening" as const, rating: 4, linkedin: "https://www.linkedin.com/in/liam-oconnor-hort", statement: "I am a qualified horticulturist with strong native plant identification and three years in a busy retail and production nursery. I am looking for a role that combines plant care, customer advice and project-based plant selection." },
+    { ref: "APP-SEED-003", token: "seed-candidate-zara-williams-private-tracker", job: "apprentice-landscaper", first: "Zara", last: "Williams", email: "zara.williams@example.com", phone: "0451 555 038", suburb: "Ashfield NSW", exp: "Entry level / apprentice", rights: "Australian citizen", status: "new" as const, rating: null, linkedin: null, statement: "I am changing careers after working in outdoor education and want to build a practical trade in landscape construction. I have a White Card, am comfortable with physical work and am ready to start TAFE." },
+    { ref: "APP-SEED-004", token: "seed-candidate-noah-patel-private-tracker", job: "landscape-foreman", first: "Noah", last: "Patel", email: "noah.patel@example.com", phone: "0408 555 046", suburb: "Parramatta NSW", exp: "10+ years", rights: "Australian citizen", status: "interview" as const, rating: 4, linkedin: "https://www.linkedin.com/in/noah-patel-landscapes", statement: "I have led civil landscape crews for more than ten years, with experience in programme coordination, subcontractor management, set-out and commercial handover. I am interested in Profile's quality-focused project mix." },
+  ];
+  for (const candidate of seededCandidates) {
+    const resumeFilename = `${candidate.ref.toLowerCase()}-sample-cv.txt`;
+    const resumePath = join(candidateDir, resumeFilename);
+    await writeFile(resumePath, `SAMPLE CANDIDATE CV\n${candidate.first} ${candidate.last}\n${candidate.exp}\nFor demonstration and testing only.\n`);
+    const [created] = await db.insert(careerApplications).values({
+      referenceCode: candidate.ref, accessToken: candidate.token, jobId: jobBySlug.get(candidate.job)?.id,
+      roleInterest: jobBySlug.get(candidate.job)?.title || "General expression of interest",
+      firstName: candidate.first, lastName: candidate.last, email: candidate.email, phone: candidate.phone,
+      suburb: candidate.suburb, linkedinUrl: candidate.linkedin, coverLetter: candidate.statement,
+      yearsExperience: candidate.exp, availability: "Four weeks' notice", workRights: candidate.rights,
+      driversLicence: true, resumePath, resumeFilename, resumeMime: "text/plain",
+      resumeSize: 100, status: candidate.status, rating: candidate.rating, consentAt: new Date("2026-07-20"),
+      reviewedAt: candidate.status === "new" ? null : new Date("2026-07-22"),
+    }).onConflictDoNothing({ target: careerApplications.referenceCode }).returning();
+    if (created) await db.insert(applicationEvents).values({
+      applicationId: created.id, status: candidate.status, candidateVisible: true,
+      message: candidate.status === "new" ? "Application received and awaiting review." : `Application progressed to ${candidate.status}.`,
+    });
+  }
+  const seededQuotes = [
+    {
+      referenceCode: "Q-SEED-001",
+      accessToken: "seed-quote-darlington-private-tracker",
+      name: "Sophie Bennett",
+      company: "Bennett Studio Architects",
+      email: "sophie.bennett@example.com",
+      phone: "0418 555 102",
+      sector: "Commercial",
+      budget: "$500K – $1M",
+      siteAddress: "18–24 Golden Grove Street, Darlington",
+      postcode: "2008",
+      projectStage: "Tender / pricing",
+      services: ["Landscape construction", "Planting / softscape", "Irrigation", "Tender pricing"],
+      desiredStart: "Within 3–6 months",
+      tenderDue: new Date("2026-08-21T12:00:00"),
+      contactPreference: "Email",
+      architect: "Bennett Studio Architects",
+      brief: "Landscape construction tender for a 42-apartment mixed-use development. Scope includes podium planters, deep-soil tree planting, irrigation, feature paving interfaces, raised steel edging and 12 months establishment maintenance. Construction documentation and BOQ are available following acknowledgement of the tender conditions.",
+      source: "website-quote-request",
+      status: "in_reply" as const,
+      notes: "Strong fit. Review podium access and cranage allowances before confirming tender participation.",
+      receivedAt: new Date("2026-07-22T09:35:00"),
+    },
+    {
+      referenceCode: "Q-SEED-002",
+      accessToken: "seed-quote-concord-private-tracker",
+      name: "Daniel Russo",
+      company: "Russo Property Group",
+      email: "daniel.russo@example.com",
+      phone: "0422 555 187",
+      sector: "Residential",
+      budget: "$100K – $500K",
+      siteAddress: "7 Flavelle Street, Concord",
+      postcode: "2137",
+      projectStage: "Construction documentation",
+      services: ["Landscape construction", "Planting / softscape", "Irrigation"],
+      desiredStart: "Within 1–3 months",
+      contactPreference: "Phone",
+      architect: "Northbank Architecture",
+      brief: "New residential landscape following completion of a major renovation. Works include sandstone paving, pool surrounds, front entry, drainage upgrades, automated irrigation, mature screening and a low-maintenance native planting palette. Planning approval is complete and architectural documentation is at 90 percent.",
+      source: "website-quote-request",
+      status: "site_visit" as const,
+      notes: "Site meeting requested for Thursday morning. Confirm rear access width and protection requirements around the completed pool.",
+      receivedAt: new Date("2026-07-23T14:10:00"),
+    },
+  ];
+  for (const quote of seededQuotes) {
+    await db.insert(quotes).values(quote).onConflictDoNothing({ target: quotes.referenceCode });
+  }
+
   // ---------- Contact page ----------
   const contactSections: Section[] = [
     {
@@ -220,12 +329,17 @@ async function main() {
         crumbs: [{ label: "Home", href: "/" }, { label: "Contact" }],
         title: "Tell us about",
         titleItalic: "your site.",
-        lede: "Send us the brief — drawings, BOQ, or a short description — and Carlo will reply personally within three working days with a realistic programme and price.",
+        lede: "Send us the brief — drawings, BOQ, or a short description — and Carlo will reply personally within two business days with a realistic programme and price.",
       },
     },
     {
       type: "contact_form",
-      props: {},
+      props: {
+        tenderTitle: "Invite us to tender",
+        tenderBody: "Already have a documented project or formal tender package? Email Carlo directly with the drawings, specification, BOQ, closing date and site contact.",
+        tenderEmail: "carlo@profilelandscapes.com.au",
+        tenderSubject: "Tender invitation - project name / suburb",
+      },
     },
   ];
   await db
@@ -233,7 +347,7 @@ async function main() {
     .values({
       slug: "/contact",
       title: "Contact — Profile Landscapes",
-      lede: "Send us the brief and Carlo will reply personally within three working days.",
+      lede: "Send us the brief and Carlo will reply personally within two business days.",
       sections: contactSections,
       status: "live",
       publishedAt: new Date(),
@@ -241,44 +355,7 @@ async function main() {
     .onConflictDoNothing({ target: pages.slug });
 
   // ---------- Services page ----------
-  const servicesSections: Section[] = [
-    {
-      type: "page_head",
-      props: {
-        crumbs: [{ label: "Home", href: "/" }, { label: "Services" }],
-        title: "Hard works, soft works,",
-        titleItalic: "ongoing care.",
-        lede: "Construction, planting and aftercare — delivered by a single team from $20K courtyards to $11M public realm packages.",
-      },
-    },
-    {
-      type: "pillars",
-      props: {
-        items: [
-          {
-            number: "01",
-            title: "Construction",
-            body: "Hard landscape — paving, decking, walls, water, structures, fit-out. Tendered, negotiated, or design-and-construct.",
-          },
-          {
-            number: "02",
-            title: "Soft works",
-            body: "Planting at scale, advanced trees, lawns, irrigation, soil specification. Plants come direct from our Petersham nursery.",
-          },
-          {
-            number: "03",
-            title: "Design studio",
-            body: "Concept, documentation, planting plans, 3D visualisation, BOQ. We can run the design under your principal architect or independently.",
-          },
-          {
-            number: "04",
-            title: "Aftercare",
-            body: "Maintenance contracts from defects-period through to long-term stewardship of legacy gardens.",
-          },
-        ],
-      },
-    },
-  ];
+  const servicesSections = carloServicesSections;
   await db
     .insert(pages)
     .values({
@@ -288,7 +365,10 @@ async function main() {
       status: "live",
       publishedAt: new Date(),
     })
-    .onConflictDoNothing({ target: pages.slug });
+    .onConflictDoUpdate({
+      target: pages.slug,
+      set: { title: "Services — Profile Landscapes", sections: servicesSections, status: "live", updatedAt: new Date() },
+    });
 
   // ---------- Projects page ----------
   const projectsSections: Section[] = [
@@ -303,7 +383,44 @@ async function main() {
     },
     {
       type: "project_grid",
-      props: {},
+      props: {
+        recentEyebrow: "From the live project register",
+        recentTitle: "Selected recent appointments.",
+        recentBody: "A current snapshot of landscape packages recently awarded or in delivery across Sydney. These appointments sit alongside a much broader active project register.",
+        recentNote: "Selected recent appointments only. This is not a complete list of current or completed Profile Landscapes projects. Value bands are indicative of project scale only and do not disclose contract pricing.",
+        featuredJob: {
+          name: "Woolworths Eastern Creek",
+          location: "Eastern Creek",
+          client: "BESIX Watpac",
+          stage: "In construction",
+          value: "$1m+",
+          summary: "A major landscape construction package currently progressing on site.",
+        },
+        recentJobs: [
+          { name: "Woolworths Eastern Creek", location: "Eastern Creek", client: "BESIX Watpac", stage: "In construction", value: "$1m+" },
+          { name: "Melrose Park Public School", location: "Melrose Park", client: "Taylor", stage: "In construction", value: "$750k–$1m" },
+          { name: "WSA — Canine Facility", location: "Western Sydney Airport", client: "CPB Contractors", stage: "In construction", value: "$750k–$1m" },
+          { name: "The Collective", location: "St Leonards", client: "Westbourne", stage: "In construction", value: "$250k–$500k" },
+          { name: "The Switch Macquarie Park", location: "Macquarie Park", client: "Taylor", stage: "In construction", value: "$250k–$500k" },
+          { name: "Tallowwood Apartments", location: "Sydney", client: "Versatile", stage: "In construction", value: "$250k–$500k" },
+          { name: "Hardi Aged Care", location: "Blacktown", client: "Belmadar", stage: "Recently awarded", value: "$250k–$500k" },
+        ],
+      },
+    },
+    {
+      type: "clients",
+      props: {
+        eyebrow: "Built in partnership",
+        title: "Selected principal contractors, developers and project partners.",
+        clients: [
+          { name: "Lendlease", logo: "/assets/clients/lendlease.png" },
+          { name: "CPB Contractors", logo: "/assets/clients/cpb-contractors.png" },
+          { name: "Richard Crookes", logo: "/assets/clients/richard-crookes.png" },
+          { name: "PERIFA", logo: "/assets/clients/perifa.png" },
+          { name: "BESIX Watpac", logo: "/assets/clients/besix-watpac.png" },
+          { name: "City of Sydney", logo: "/assets/clients/city-of-sydney.png" },
+        ],
+      },
     },
   ];
   await db
@@ -315,65 +432,162 @@ async function main() {
       status: "live",
       publishedAt: new Date(),
     })
-    .onConflictDoNothing({ target: pages.slug });
+    .onConflictDoUpdate({
+      target: pages.slug,
+      set: { title: "Projects — Profile Landscapes", sections: projectsSections, status: "live", updatedAt: new Date() },
+    });
 
   // ---------- Projects (portfolio entries) ----------
   const portfolio = [
     {
-      slug: "bench-terrace-george-street",
-      title: "333 George Street — Bench terrace",
+      slug: "kinghorn-cancer-centre",
+      title: "The Kinghorn Cancer Centre",
+      suburb: "Darlinghurst",
+      sector: "healthcare" as const,
+      principal: "Richard Crookes Constructions",
+      packageValue: "$500K",
+      summary: "A carefully detailed healing landscape integrating warm timber seating, established planting and accessible outdoor space.",
+      body: "Profile Landscapes delivered the external landscape works for The Kinghorn Cancer Centre in Darlinghurst.\n\nThe finished courtyard balances robust institutional requirements with a calm, human scale: timber decking and seating are set against layered planting to create a welcoming place for patients, visitors and staff.",
+      heroImage: "/assets/projects/kinghorn-cancer-centre-restored.webp",
+      featured: true,
+    },
+    {
+      slug: "canterbury-leagues-club",
+      title: "Canterbury Leagues Club",
+      suburb: "Belmore",
+      sector: "commercial" as const,
+      principal: "Canterbury Bankstown Leagues Club",
+      packageValue: "$6.5M",
+      summary: "Major car-park landscaping, water-feature forecourt and atrium garden works for one of Sydney's landmark hospitality venues.",
+      body: "This multi-stage landscape package brought together large-scale water features, established palms, garden beds and detailed public-realm finishes.\n\nThe project is one of Profile Landscapes' award-winning commercial landscape works and demonstrates the team's ability to coordinate specialist landscape construction within a busy operating venue.",
+      heroImage: "/assets/projects/canterbury-leagues-club-grounds-restored-v2.webp",
+      featured: true,
+    },
+    {
+      slug: "waterbrook-yowie-bay",
+      title: "Waterbrook",
+      suburb: "Yowie Bay",
+      sector: "residential" as const,
+      principal: "Private",
+      summary: "A resort-like residential landscape shaped around cascading stonework, subtropical planting and strong connections between buildings and garden.",
+      body: "Waterbrook is a richly planted residential landscape in Yowie Bay.\n\nNatural stone, level changes and layered subtropical planting create a sequence of garden rooms and a strong sense of arrival through the site.",
+      heroImage: "/assets/projects/waterbrook-yowie-bay-restored-v2.webp",
+      featured: true,
+    },
+    {
+      slug: "tregoyd-gardens-mosman",
+      title: "Tregoyd Gardens",
+      suburb: "Mosman",
+      sector: "residential" as const,
+      principal: "Private",
+      summary: "An immersive subtropical garden with a restrained pathway threaded through mature, layered foliage.",
+      body: "Tregoyd Gardens is designed as an immersive green retreat.\n\nThe pathway is held within dense, layered foliage, using changes in leaf scale, tone and height to create depth while maintaining a clear and inviting circulation route.",
+      heroImage: "/assets/projects/tregoyd-gardens-mosman-restored-v2.webp",
+      featured: false,
+    },
+    {
+      slug: "trio-apartments-camperdown",
+      title: "Trio Apartments",
+      suburb: "Camperdown",
+      sector: "residential" as const,
+      principal: "Watpac Construction",
+      packageValue: "$1.2M",
+      summary: "Landscape construction for a major apartment development, including a pool terrace, pergolas and layered communal planting.",
+      body: "The Trio Apartments landscape provides a series of shared outdoor spaces for residents, centred on the pool terrace and its strong timber pergola structure.\n\nPlanting around the development softens the architecture and creates privacy, shade and a settled garden character across the communal areas.",
+      heroImage: "/assets/projects/trio-camperdown-pool-restored-v2.webp",
+      featured: true,
+    },
+    {
+      slug: "fraser-suites-lumiere",
+      title: "Fraser Suites / Lumiere",
       suburb: "Sydney CBD",
       sector: "commercial" as const,
-      principal: "Lendlease",
-      packageValue: "$2.4M",
-      summary:
-        "Public-realm terrace and planting for a 47-storey commercial tower. Granite, hardwood, mature Cupaniopsis anacardioides.",
-      heroImage: "/assets/project-bench-terrace.png",
+      principal: "Multiplex Construction",
+      packageValue: "$450K",
+      summary: "A finely detailed elevated terrace combining timber decking, integrated seating and dense urban planting in the Sydney CBD.",
+      body: "Profile Landscapes delivered the landscape works for Fraser Suites / Lumiere in the Sydney CBD.\n\nThe elevated terrace uses warm timber, dark metalwork and layered planting to create a sheltered outdoor setting within a dense city context.",
+      heroImage: "/assets/projects/fraser-suites-lumiere-restored-v2.webp",
       featured: true,
     },
     {
-      slug: "canterbury-waterfall",
-      title: "Canterbury — Sandstone waterfall",
-      suburb: "Canterbury",
-      sector: "residential" as const,
-      principal: "Private",
-      packageValue: "$380K",
-      summary:
-        "Sandstone water feature and tropical understorey for a 1920s federation home. Designed and constructed in-house.",
-      heroImage: "/assets/project-canterbury-waterfall.png",
-      featured: true,
+      slug: "cranbrook-junior-school",
+      title: "Cranbrook Junior School",
+      suburb: "Rose Bay",
+      sector: "healthcare" as const,
+      principal: "Cranbrook School",
+      summary: "A robust school landscape with generous paved gathering areas, integrated seating and a restrained native planting palette.",
+      body: "The Cranbrook Junior School landscape is organised around clear circulation, durable outdoor learning and gathering spaces, and a planting palette suited to the exposed campus setting.\n\nThe result is a calm, legible landscape that supports daily school life while maturing into the architecture.",
+      heroImage: "/assets/projects/cranbrook-junior-school-restored-v2.webp",
+      featured: false,
     },
     {
-      slug: "tregoyd-courtyard",
-      title: "Tregoyd — Heritage courtyard",
-      suburb: "Glebe",
+      slug: "the-dixon-little-bay",
+      title: "The Dixon",
+      suburb: "Little Bay",
       sector: "residential" as const,
       principal: "Private",
-      packageValue: "$220K",
-      summary:
-        "Reinstated heritage courtyard in a heritage-listed terrace — drainage, bluestone paving, period planting palette.",
-      heroImage: "/assets/project-tregoyd.png",
-      featured: true,
+      summary: "A formal communal garden organised around a long timber walkway and pergola, with lawns and young canopy trees.",
+      body: "At The Dixon in Little Bay, the landscape is structured by a strong covered timber walk that connects the surrounding residences.\n\nSimple lawns, evenly placed trees and built-in timber elements give the courtyard a clear rhythm and a durable communal character.",
+      heroImage: "/assets/projects/dixon-little-bay.webp",
+      featured: false,
     },
     {
-      slug: "tropical-boardwalk",
-      title: "Hunters Hill — Tropical boardwalk",
-      suburb: "Hunters Hill",
-      sector: "residential" as const,
+      slug: "warriewood-retirement-village",
+      title: "Warriewood Retirement Village",
+      suburb: "Warriewood",
+      sector: "healthcare" as const,
       principal: "Private",
-      packageValue: "$540K",
-      summary:
-        "Spotted-gum boardwalk through a sub-tropical garden, with bespoke timber pergola and integrated lighting.",
-      heroImage: "/assets/project-tropical-boardwalk.png",
+      summary: "A water-wise courtyard planting composition using sculptural succulents, flowering perennials and stone mulch.",
+      body: "This retirement-living garden uses bold, low-maintenance planting to provide year-round form and seasonal colour.\n\nSculptural succulents sit among flowering spikes and river stone, creating a tactile garden that is legible from adjoining rooms and circulation spaces.",
+      heroImage: "/assets/projects/warriewood-retirement-village.webp",
       featured: false,
     },
   ];
+  const portfolioGalleries: Record<string, Array<{ url: string; alt: string }>> = {
+    "canterbury-leagues-club": [
+      {
+        url: "/assets/projects/canterbury-leagues-club-waterfall.webp",
+        alt: "Illuminated waterfall landscape at Canterbury Leagues Club",
+      },
+    ],
+    "trio-apartments-camperdown": [
+      {
+        url: "/assets/projects/trio-camperdown-planting-restored-v2.webp",
+        alt: "Layered subtropical planting at Trio Apartments, Camperdown",
+      },
+    ],
+  };
   for (const p of portfolio) {
-    await db
+    const [saved] = await db
       .insert(projects)
-      .values({ ...p, status: "live", completedAt: new Date() })
-      .onConflictDoNothing({ target: projects.slug });
+      .values({ ...p, status: "live" })
+      .onConflictDoUpdate({
+        target: projects.slug,
+        set: { ...p, status: "live", updatedAt: new Date() },
+      })
+      .returning({ id: projects.id, slug: projects.slug });
+    if (saved && portfolioGalleries[saved.slug]) {
+      await db.delete(projectImages).where(eq(projectImages.projectId, saved.id));
+      await db.insert(projectImages).values(
+        portfolioGalleries[saved.slug].map((image, order) => ({
+          projectId: saved.id,
+          ...image,
+          order,
+        }))
+      );
+    }
   }
+  await db
+    .update(projects)
+    .set({ status: "draft", updatedAt: new Date() })
+    .where(
+      inArray(projects.slug, [
+        "bench-terrace-george-street",
+        "canterbury-waterfall",
+        "tregoyd-courtyard",
+        "tropical-boardwalk",
+      ])
+    );
 
   // ---------- Nursery page ----------
   const nurserySections: Section[] = [
@@ -429,7 +643,7 @@ async function main() {
     .onConflictDoNothing({ target: pages.slug });
 
   // ---------- Landscape design page ----------
-  const designSections: Section[] = [
+  const legacyDesignSections: Section[] = [
     {
       type: "page_head",
       props: {
@@ -467,6 +681,39 @@ async function main() {
       },
     },
     {
+      type: "two_col",
+      props: {
+        eyebrow: "Design informed by delivery",
+        title: "Drawn by people",
+        titleItalic: "who understand the site.",
+        body: "Our design team works alongside estimators, project managers, horticulturists and site crews. Details are developed around buildability, procurement, maintenance and programme—not treated as a separate exercise.",
+        image: "/assets/projects/fraser-suites-lumiere-restored-v2.webp",
+        imageAlt: "Elevated planted terrace at Fraser Suites and Lumiere, Sydney",
+      },
+    },
+    {
+      type: "stats",
+      props: {
+        eyebrow: "Studio outputs",
+        items: [
+          { value: "01", label: "Concept & masterplans" },
+          { value: "02", label: "Planting & irrigation" },
+          { value: "03", label: "Construction documentation" },
+          { value: "04", label: "BOQ & cost planning" },
+        ],
+      },
+    },
+    {
+      type: "featured_projects",
+      props: {
+        eyebrow: "From drawing to delivery",
+        title: "Selected built work",
+        titleItalic: "by the same team.",
+        cta: { label: "View all projects", href: "/projects" },
+        limit: 3,
+      },
+    },
+    {
       type: "cta",
       props: {
         eyebrow: "Start a brief",
@@ -476,6 +723,11 @@ async function main() {
       },
     },
   ];
+  const designSections: Section[] = [
+    { type: "design_studio", props: {} },
+  ];
+  void legacyDesignSections;
+
   await db
     .insert(pages)
     .values({
@@ -486,7 +738,10 @@ async function main() {
       status: "live",
       publishedAt: new Date(),
     })
-    .onConflictDoNothing({ target: pages.slug });
+    .onConflictDoUpdate({
+      target: pages.slug,
+      set: { title: "Design studio — Profile Landscapes", sections: designSections, status: "live", updatedAt: new Date() },
+    });
 
   // ---------- Encyclopedia page ----------
   const encyclopediaSections: Section[] = [
@@ -531,7 +786,7 @@ async function main() {
     .onConflictDoNothing({ target: pages.slug });
 
   // ---------- Capability page ----------
-  const capabilitySections: Section[] = [
+  const legacyCapabilitySections: Section[] = [
     {
       type: "page_head",
       props: {
@@ -594,12 +849,30 @@ async function main() {
     {
       type: "two_col",
       props: {
-        eyebrow: "Clients & partners",
-        title: "Trusted by Australia's",
-        titleItalic: "leading builders.",
-        body: "We're a preferred landscape subcontractor to many of Australia's top-tier principal contractors, developers and public bodies. Our client roster includes Lendlease, CPB Contractors, Richard Crookes Constructions, BESIX Watpac, Taylor Construction and Billbergia.",
-        image: "/assets/client-lendlease.jpeg",
-        imageAlt: "Profile Landscapes clients",
+        eyebrow: "Self-performed delivery",
+        title: "Plant, people and",
+        titleItalic: "project controls.",
+        body: "Our company-owned excavation and transport fleet is backed by in-house estimating, live cost reporting, ACONEX, Procore, Teambinder, AutoCAD and Irricad. The result is tighter programme control and fewer hand-offs across consequential landscape packages.",
+        image: "/assets/projects/cranbrook-junior-school-restored-v2.webp",
+        imageAlt: "Landscape works at Cranbrook Junior School, Rose Bay",
+      },
+    },
+    {
+      type: "clients",
+      props: {
+        eyebrow: "Clients, contractors & design partners",
+        title: "Relationships represented in our 2025 company profile.",
+        clients: [
+          { name: "Lendlease", logo: "/assets/clients/lendlease.png" },
+          { name: "CPB Contractors", logo: "/assets/clients/cpb-contractors.png" },
+          { name: "Richard Crookes", logo: "/assets/clients/richard-crookes.png" },
+          { name: "PERIFA", logo: "/assets/clients/perifa.png" },
+          { name: "BESIX Watpac", logo: "/assets/clients/besix-watpac.png" },
+          { name: "Taylor Construction", logo: "/assets/clients/taylor-construction.png" },
+          { name: "Billbergia", logo: "/assets/clients/billbergia.png" },
+          { name: "City of Sydney", logo: "/assets/clients/city-of-sydney.png" },
+          { name: "Black Beetle", logo: "/assets/clients/black-beetle.png" },
+        ],
       },
     },
     {
@@ -613,6 +886,11 @@ async function main() {
       },
     },
   ];
+  const capabilitySections: Section[] = [
+    { type: "capability_studio", props: {} },
+  ];
+  void legacyCapabilitySections;
+
   await db
     .insert(pages)
     .values({
@@ -623,7 +901,10 @@ async function main() {
       status: "live",
       publishedAt: new Date(),
     })
-    .onConflictDoNothing({ target: pages.slug });
+    .onConflictDoUpdate({
+      target: pages.slug,
+      set: { title: "Capability — Profile Landscapes", sections: capabilitySections, status: "live", updatedAt: new Date() },
+    });
 
   // ---------- Careers page ----------
   const careersSections: Section[] = [
@@ -1100,9 +1381,16 @@ async function main() {
 
   for (const p of productList) {
     const { categorySlug, ...vals } = p;
+    const categoryImages: Record<string, Array<{ url: string; alt: string }>> = {
+      workwear: [{ url: "/assets/generated/shop-workwear.webp", alt: `${vals.name} - professional landscape workwear` }],
+      "hand-tools": [{ url: "/assets/generated/shop-tools.webp", alt: `${vals.name} - professional landscape hand tools` }],
+      safety: [{ url: "/assets/generated/shop-gloves.webp", alt: `${vals.name} - landscape safety equipment` }],
+      household: [{ url: "/assets/generated/shop-home-garden.webp", alt: `${vals.name} - garden and household equipment` }],
+    };
+    const images = categoryImages[categorySlug] || [];
     await db
       .insert(products)
-      .values({ ...vals, categoryId: catId(categorySlug), status: "live" })
+      .values({ ...vals, images, categoryId: catId(categorySlug), status: "live" })
       .onConflictDoUpdate({
         target: products.slug,
         set: {
@@ -1114,6 +1402,7 @@ async function main() {
           shortDescription: vals.shortDescription,
           description: vals.description,
           featured: vals.featured,
+          images,
           categoryId: catId(categorySlug),
         },
       });
@@ -1473,6 +1762,13 @@ async function main() {
   // Full nursery + encyclopedia catalog (528 plants, 384 species) + product/project extras
   const { seedCatalog } = await import("./seed-catalog");
   await seedCatalog();
+
+  if (releaseVersion) {
+    await db.insert(siteSettings).values({ key: "seed_release_version", value: releaseVersion }).onConflictDoUpdate({
+      target: siteSettings.key,
+      set: { value: releaseVersion, updatedAt: new Date() },
+    });
+  }
 
   console.log("✓ seed complete");
   console.log("   admin login: admin@profilelandscapes.com.au / pl-admin-2026");

@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import { getPublicSiteUrl } from "@/lib/content";
 import { db } from "@/lib/db";
 import { products, plants, orders } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { calcShipping, generateOrderNumber } from "@/lib/commerce";
 import type { OrderLineItem } from "@/lib/db/schema";
 import { getTradeAccount, tierMultiplier } from "@/lib/tradeAuth";
+import { getSiteSettings } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ interface IncomingItem {
 }
 
 export async function POST(req: Request) {
+  const settings = await getSiteSettings();
   let body: {
     items?: IncomingItem[];
     customerName?: string;
@@ -50,6 +53,9 @@ export async function POST(req: Request) {
 
   for (const item of items) {
     if (item.type === "product") {
+      if (!settings.commerce_features.shop) {
+        return NextResponse.json({ error: "The online shop is currently unavailable" }, { status: 503 });
+      }
       const [row] = await db
         .select()
         .from(products)
@@ -71,6 +77,9 @@ export async function POST(req: Request) {
         quantity: item.quantity,
       });
     } else if (item.type === "plant") {
+      if (!settings.commerce_features.nursery) {
+        return NextResponse.json({ error: "Online nursery ordering is currently unavailable" }, { status: 503 });
+      }
       const [row] = await db
         .select()
         .from(plants)
@@ -137,6 +146,7 @@ export async function POST(req: Request) {
     const { getStripe } = await import("@/lib/stripe");
     const stripe = getStripe();
 
+    const publicUrl = await getPublicSiteUrl(new URL(req.url).origin);
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems.map((li) => ({
@@ -174,8 +184,8 @@ export async function POST(req: Request) {
               },
             ],
           }),
-      success_url: `${process.env.NEXT_PUBLIC_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL}/checkout/cancel`,
+      success_url: `${publicUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${publicUrl}/checkout/cancel`,
       metadata: {
         customerName,
         customerEmail,

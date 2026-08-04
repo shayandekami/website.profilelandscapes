@@ -2,11 +2,16 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { encyclopediaEntries } from "@/lib/db/schema";
 import { eq, and, ilike, sql } from "drizzle-orm";
+import { getSiteSettings } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
+    const settings = await getSiteSettings();
+    if (!settings.commerce_features.encyclopedia) {
+      return NextResponse.json({ error: "Plant encyclopedia is currently unavailable" }, { status: 503 });
+    }
     const { searchParams } = new URL(req.url);
     const tag = searchParams.get("tag");
     const featured = searchParams.get("featured");

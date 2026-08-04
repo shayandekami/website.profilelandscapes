@@ -1,6 +1,5 @@
 import { db, siteSettings, users } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
 import { SettingsEditor } from "@/components/admin/SettingsEditor";
 import { saveSettings, changePassword } from "./actions";
 
@@ -22,6 +21,7 @@ export default async function SettingsPage() {
     .from(users);
 
   const settings = {
+    public_url: (map.public_url as string) || process.env.NEXT_PUBLIC_URL || "https://profilelandscapes.com.au",
     studio_name: (map.studio_name as string) || "",
     tagline: (map.tagline as string) || "",
     phone: (map.phone as string) || "",
@@ -40,6 +40,12 @@ export default async function SettingsPage() {
       bone: "#f4efe4",
       accent: "#1f5a3d",
       cream: "#e8dcb6",
+    },
+    commerce_features: {
+      shop: true,
+      nursery: true,
+      encyclopedia: true,
+      ...((map.commerce_features as Record<string, boolean>) || {}),
     },
   };
 
@@ -69,6 +75,12 @@ export default async function SettingsPage() {
         }))}
         currentUserEmail={session?.user?.email || ""}
         changePassword={changePassword}
+        emailHealth={{
+          delivery: Boolean(process.env.RESEND_API_KEY && process.env.QUOTE_FROM_EMAIL),
+          quotes: Boolean(process.env.QUOTE_NOTIFY_EMAIL),
+          careers: Boolean(process.env.CAREERS_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL),
+          publicUrl: Boolean(settings.public_url),
+        }}
       />
     </main>
   );

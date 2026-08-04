@@ -18,6 +18,17 @@ const T = {
 };
 
 const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const TAG_NAMES: Record<string, string> = {
+  NATIVE: "Australian native",
+  INDIGENOUS_SYDNEY: "Locally indigenous",
+  COUNCIL_RECOMMENDED: "Council listed",
+  TREE: "Tree",
+  INNER_WEST: "Inner West",
+  SSFW: "Sandstone slopes",
+  STIF: "Turpentine-Ironbark",
+  WC: "Wetland complex",
+};
+const tagName = (tag: string) => TAG_NAMES[tag] || tag.replaceAll("_", " ").toLowerCase();
 
 // ── Season bar ────────────────────────────────────────────────────────────────
 function SeasonBar({
@@ -127,7 +138,7 @@ function CompanionCard({ entry }: { entry: EncyclopediaEntry }) {
                   borderRadius: 3,
                 }}
               >
-                {tag}
+                {tagName(tag)}
               </span>
             ))}
           </div>
@@ -169,6 +180,9 @@ export function EntryPage({ entry, companions }: EntryPageProps) {
   const climateZones = (entry.climateZones as string[]) || [];
   const cultivars = (entry.cultivars as Array<{ name: string; note: string }>) || [];
   const references = (entry.references as Array<{ title: string; source: string; url?: string }>) || [];
+  const councilReferences = references.filter((reference) =>
+    reference.source === "City of Sydney" || reference.source.includes("Council"),
+  );
   const [activeImg, setActiveImg] = useState(0);
 
   const wrap: React.CSSProperties = { maxWidth: 1400, margin: "0 auto", padding: "0 56px" };
@@ -261,7 +275,7 @@ export function EntryPage({ entry, companions }: EntryPageProps) {
                       letterSpacing: "0.06em",
                     }}
                   >
-                    {tag}
+                    {tagName(tag)}
                   </span>
                 ))}
               </div>
@@ -314,6 +328,25 @@ export function EntryPage({ entry, companions }: EntryPageProps) {
             )}
 
             {/* In-stock link — links to nursery plant with matching encyclopedia slug */}
+            {councilReferences.length > 0 && (
+              <aside className="encyclopedia-council-panel" aria-label="Council planting guidance">
+                <div className="encyclopedia-council-panel-head">
+                  <span>Local authority guidance</span>
+                  <strong>{councilReferences.length} {councilReferences.length === 1 ? "source" : "sources"}</strong>
+                </div>
+                <p>This plant appears in published local-government planting guidance. Confirm the final selection against the site&apos;s soil, available space, services and exposure.</p>
+                <div className="encyclopedia-council-links">
+                  {councilReferences.map((reference) => (
+                    <a key={`${reference.source}-${reference.title}`} href={reference.url || "#"} target={reference.url ? "_blank" : undefined} rel={reference.url ? "noreferrer" : undefined}>
+                      <span>{reference.source}</span>
+                      <small>{reference.title}</small>
+                      <b aria-hidden="true">↗</b>
+                    </a>
+                  ))}
+                </div>
+              </aside>
+            )}
+
             <a
               href={`/plants?encyclopedia=${entry.slug}`}
               style={{

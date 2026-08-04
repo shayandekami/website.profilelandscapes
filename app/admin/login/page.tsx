@@ -279,11 +279,11 @@ export default async function AdminLogin({
               Sign in →
             </button>
 
-            <p style={{ marginTop: 24, fontSize: 12.5, color: TOKENS.ink2, lineHeight: 1.5 }}>
-              <b>Demo credentials</b> (seeded for local dev):
-              <br />
-              admin@profilelandscapes.com.au / pl-admin-2026
-            </p>
+            {process.env.NODE_ENV === "development" && (
+              <p className="local-dev-note" style={{ marginTop: 24, fontSize: 12.5, color: TOKENS.ink2, lineHeight: 1.5 }}>
+                Local development account is enabled. Production never displays sign-in credentials.
+              </p>
+            )}
           </form>
         </div>
       </div>

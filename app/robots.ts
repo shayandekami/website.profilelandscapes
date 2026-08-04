@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
+import { getPublicSiteUrl } from "@/lib/content";
 
-const base = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
-
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const base = await getPublicSiteUrl();
   return {
     rules: [
       {

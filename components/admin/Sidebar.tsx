@@ -23,6 +23,8 @@ const NAV: NavGroup[] = [
       { id: "quotes", label: "Quote Inbox", href: "/admin/quotes", icon: "✉" },
       { id: "orders", label: "Orders", href: "/admin/orders", icon: "◈" },
       { id: "trade", label: "Trade Accounts", href: "/admin/trade-accounts", icon: "❖" },
+      { id: "jobs", label: "Job Listings", href: "/admin/jobs", icon: "◇" },
+      { id: "applicants", label: "Applications", href: "/admin/applicants", icon: "◎" },
     ],
   },
   {
@@ -75,8 +77,9 @@ export function Sidebar({ currentUser }: Props) {
   return (
     <aside className="side">
       <Link className="brand" href="/admin">
-        <div className="logo">p</div> Profile
-        <span className="env-pill">DEV</span>
+        <img className="brand-logo" src="/assets/logo.png" alt="" />
+        <span className="brand-name">Profile <small>Landscapes</small></span>
+        {process.env.NODE_ENV === "development" && <span className="env-pill">DEV</span>}
       </Link>
       {NAV.map((g) => (
         <div key={g.group}>

@@ -4,6 +4,7 @@ import { products, plants } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { calcShipping } from "@/lib/commerce";
 import { getTradeAccount, tierMultiplier } from "@/lib/tradeAuth";
+import { getSiteSettings } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,7 @@ interface ValidatedItem {
 }
 
 export async function POST(req: Request) {
+  const settings = await getSiteSettings();
   let body: { items?: CartItem[] };
   try {
     body = await req.json();
@@ -48,6 +50,10 @@ export async function POST(req: Request) {
     }
 
     if (item.type === "product") {
+      if (!settings.commerce_features.shop) {
+        errors.push("The online shop is currently unavailable");
+        continue;
+      }
       const [row] = await db
         .select()
         .from(products)
@@ -73,6 +79,10 @@ export async function POST(req: Request) {
         quantity: item.quantity,
       });
     } else if (item.type === "plant") {
+      if (!settings.commerce_features.nursery) {
+        errors.push("Online nursery ordering is currently unavailable");
+        continue;
+      }
       const [row] = await db
         .select()
         .from(plants)

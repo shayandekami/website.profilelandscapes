@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { QuoteCartClient } from "./QuoteCartClient";
+import { getSiteSettings } from "@/lib/content";
+import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const metadata: Metadata = {
   title: "Quote request — Profile Landscapes",
   description: "Review your selected plants and request a trade quote.",
 };
 
-export default function QuoteCartPage() {
+export default async function QuoteCartPage() {
+  const settings = await getSiteSettings();
+  if (!settings.commerce_features.nursery) {
+    return <FeatureUnavailable eyebrow="Trade nursery" title="Plant quote scheduling is currently paused." body="Contact our nursery team directly for stock availability, project schedules and trade pricing." />;
+  }
   return (
     <div style={{ maxWidth: 920, margin: "64px auto 120px", padding: "0 24px" }}>
       <p

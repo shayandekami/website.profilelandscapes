@@ -3,6 +3,8 @@ import { db, products, productCategories } from "@/lib/db";
 import { eq, and, ilike, or } from "drizzle-orm";
 import { DefaultShopPage } from "@/components/commerce/defaults/DefaultShopPage";
 import { theme } from "@/themes/active";
+import { getSiteSettings } from "@/lib/content";
+import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +18,10 @@ interface ShopPageProps {
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const settings = await getSiteSettings();
+  if (!settings.commerce_features.shop) {
+    return <FeatureUnavailable eyebrow="Online shop" title="The shop is currently offline." body="Our team is updating the range. Contact us for product availability or return soon." />;
+  }
   const { category: categorySlug, q: searchQuery } = await searchParams;
 
   // Load all live categories

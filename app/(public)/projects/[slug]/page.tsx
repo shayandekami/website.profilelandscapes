@@ -43,7 +43,8 @@ export default async function ProjectDetail({ params }: Params) {
     commercial: "Commercial",
     civic: "Civic & Public",
     healthcare: "Healthcare & Education",
-    mixed: "Mixed-Use",
+    hospitality: "Hospitality",
+    other: "Other",
   };
 
   return (
@@ -51,9 +52,9 @@ export default async function ProjectDetail({ params }: Params) {
       {/* Full-bleed hero */}
       <section style={{ position: "relative", height: "min(80vh, 680px)", overflow: "hidden", background: "var(--ink)" }}>
         {project.heroImage && (
-          <img src={project.heroImage} alt={project.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.75 }} />
+          <img src={project.heroImage} alt={project.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.86 }} />
         )}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(19,48,36,0.85) 0%, rgba(19,48,36,0.1) 60%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(19,48,36,0.8) 0%, rgba(19,48,36,0.04) 64%)" }} />
         <div className="wrap" style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", justifyContent: "flex-end", paddingBottom: 52 }}>
           <nav style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13, color: "rgba(255,255,255,0.6)", marginBottom: 20 }}>
             <a href="/" style={{ color: "inherit", textDecoration: "none" }}>Home</a>
@@ -83,7 +84,7 @@ export default async function ProjectDetail({ params }: Params) {
               { label: "Principal", value: project.principal || "—" },
               { label: "Sector", value: sectorLabel[project.sector] || project.sector },
               { label: "Package", value: project.packageValue || "—" },
-              { label: "Completed", value: completedYear ? String(completedYear) : "Ongoing" },
+              { label: "Completed", value: completedYear ? String(completedYear) : "Project archive" },
             ].map((cell) => (
               <div key={cell.label} style={{ padding: "24px 20px", borderRight: "1px solid var(--line-2)" }}>
                 <div style={{ fontSize: 10.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-2)", marginBottom: 8 }}>{cell.label}</div>

@@ -2,11 +2,16 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { products, productCategories } from "@/lib/db/schema";
 import { eq, and, ilike } from "drizzle-orm";
+import { getSiteSettings } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
+    const settings = await getSiteSettings();
+    if (!settings.commerce_features.shop) {
+      return NextResponse.json({ error: "Shop is currently unavailable" }, { status: 503 });
+    }
     const { searchParams } = new URL(req.url);
     const categorySlug = searchParams.get("category");
     const featured = searchParams.get("featured");

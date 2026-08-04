@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 const Input = z.object({
+  public_url: z.string().trim().url().max(300).transform((value) => value.replace(/\/$/, "")),
   studio_name: z.string().min(1).max(120),
   tagline: z.string().max(200),
   phone: z.string().max(60),
@@ -25,6 +26,11 @@ const Input = z.object({
     bone: z.string().regex(/^#[0-9a-fA-F]{3,8}$/),
     accent: z.string().regex(/^#[0-9a-fA-F]{3,8}$/),
     cream: z.string().regex(/^#[0-9a-fA-F]{3,8}$/),
+  }),
+  commerce_features: z.object({
+    shop: z.boolean(),
+    nursery: z.boolean(),
+    encyclopedia: z.boolean(),
   }),
 });
 
@@ -46,6 +52,7 @@ export async function saveSettings(input: unknown): Promise<SaveResult> {
   const d = parsed.data;
 
   const upserts: { key: string; value: unknown }[] = [
+    { key: "public_url", value: d.public_url },
     { key: "studio_name", value: d.studio_name },
     { key: "tagline", value: d.tagline },
     { key: "phone", value: d.phone },
@@ -54,6 +61,7 @@ export async function saveSettings(input: unknown): Promise<SaveResult> {
     { key: "address", value: d.address },
     { key: "legal", value: d.legal },
     { key: "theme_tokens", value: d.theme_tokens },
+    { key: "commerce_features", value: d.commerce_features },
   ];
 
   const now = new Date();

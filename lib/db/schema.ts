@@ -60,6 +60,18 @@ export const orderStatusEnum = pgEnum("order_status", [
   "refunded",
 ]);
 
+export const jobStatusEnum = pgEnum("job_status", ["draft", "live", "closed"]);
+export const applicationStatusEnum = pgEnum("application_status", [
+  "new",
+  "screening",
+  "shortlisted",
+  "interview",
+  "offer",
+  "hired",
+  "rejected",
+  "withdrawn",
+]);
+
 // ---------- Users ----------
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -163,17 +175,118 @@ export const projectImages = pgTable("project_images", {
 export const quotes = pgTable("quotes", {
   id: serial("id").primaryKey(),
   referenceCode: varchar("reference_code", { length: 20 }).unique(), // e.g. Q-2024-0001
+  accessToken: varchar("access_token", { length: 80 }).unique(),
   name: varchar("name", { length: 200 }).notNull(),
   company: varchar("company", { length: 200 }),
   email: varchar("email", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 60 }),
   sector: varchar("sector", { length: 60 }),
   budget: varchar("budget", { length: 60 }),
+  siteAddress: varchar("site_address", { length: 300 }),
+  postcode: varchar("postcode", { length: 12 }),
+  projectStage: varchar("project_stage", { length: 80 }),
+  services: jsonb("services").$type<string[]>().notNull().default([]),
+  desiredStart: varchar("desired_start", { length: 100 }),
+  tenderDue: timestamp("tender_due"),
+  contactPreference: varchar("contact_preference", { length: 40 }),
+  architect: varchar("architect", { length: 200 }),
   brief: text("brief").notNull(),
   source: varchar("source", { length: 120 }),
   status: quoteStatusEnum("status").notNull().default("new"),
   receivedAt: timestamp("received_at").defaultNow().notNull(),
   notes: text("notes"),
+});
+
+export const quoteAttachments = pgTable("quote_attachments", {
+  id: serial("id").primaryKey(),
+  quoteId: integer("quote_id").notNull().references(() => quotes.id, { onDelete: "cascade" }),
+  storedPath: varchar("stored_path", { length: 500 }).notNull(),
+  filename: varchar("filename", { length: 300 }).notNull(),
+  mimeType: varchar("mime_type", { length: 140 }).notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// ---------- Careers: managed roles and candidate pipeline ----------
+export const jobPostings = pgTable(
+  "job_postings",
+  {
+    id: serial("id").primaryKey(),
+    slug: varchar("slug", { length: 200 }).notNull(),
+    title: varchar("title", { length: 200 }).notNull(),
+    team: varchar("team", { length: 120 }).notNull(),
+    location: varchar("location", { length: 160 }).notNull(),
+    employmentType: varchar("employment_type", { length: 80 }).notNull(),
+    summary: text("summary").notNull(),
+    description: text("description"),
+    responsibilities: jsonb("responsibilities").$type<string[]>().notNull().default([]),
+    requirements: jsonb("requirements").$type<string[]>().notNull().default([]),
+    desirable: jsonb("desirable").$type<string[]>().notNull().default([]),
+    salaryRange: varchar("salary_range", { length: 120 }),
+    closingDate: timestamp("closing_date"),
+    status: jobStatusEnum("status").notNull().default("draft"),
+    sortOrder: integer("sort_order").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (t) => ({ slugIdx: uniqueIndex("job_postings_slug_idx").on(t.slug) })
+);
+
+export const careerApplications = pgTable(
+  "career_applications",
+  {
+    id: serial("id").primaryKey(),
+    referenceCode: varchar("reference_code", { length: 24 }).notNull().unique(),
+    accessToken: varchar("access_token", { length: 80 }).notNull().unique(),
+    jobId: integer("job_id").references(() => jobPostings.id, { onDelete: "set null" }),
+    roleInterest: varchar("role_interest", { length: 200 }).notNull(),
+    firstName: varchar("first_name", { length: 100 }).notNull(),
+    lastName: varchar("last_name", { length: 100 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    phone: varchar("phone", { length: 60 }).notNull(),
+    suburb: varchar("suburb", { length: 160 }),
+    linkedinUrl: varchar("linkedin_url", { length: 500 }),
+    portfolioUrl: varchar("portfolio_url", { length: 500 }),
+    coverLetter: text("cover_letter").notNull(),
+    yearsExperience: varchar("years_experience", { length: 60 }),
+    availability: varchar("availability", { length: 120 }),
+    workRights: varchar("work_rights", { length: 120 }).notNull(),
+    driversLicence: boolean("drivers_licence").notNull().default(false),
+    resumePath: varchar("resume_path", { length: 500 }).notNull(),
+    resumeFilename: varchar("resume_filename", { length: 300 }).notNull(),
+    resumeMime: varchar("resume_mime", { length: 120 }).notNull(),
+    resumeSize: integer("resume_size").notNull(),
+    status: applicationStatusEnum("status").notNull().default("new"),
+    rating: integer("rating"),
+    assignedToId: integer("assigned_to_id").references(() => users.id),
+    source: varchar("source", { length: 120 }).default("careers-page"),
+    consentAt: timestamp("consent_at").notNull(),
+    submittedAt: timestamp("submitted_at").defaultNow().notNull(),
+    reviewedAt: timestamp("reviewed_at"),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  }
+);
+
+export const applicationNotes = pgTable("application_notes", {
+  id: serial("id").primaryKey(),
+  applicationId: integer("application_id")
+    .notNull()
+    .references(() => careerApplications.id, { onDelete: "cascade" }),
+  authorId: integer("author_id").references(() => users.id),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const applicationEvents = pgTable("application_events", {
+  id: serial("id").primaryKey(),
+  applicationId: integer("application_id")
+    .notNull()
+    .references(() => careerApplications.id, { onDelete: "cascade" }),
+  status: applicationStatusEnum("status").notNull(),
+  message: text("message"),
+  candidateVisible: boolean("candidate_visible").notNull().default(true),
+  createdById: integer("created_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // ---------- Media library ----------

@@ -28,6 +28,7 @@ export async function getPage(slug: string): Promise<PageRecord | null> {
 }
 
 export type SiteSettings = {
+  public_url: string;
   studio_name: string;
   tagline: string;
   phone: string;
@@ -36,11 +37,34 @@ export type SiteSettings = {
   address: string;
   legal: { acn: string; abn: string; licence: string; founded: number };
   theme_tokens: Record<string, string>;
+  commerce_features: {
+    shop: boolean;
+    nursery: boolean;
+    encyclopedia: boolean;
+  };
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   const rows = await db.select().from(siteSettings);
   const out: Record<string, unknown> = {};
   for (const r of rows) out[r.key] = r.value;
-  return out as unknown as SiteSettings;
+  return {
+    ...out,
+    public_url: String(out.public_url || process.env.NEXT_PUBLIC_URL || "https://profilelandscapes.com.au").replace(/\/$/, ""),
+    commerce_features: {
+      shop: true,
+      nursery: true,
+      encyclopedia: true,
+      ...((out.commerce_features as Partial<SiteSettings["commerce_features"]>) || {}),
+    },
+  } as unknown as SiteSettings;
+}
+
+export async function getPublicSiteUrl(origin?: string): Promise<string> {
+  try {
+    const settings = await getSiteSettings();
+    return settings.public_url;
+  } catch {
+    return String(process.env.NEXT_PUBLIC_URL || origin || "https://profilelandscapes.com.au").replace(/\/$/, "");
+  }
 }

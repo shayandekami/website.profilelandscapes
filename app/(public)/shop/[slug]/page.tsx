@@ -4,6 +4,8 @@ import { db, products } from "@/lib/db";
 import { eq, and, ne } from "drizzle-orm";
 import { DefaultProductPage } from "@/components/commerce/defaults/DefaultProductPage";
 import { theme } from "@/themes/active";
+import { getSiteSettings } from "@/lib/content";
+import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +28,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function ProductDetailPage({ params }: Params) {
+  const settings = await getSiteSettings();
+  if (!settings.commerce_features.shop) {
+    return <FeatureUnavailable eyebrow="Online shop" title="The shop is currently offline." body="Our team is updating the range. Contact us for product availability or return soon." />;
+  }
   const { slug } = await params;
 
   const product = await db.query.products.findFirst({

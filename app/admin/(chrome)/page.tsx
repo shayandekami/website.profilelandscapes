@@ -1,19 +1,13 @@
-import { db, quotes, pages, projects } from "@/lib/db";
-import { count, desc, eq } from "drizzle-orm";
+import { db, quotes, pages, projects, jobPostings } from "@/lib/db";
+import { count, desc, eq, notInArray } from "drizzle-orm";
 
 export default async function AdminDashboard() {
-  const [openQuotes] = await db
-    .select({ n: count() })
-    .from(quotes)
-    .where(eq(quotes.status, "new"));
-  const [livePages] = await db
-    .select({ n: count() })
-    .from(pages)
-    .where(eq(pages.status, "live"));
-  const [livePortfolio] = await db
-    .select({ n: count() })
-    .from(projects)
-    .where(eq(projects.status, "live"));
+  const [[openQuotes], [livePages], [livePortfolio], [activeJobs]] = await Promise.all([
+    db.select({ n: count() }).from(quotes).where(notInArray(quotes.status, ["won", "lost"])),
+    db.select({ n: count() }).from(pages).where(eq(pages.status, "live")),
+    db.select({ n: count() }).from(projects).where(eq(projects.status, "live")),
+    db.select({ n: count() }).from(jobPostings).where(eq(jobPostings.status, "live")),
+  ]);
 
   const recentQuotes = await db
     .select()
@@ -50,11 +44,7 @@ export default async function AdminDashboard() {
             What landed overnight, and what still needs your eye.
           </div>
         </div>
-        <div className="filt">
-          <button>Today</button>
-          <button className="on">This Week</button>
-          <button>Month</button>
-        </div>
+        <div className="dashboard-live-state"><span /> Live operational overview</div>
       </div>
 
       <div className="kpi-grid">
@@ -75,10 +65,8 @@ export default async function AdminDashboard() {
         </div>
         <div className="kpi">
           <div className="lbl">— Active Jobs</div>
-          <div className="val">
-            — <span className="u">phase 2</span>
-          </div>
-          <div className="delta">comes online next phase</div>
+          <div className="val">{activeJobs?.n ?? 0}</div>
+          <div className="delta">published vacancies</div>
         </div>
       </div>
 

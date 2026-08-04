@@ -70,6 +70,7 @@ export function ServiceBlocks({ props }: { props: Record<string, unknown> }) {
         {services.map((service, i) => (
           <div
             key={i}
+            className="service-block-row"
             style={{
               display: "grid",
               gridTemplateColumns: "72px 1fr 1fr",

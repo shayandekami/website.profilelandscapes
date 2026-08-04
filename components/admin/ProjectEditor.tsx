@@ -225,7 +225,7 @@ export function ProjectEditor({
             <label>— Hero image</label>
             <input
               value={p.heroImage}
-              placeholder="/assets/project-bench-terrace.png"
+              placeholder="/assets/projects/kinghorn-cancer-centre-restored.webp"
               onChange={(e) => set("heroImage", e.target.value)}
             />
             {p.heroImage && (

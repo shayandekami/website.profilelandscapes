@@ -4,6 +4,8 @@ import { db, encyclopediaEntries } from "@/lib/db";
 import { eq, and, inArray } from "drizzle-orm";
 import { DefaultEncyclopediaEntryPage } from "@/components/commerce/defaults/DefaultEncyclopediaEntryPage";
 import { theme } from "@/themes/active";
+import { getSiteSettings } from "@/lib/content";
+import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +33,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function EncyclopediaEntryPage({ params }: Params) {
+  const settings = await getSiteSettings();
+  if (!settings.commerce_features.encyclopedia) {
+    return <FeatureUnavailable eyebrow="Plant knowledge" title="The encyclopedia is being tended." body="We are reviewing the plant library and local guidance. Our resources remain available in the meantime." />;
+  }
   const { slug } = await params;
 
   const entry = await db

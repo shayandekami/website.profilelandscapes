@@ -3,7 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function ContactForm() {
+type ContactFormProps = {
+  tenderTitle?: string;
+  tenderBody?: string;
+  tenderEmail?: string;
+  tenderSubject?: string;
+};
+
+export function ContactForm({ props }: { props?: Record<string, unknown> }) {
+  const content = (props || {}) as ContactFormProps;
+  const tenderEmail = content.tenderEmail || "carlo@profilelandscapes.com.au";
+  const tenderSubject = content.tenderSubject || "Tender invitation - project name / suburb";
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,19 +23,31 @@ export function ContactForm() {
     setSubmitting(true);
     setError(null);
     const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form).entries());
+    const data = new FormData(form);
+    if (data.getAll("services").length === 0) {
+      setError("Select at least one service so we can direct your enquiry correctly.");
+      form.querySelector<HTMLElement>(".quote-service-grid")?.focus();
+      setSubmitting(false);
+      return;
+    }
+    const files = data.getAll("attachments").filter((item): item is File => item instanceof File && item.size > 0);
+    if (files.length > 6 || files.some((file) => file.size > 15 * 1024 * 1024) || files.reduce((sum, file) => sum + file.size, 0) > 40 * 1024 * 1024) {
+      setError("Check the documents: maximum 6 files, 15 MB each and 40 MB combined.");
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const res = await fetch("/api/quote", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: data,
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error || "Could not send. Please try again.");
       }
-      router.push("/thank-you");
+      const result = await res.json();
+      router.push(`/thank-you?ref=${encodeURIComponent(result.referenceCode)}&token=${encodeURIComponent(result.accessToken)}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Unexpected error");
       setSubmitting(false);
@@ -73,6 +95,15 @@ export function ContactForm() {
               <span className="k">Hours</span>
               <span>Mon – Fri, 7.00am – 5.00pm</span>
             </div>
+            <div className="tender-invite-card">
+              <span className="eyebrow">Documented projects</span>
+              <h3>{content.tenderTitle || "Invite us to tender"}</h3>
+              <p>{content.tenderBody || "Already have a documented project or formal tender package? Email Carlo directly with the drawings, specification, BOQ, closing date and site contact."}</p>
+              <a href={`mailto:${tenderEmail}?subject=${encodeURIComponent(tenderSubject)}`}>
+                {tenderEmail} →
+              </a>
+              <small>Suggested subject: {tenderSubject}</small>
+            </div>
           </div>
 
           <form className="form-card" onSubmit={onSubmit}>
@@ -81,7 +112,7 @@ export function ContactForm() {
               Tell us about the project — we&apos;ll be in touch shortly.
             </p>
             {error && (
-              <div className="form-error" style={{ color: "#c2783a", marginBottom: 12 }}>
+              <div className="form-error" role="alert" aria-live="polite" style={{ color: "#c2783a", marginBottom: 12 }}>
                 {error}
               </div>
             )}
@@ -112,6 +143,16 @@ export function ContactForm() {
             </div>
             <div className="grid-2">
               <div className="field">
+                <label>Site address / suburb <span className="req">*</span></label>
+                <input required name="siteAddress" placeholder="Project address or suburb" />
+              </div>
+              <div className="field">
+                <label>Postcode <span className="req">*</span></label>
+                <input required name="postcode" inputMode="numeric" pattern="[0-9]{4}" maxLength={4} placeholder="2049" />
+              </div>
+            </div>
+            <div className="grid-2">
+              <div className="field">
                 <label>Project type</label>
                 <select name="sector" defaultValue="">
                   <option value="">Select…</option>
@@ -137,14 +178,37 @@ export function ContactForm() {
               </div>
             </div>
             <div className="field">
+              <label>Services required <span className="req">*</span></label>
+              <div className="quote-service-grid" tabIndex={-1}>
+                {["Landscape construction", "Landscape design", "Planting / softscape", "Irrigation", "Maintenance", "Nursery supply", "Tender pricing", "Other"].map((service) => (
+                  <label key={service} className="quote-check"><input type="checkbox" name="services" value={service} /> {service}</label>
+                ))}
+              </div>
+            </div>
+            <div className="grid-2">
+              <div className="field"><label>Project stage <span className="req">*</span></label><select required name="projectStage" defaultValue=""><option value="">Select…</option><option>Early feasibility</option><option>Concept design</option><option>Development application</option><option>Construction documentation</option><option>Tender / pricing</option><option>Ready to commence</option><option>Existing landscape / maintenance</option></select></div>
+              <div className="field"><label>Preferred start</label><select name="desiredStart" defaultValue=""><option value="">Select…</option><option>As soon as possible</option><option>Within 1–3 months</option><option>Within 3–6 months</option><option>Within 6–12 months</option><option>More than 12 months</option><option>Not yet known</option></select></div>
+            </div>
+            <div className="grid-2">
+              <div className="field"><label>Tender / response due</label><input type="date" name="tenderDue" /></div>
+              <div className="field"><label>Architect / designer</label><input name="architect" maxLength={200} placeholder="Practice or consultant, if appointed" /></div>
+            </div>
+            <div className="field"><label>Preferred contact</label><select name="contactPreference" defaultValue="Email"><option>Email</option><option>Phone</option><option>Either email or phone</option></select></div>
+            <div className="field">
               <label>
                 Project brief <span className="req">*</span>
               </label>
               <textarea
                 required
                 name="brief"
+                minLength={80}
                 placeholder="Location, scope, timeframe, links to drawings / BOQ…"
               />
+            </div>
+            <div className="field quote-upload">
+              <label>Drawings and project documents</label>
+              <input type="file" name="attachments" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.dwg,.dxf,.zip" />
+              <small>Up to 6 files: drawings, specifications, BOQ, site photos, surveys or tender documents. Maximum 15 MB each and 40 MB total. Stored privately.</small>
             </div>
             {/* honeypot */}
             <input
@@ -158,7 +222,7 @@ export function ContactForm() {
               {submitting ? "Sending…" : "Send enquiry →"}
             </button>
             <div className="form-note">
-              We reply to all enquiries within three working days.
+              We reply to all enquiries within two business days.
             </div>
           </form>
         </div>

@@ -5,11 +5,12 @@ export const metadata: Metadata = {
   robots: "noindex",
 };
 
-export default function ThankYou({
+export default async function ThankYou({
   searchParams,
 }: {
-  searchParams: Promise<{ ref?: string; name?: string }>;
+  searchParams: Promise<{ ref?: string; token?: string }>;
 }) {
+  const { ref, token } = await searchParams;
   return (
     <section
       style={{
@@ -66,7 +67,7 @@ export default function ThankYou({
             }}
           >
             We have received your enquiry and will be in touch within two business days. 
-            If you have an urgent requirement, call us directly on (02) 9560 3888.
+            If you have an urgent tender deadline, call us directly on (02) 9568 5868.
           </p>
 
           {/* Reference card */}
@@ -100,8 +101,7 @@ export default function ThankYou({
                 color: "#e8dcb6",
               }}
             >
-              PL-{new Date().getFullYear()}-
-              {String(Math.floor(Math.random() * 9000) + 1000)}
+              {ref || "Confirmation pending"}
             </div>
             <div style={{ fontSize: 13, color: "#8a8070", marginTop: 6 }}>
               Quote this reference when following up
@@ -110,6 +110,14 @@ export default function ThankYou({
 
           {/* CTAs */}
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+            {ref && token && (
+              <a
+                href={`/quote/${encodeURIComponent(ref)}?token=${encodeURIComponent(token)}`}
+                style={{ display: "inline-flex", alignItems: "center", padding: "13px 24px", borderRadius: 999, background: "#fff", color: "#0a1e15", fontWeight: 500, fontSize: 14.5, textDecoration: "none" }}
+              >
+                Track your request
+              </a>
+            )}
             <a
               href="/projects"
               style={{

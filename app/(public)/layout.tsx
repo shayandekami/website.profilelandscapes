@@ -18,6 +18,18 @@ export default async function PublicLayout({
 }) {
   const { Header, Footer } = theme.chrome;
   const [settings, session] = await Promise.all([getSiteSettings(), auth()]);
+  const features = settings.commerce_features;
+  const visibleNav = theme.nav
+    .filter((group) => group.key !== "shop" || features.shop)
+    .map((group) => ({
+      ...group,
+      children: group.children?.filter((item) => {
+        if ((item.href === "/plants" || item.href === "/plants/pricelist") && !features.nursery) return false;
+        if (item.href === "/encyclopedia" && !features.encyclopedia) return false;
+        return true;
+      }),
+    }))
+    .filter((group) => group.key !== "plants" || group.children?.length);
 
   // Build CSS-variable overrides from theme tokens
   const tokenStyle = theme.tokens
@@ -34,25 +46,26 @@ export default async function PublicLayout({
         rel="stylesheet"
         href={theme.stylesheet.replace("site.css", "site-ext.css")}
       />
+      <link rel="stylesheet" href="/themes/profile-landscapes/design-atelier.css" />
       {tokenStyle && (
         <style dangerouslySetInnerHTML={{ __html: `:root{${tokenStyle}}` }} />
       )}
 
       <JsonLd data={organizationLd(settings)} />
-      <TradePricingBanner />
-      <Header studioName={settings.studio_name} nav={theme.nav} />
+      {features.nursery && <TradePricingBanner />}
+      <Header studioName={settings.studio_name} nav={visibleNav} />
       <main>{children}</main>
       <Footer
         studioName={settings.studio_name}
         phone={settings.phone}
         email={settings.email}
         address={settings.address}
-        nav={theme.nav}
+        nav={visibleNav}
         legal={settings.legal}
       />
       {session?.user && <AdminBar userName={session.user.name || session.user.email || "Admin"} />}
-      <QuoteBar />
-      <ScheduleBar />
+      {features.nursery && <QuoteBar />}
+      {(features.nursery || features.encyclopedia) && <ScheduleBar />}
       <CookieNotice />
     </>
   );

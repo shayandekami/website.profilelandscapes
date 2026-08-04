@@ -2,6 +2,15 @@ import Link from "next/link";
 import { db, quotes } from "@/lib/db";
 import { desc } from "drizzle-orm";
 
+const statusLabels: Record<string, string> = {
+  new: "New",
+  in_reply: "In reply",
+  site_visit: "Site visit",
+  won: "Won",
+  lost: "Lost",
+  out_of_scope: "Out of scope",
+};
+
 export default async function QuotesInbox() {
   const rows = await db.select().from(quotes).orderBy(desc(quotes.receivedAt));
 
@@ -44,6 +53,7 @@ export default async function QuotesInbox() {
                 <tr key={q.id}>
                   <td>
                     <Link href={`/admin/quotes/${q.id}`} style={{ fontWeight: 500, color: "var(--ink)" }}>{q.name}</Link>
+                    <div className="mono muted" style={{ marginTop: 3, fontSize: 10.5 }}>{q.referenceCode}</div>
                     <div className="sub" style={{ marginTop: 4, fontSize: 12.5 }}>
                       <a href={`mailto:${q.email}`} style={{ color: "var(--accent)" }}>
                         {q.email}
@@ -53,18 +63,20 @@ export default async function QuotesInbox() {
                   </td>
                   <td>{q.company || "—"}</td>
                   <td>
-                    {q.sector || "—"}
+                    {q.siteAddress || q.sector || "—"}
                     {q.brief && (
                       <div className="sub" style={{ marginTop: 4, fontSize: 12.5 }}>
-                        {q.brief.slice(0, 80)}
-                        {q.brief.length > 80 ? "…" : ""}
+                        {[q.projectStage, q.sector].filter(Boolean).join(" · ")}
+                        {[q.projectStage, q.sector].some(Boolean) ? " — " : ""}
+                        {q.brief.slice(0, 65)}
+                        {q.brief.length > 65 ? "…" : ""}
                       </div>
                     )}
                   </td>
                   <td>{q.budget || "—"}</td>
                   <td>
                     <span className={`chip ${q.status === "new" ? "draft" : "paid"}`}>
-                      {q.status}
+                      {statusLabels[q.status] || q.status}
                     </span>
                   </td>
                   <td className="mono muted">

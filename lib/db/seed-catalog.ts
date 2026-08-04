@@ -25,7 +25,10 @@ export async function seedCatalog() {
       tags: r.tags ?? [], images: r.images ?? [], shortDescription: cap(r.short_description),
       description: cap(r.description), care: cap(r.care), seasons: cap(r.seasons), companions: r.companions ?? [],
       encyclopediaSlug: cap(r.encyclopedia_slug), featured: !!r.featured, status: "live",
-    }).onConflictDoNothing({ target: plants.slug });
+    }).onConflictDoUpdate({
+      target: plants.slug,
+      set: { encyclopediaSlug: cap(r.encyclopedia_slug) },
+    });
     p++;
   }
 
@@ -37,7 +40,27 @@ export async function seedCatalog() {
       genus: cap(r.genus), description: cap(r.description), climateZones: r.climate_zones ?? [], tags: r.tags ?? [],
       care: cap(r.care), seasons: cap(r.seasons), companions: r.companions ?? [], images: r.images ?? [],
       cultivars: r.cultivars ?? [], landscapeUse: cap(r.landscape_use), references: r.references ?? [], status: "live",
-    }).onConflictDoNothing({ target: encyclopediaEntries.slug });
+    }).onConflictDoUpdate({
+      target: encyclopediaEntries.slug,
+      set: {
+        latinName: r.latin_name,
+        commonName: cap(r.common_name),
+        family: cap(r.family),
+        genus: cap(r.genus),
+        description: cap(r.description),
+        climateZones: r.climate_zones ?? [],
+        tags: r.tags ?? [],
+        care: cap(r.care),
+        seasons: cap(r.seasons),
+        companions: r.companions ?? [],
+        images: r.images ?? [],
+        cultivars: r.cultivars ?? [],
+        landscapeUse: cap(r.landscape_use),
+        references: r.references ?? [],
+        status: "live",
+        updatedAt: new Date(),
+      },
+    });
     e++;
   }
 

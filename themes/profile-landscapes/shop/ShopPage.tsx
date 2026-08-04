@@ -273,41 +273,10 @@ function ProductCard({
 
 // ── Category card ─────────────────────────────────────────────────────────────
 const CAT_ARTWORKS = [
-  // workwear
-  <svg key={0} viewBox="0 0 300 180" style={{ width: "100%", height: "100%", display: "block" }}>
-    <rect width="100%" height="100%" fill="#e5da7a" />
-    <g transform="translate(85,30)">
-      <path d="M 50 10 L 100 10 L 118 30 L 98 42 L 98 150 L 22 150 L 22 42 L 2 30 Z" fill="#f7e574" stroke="#113021" strokeWidth="2" />
-      <rect x="24" y="80" width="72" height="8" fill="#c2783a" />
-      <rect x="24" y="110" width="72" height="8" fill="#c2783a" />
-    </g>
-  </svg>,
-  // gloves
-  <svg key={1} viewBox="0 0 300 180" style={{ width: "100%", height: "100%", display: "block" }}>
-    <rect width="100%" height="100%" fill="#c9a87c" />
-    <g transform="translate(100,45)">
-      <path d="M 10 40 Q 0 30 10 18 L 10 5 Q 15 0 25 0 L 25 18 L 40 18 L 40 0 Q 47 -5 55 0 L 55 22 L 70 22 L 70 3 Q 78 0 85 5 L 85 30 L 95 30 Q 102 36 95 48 L 95 95 Q 50 102 10 95 Z" fill="#6b4423" stroke="#3a2817" strokeWidth="2" />
-    </g>
-  </svg>,
-  // tools
-  <svg key={2} viewBox="0 0 300 180" style={{ width: "100%", height: "100%", display: "block" }}>
-    <rect width="100%" height="100%" fill="#cbd7b8" />
-    <g transform="translate(50,40)">
-      <circle cx="25" cy="40" r="10" fill="none" stroke="#113021" strokeWidth="3" />
-      <circle cx="55" cy="40" r="10" fill="none" stroke="#113021" strokeWidth="3" />
-      <path d="M 40 45 L 170 110 L 180 98" stroke="#c2783a" strokeWidth="5" fill="none" />
-    </g>
-  </svg>,
-  // household
-  <svg key={3} viewBox="0 0 300 180" style={{ width: "100%", height: "100%", display: "block" }}>
-    <rect width="100%" height="100%" fill="#d9c9a1" />
-    <g transform="translate(60,40)">
-      <rect x="0" y="70" width="180" height="10" fill="#8a5a35" />
-      <rect x="20" y="40" width="40" height="40" fill="#c2783a" />
-      <circle cx="150" cy="55" r="22" fill="#113021" />
-      <circle cx="150" cy="55" r="12" fill="#c2783a" />
-    </g>
-  </svg>,
+  "/assets/generated/shop-workwear.webp",
+  "/assets/generated/shop-gloves.webp",
+  "/assets/generated/shop-tools.webp",
+  "/assets/generated/shop-home-garden.webp",
 ];
 
 // ── Shop by trade ──────────────────────────────────────────────────────────────
@@ -321,7 +290,7 @@ const TRADE_SETS = [
 
 function ShopByTrade({ onPick }: { onPick: (slug: string) => void }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 16 }}>
+    <div className="responsive-grid-5" style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 16 }}>
       {TRADE_SETS.map((set) => (
         <div
           key={set.n}
@@ -386,6 +355,7 @@ function TrustBand() {
       }}
     >
       <div
+        className="responsive-grid-4"
         style={{
           maxWidth: 1400,
           margin: "0 auto",
@@ -473,8 +443,9 @@ export function ShopPage({
 
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       {isHome && (
-        <section style={{ ...wrap, marginTop: 28, paddingTop: 0 }}>
+        <section className="commerce-hero-section" style={{ ...wrap, marginTop: 28, paddingTop: 0 }}>
           <div
+            className="commerce-hero-grid"
             style={{
               background: "#113021",
               color: "#fff",
@@ -486,6 +457,7 @@ export function ShopPage({
             }}
           >
             <div
+              className="commerce-hero-copy"
               style={{
                 padding: "60px 56px",
                 display: "flex",
@@ -506,6 +478,7 @@ export function ShopPage({
                   Winter &apos;26 · Now shipping
                 </div>
                 <h1
+                  className="commerce-hero-title"
                   style={{
                     fontFamily: "Fraunces, serif",
                     fontWeight: 300,
@@ -571,29 +544,26 @@ export function ShopPage({
                 </button>
               </div>
             </div>
-            {/* Hero art */}
+            {/* Field shop photography */}
             <div
+              className="commerce-hero-photo"
               style={{
-                background: "linear-gradient(145deg,#1a4330,#0b2018)",
+                background: "#0b2018",
                 overflow: "hidden",
+                position: "relative",
               }}
-              aria-hidden="true"
             >
-              <svg viewBox="0 0 600 460" style={{ width: "100%", height: "100%", display: "block" }}>
-                <defs>
-                  <pattern id="gr" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#gr)" />
-                <g transform="translate(120,120)">
-                  <path d="M 60 20 L 120 20 L 140 45 L 115 60 L 115 200 L 25 200 L 25 60 L 0 45 Z" fill="#e8dcb6" stroke="#f7e574" strokeWidth="3" />
-                  <rect x="30" y="110" width="80" height="10" fill="#c2783a" />
-                  <rect x="30" y="155" width="80" height="10" fill="#c2783a" />
-                  <text x="70" y="90" textAnchor="middle" fontFamily="Inter Tight, sans-serif" fontWeight="800" fontSize="13" fill="#113021" letterSpacing="2">PL</text>
-                </g>
-                <rect y="420" width="600" height="40" fill="#0a1f14" />
-              </svg>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/assets/generated/field-shop-hero.webp"
+                alt="Professional landscape tools and workwear arranged on a workshop bench"
+                fetchPriority="high"
+                style={{ width: "100%", height: "100%", minHeight: 460, objectFit: "cover", objectPosition: "58% center" }}
+              />
+              <div
+                aria-hidden="true"
+                style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(11,32,24,.2),transparent 45%)" }}
+              />
             </div>
           </div>
         </section>
@@ -643,6 +613,7 @@ export function ShopPage({
       {isHome && categories.length > 0 && (
         <section style={{ ...wrap, marginTop: 56 }}>
           <div
+            className="shop-category-grid"
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -701,7 +672,13 @@ export function ShopPage({
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={cat.image} alt={cat.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
-                      CAT_ARTWORKS[i % CAT_ARTWORKS.length]
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={CAT_ARTWORKS[i % CAT_ARTWORKS.length]}
+                        alt={`${cat.name} category`}
+                        loading="lazy"
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
                     )}
                   </div>
                   <div
@@ -759,7 +736,7 @@ export function ShopPage({
               Shop all new →
             </span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
+          <div className="responsive-grid-4" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
             {featured.map((p) => (
               <ProductCard key={p.id} product={p} category={catMap[p.categoryId!]} />
             ))}
@@ -809,6 +786,7 @@ export function ShopPage({
           </section>
 
           <section
+            className="responsive-sidebar-grid"
             style={{
               ...wrap,
               marginTop: 28,
@@ -873,7 +851,7 @@ export function ShopPage({
             </aside>
 
             {/* Product grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18 }}>
+            <div className="responsive-grid-3" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18 }}>
               {filtered.length === 0 ? (
                 <div style={{ gridColumn: "1/-1", padding: "60px 0", textAlign: "center", color: T.moss }}>
                   No products found.

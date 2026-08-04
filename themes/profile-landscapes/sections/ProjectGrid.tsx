@@ -6,7 +6,8 @@ const SECTOR_LABELS: Record<string, string> = {
   commercial: "Commercial",
   civic: "Civic & Public",
   healthcare: "Healthcare & Education",
-  mixed: "Mixed-Use",
+  hospitality: "Hospitality",
+  other: "Other",
 };
 
 /**
@@ -14,7 +15,32 @@ const SECTOR_LABELS: Record<string, string> = {
  * in a data attribute, then a small inline script handles filter state.
  * No React client bundle needed.
  */
-export async function ProjectGrid() {
+type RecentJob = {
+  name: string;
+  location?: string;
+  client?: string;
+  stage?: string;
+  value?: string;
+};
+
+type ProjectGridProps = {
+  recentEyebrow?: string;
+  recentTitle?: string;
+  recentBody?: string;
+  recentNote?: string;
+  featuredJob?: RecentJob & { summary?: string };
+  recentJobs?: RecentJob[];
+};
+
+export async function ProjectGrid({ props }: { props: Record<string, unknown> }) {
+  const {
+    recentEyebrow,
+    recentTitle,
+    recentBody,
+    recentNote,
+    featuredJob,
+    recentJobs = [],
+  } = props as ProjectGridProps;
   const rows = await db
     .select()
     .from(projects)
@@ -22,24 +48,68 @@ export async function ProjectGrid() {
     .orderBy(desc(projects.featured), desc(projects.completedAt));
 
   // Collect unique sectors in display order
-  const sectorOrder = ["commercial", "residential", "civic", "healthcare", "mixed"];
+  const sectorOrder = ["commercial", "residential", "civic", "healthcare", "hospitality", "other"];
   const availableSectors = sectorOrder.filter((s) =>
     rows.some((r) => r.sector === s)
   );
 
-  const projectData = rows.map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    suburb: p.suburb,
-    sector: p.sector,
-    heroImage: p.heroImage,
-    packageValue: p.packageValue,
-  }));
-
   return (
     <section className="proj-grid-section">
       <div className="wrap">
+        {featuredJob && recentJobs.length > 0 && (
+          <div className="recent-jobs">
+            <div className="recent-jobs-intro">
+              <span className="eyebrow">{recentEyebrow || "Recent appointments"}</span>
+              <div>
+                <h2>{recentTitle || "A current snapshot of work underway."}</h2>
+                <span className="recent-jobs-featured-name">
+                  Featuring now · {featuredJob.name}
+                </span>
+              </div>
+              {recentBody && <p>{recentBody}</p>}
+            </div>
+
+            <div className="recent-jobs-board">
+              <article className="recent-job-feature">
+                <div className="recent-job-feature-top">
+                  <span>Scale spotlight</span>
+                  {featuredJob.stage && <b>{featuredJob.stage}</b>}
+                </div>
+                <div>
+                  <p>{featuredJob.location}</p>
+                  <h3>{featuredJob.name}</h3>
+                  {featuredJob.summary && <div className="recent-job-summary">{featuredJob.summary}</div>}
+                </div>
+                <div className="recent-job-feature-foot">
+                  <span>{featuredJob.client}</span>
+                  <strong>{featuredJob.value}</strong>
+                </div>
+              </article>
+
+              <div className="recent-job-list" role="list" aria-label="Selected recent landscape contracts">
+                {recentJobs.map((job, index) => (
+                  <div className="recent-job-row" role="listitem" key={`${job.name}-${index}`}>
+                    <span className="recent-job-number">{String(index + 1).padStart(2, "0")}</span>
+                    <div>
+                      <h3>{job.name}</h3>
+                      <p>{[job.location, job.client].filter(Boolean).join(" · ")}</p>
+                    </div>
+                    <span className="recent-job-stage">{job.stage}</span>
+                    <strong>{job.value}</strong>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {recentNote && <p className="recent-jobs-note">{recentNote}</p>}
+          </div>
+        )}
+
+        <div className="portfolio-index-head">
+          <span className="eyebrow">Selected portfolio</span>
+          <p>Explore completed work in detail by sector.</p>
+        </div>
+
         {/* Filter bar */}
         <div className="filter" id="proj-filter">
           <button

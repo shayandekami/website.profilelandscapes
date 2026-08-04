@@ -18,6 +18,9 @@ import { CareersHub } from "./CareersHub";
 import { DirectorProfile } from "./DirectorProfile";
 import { ServiceBlocks } from "./ServiceBlocks";
 import { LegalContent } from "./LegalContent";
+import { DesignStudio } from "./DesignStudio";
+import { CapabilityStudio } from "./CapabilityStudio";
+import { HomeStudio } from "./HomeStudio";
 
 /**
  * Maps section.type → renderer. The renderer falls back to a soft warning
@@ -44,4 +47,7 @@ export const sections: Record<string, SectionComponent> = {
   director_profile: DirectorProfile,
   service_blocks: ServiceBlocks,
   legal_content: LegalContent,
+  design_studio: DesignStudio,
+  capability_studio: CapabilityStudio,
+  home_studio: HomeStudio,
 };

@@ -30,6 +30,16 @@ function renderBody(text: string) {
 export function TwoCol({ props }: { props: Record<string, unknown> }) {
   const p = props as Props;
   const imgLeft = p.imageLeft ?? p.imagePosition === "left";
+  const image =
+    p.image ||
+    (p.eyebrow === "Our story"
+      ? "/assets/generated/about-team.webp"
+      : undefined);
+  const imageAlt =
+    p.imageAlt ||
+    (p.eyebrow === "Our story"
+      ? "Landscape crew reviewing planting plans beside a completed Sydney garden"
+      : "");
 
   return (
     <section className="twocol fade-target">
@@ -43,10 +53,10 @@ export function TwoCol({ props }: { props: Record<string, unknown> }) {
             alignItems: "center",
           }}
         >
-          {imgLeft && p.image && (
+          {imgLeft && image && (
             <div className="twocol-image" style={{ borderRadius: 4, overflow: "hidden", aspectRatio: "4/3" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.image} alt={p.imageAlt || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={image} alt={imageAlt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
           )}
           <div className="twocol-text" style={{ order: imgLeft ? 2 : 1 }}>
@@ -85,10 +95,10 @@ export function TwoCol({ props }: { props: Record<string, unknown> }) {
               </a>
             )}
           </div>
-          {!imgLeft && p.image && (
+          {!imgLeft && image && (
             <div className="twocol-image" style={{ borderRadius: 4, overflow: "hidden", aspectRatio: "4/3", order: 2 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.image} alt={p.imageAlt || ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={image} alt={imageAlt} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
             </div>
           )}
         </div>
