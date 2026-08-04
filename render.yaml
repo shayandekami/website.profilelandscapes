@@ -1,0 +1,51 @@
+# Render Blueprint — Profile Landscapes public website (Next.js)
+# Setup: Render Dashboard → New → Blueprint → pick this repo.
+# Render reads this file and pre-creates BOTH the web service and a managed
+# Postgres database, wiring DATABASE_URL between them automatically.
+# You only fill in the secret values (marked sync:false) when prompted.
+databases:
+  - name: pl-web-db
+    plan: basic-256mb
+    region: singapore
+
+services:
+  - type: web
+    name: pl-website
+    runtime: node
+    region: singapore
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    # Custom domains (add in dashboard after first deploy):
+    #   profilelandscapes.com.au  +  www.profilelandscapes.com.au
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pl-web-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_URL
+        value: https://profilelandscapes.com.au
+      - key: AUTH_SECRET
+        sync: false
+      - key: AZURE_CLIENT_ID
+        sync: false
+      - key: AZURE_TENANT_ID
+        sync: false
+      - key: AZURE_CLIENT_SECRET
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: QUOTE_FROM_EMAIL
+        sync: false
+      - key: QUOTE_NOTIFY_EMAIL
+        sync: false
+      - key: ORDER_NOTIFY_EMAIL
+        sync: false
+      - key: CAREERS_NOTIFY_EMAIL
+        sync: false
