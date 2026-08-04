@@ -1,7 +1,14 @@
 import { redirect } from "next/navigation";
+import { sql } from "drizzle-orm";
 import { signIn, auth } from "@/lib/auth";
+import { db, users } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
+
+async function hasAnyUser(): Promise<boolean> {
+  const rows = await db.select({ n: sql<number>`count(*)` }).from(users);
+  return Number(rows[0]?.n ?? 0) > 0;
+}
 
 async function loginWithCredentials(formData: FormData) {
   "use server";
@@ -46,6 +53,8 @@ export default async function AdminLogin({
 }) {
   const session = await auth();
   if (session?.user) redirect("/admin");
+  // Fresh install: no accounts yet → run first-run setup instead of login.
+  if (!(await hasAnyUser())) redirect("/admin/setup");
   const { from, error } = await searchParams;
   const ssoEnabled =
     !!process.env.AZURE_CLIENT_ID && !!process.env.AZURE_TENANT_ID;

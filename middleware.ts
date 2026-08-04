@@ -11,8 +11,12 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const isAdminPath = req.nextUrl.pathname.startsWith("/admin");
   const isLoginPath = req.nextUrl.pathname === "/admin/login";
+  const isSetupPath = req.nextUrl.pathname === "/admin/setup";
+  // /admin/setup is public: the zero-users check + redirect lives in the
+  // setup/login pages (Node runtime — the edge middleware has no DB access).
+  const isPublicAuthPath = isLoginPath || isSetupPath;
 
-  if (isAdminPath && !isLoginPath && !req.auth) {
+  if (isAdminPath && !isPublicAuthPath && !req.auth) {
     const url = new URL("/admin/login", req.nextUrl.origin);
     url.searchParams.set("from", req.nextUrl.pathname);
     return Response.redirect(url);

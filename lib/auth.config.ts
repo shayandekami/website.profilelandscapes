@@ -15,9 +15,11 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request }) {
       const isAdmin = request.nextUrl.pathname.startsWith("/admin");
-      const isLoginPage = request.nextUrl.pathname === "/admin/login";
+      const isPublicAuthPage =
+        request.nextUrl.pathname === "/admin/login" ||
+        request.nextUrl.pathname === "/admin/setup";
       if (!isAdmin) return true;
-      if (isLoginPage) return true;
+      if (isPublicAuthPage) return true;
       return !!auth?.user;
     },
     async jwt({ token, user }) {
