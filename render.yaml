@@ -36,10 +36,12 @@ services:
         value: https://profilelandscapes.com.au
       - key: AUTH_SECRET
         sync: false
+      # Client ID + Tenant ID are public identifiers (they appear in every OAuth
+      # URL/token) — safe to commit. Reuses the shared PL-Platform app registration.
       - key: AZURE_CLIENT_ID
-        sync: false
+        value: 4902dae7-54f8-4802-b56e-59f8b9b6a012
       - key: AZURE_TENANT_ID
-        sync: false
+        value: a6e8790f-56c3-4b65-958b-d0bef04994bd
       - key: AZURE_CLIENT_SECRET
         sync: false
       - key: AZURE_ALLOWED_EMAIL_DOMAINS
