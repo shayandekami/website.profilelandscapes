@@ -5,7 +5,7 @@ import { eq, and, inArray } from "drizzle-orm";
 import { DefaultPlantPage } from "@/components/commerce/defaults/DefaultPlantPage";
 import { theme } from "@/themes/active";
 import { JsonLd, productLd, breadcrumbLd } from "@/components/JsonLd";
-import { getSiteSettings } from "@/lib/content";
+import { featureAccess, getSiteSettings } from "@/lib/content";
 import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +35,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function PlantDetailPage({ params }: Params) {
   const settings = await getSiteSettings();
-  if (!settings.commerce_features.nursery) {
+  const _gate = await featureAccess("nursery");
+  if (!_gate.visible) {
     return <FeatureUnavailable eyebrow="Petersham nursery" title="Online nursery browsing is paused." body="The nursery team can still help with current stock, sourcing and trade enquiries by phone or email." />;
   }
   const { slug } = await params;

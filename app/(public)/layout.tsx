@@ -5,7 +5,7 @@ import { AdminBar } from "@/components/admin/AdminBar";
 import { QuoteBar } from "@/components/commerce/QuoteBar";
 import { ScheduleBar } from "@/components/commerce/ScheduleBar";
 import { TradePricingBanner } from "@/components/commerce/TradePricingBanner";
-import { JsonLd, organizationLd } from "@/components/JsonLd";
+import { JsonLd, organizationLd, websiteLd } from "@/components/JsonLd";
 import { CookieNotice } from "@/components/CookieNotice";
 
 // CMS-backed: render per request, not at build time
@@ -51,7 +51,12 @@ export default async function PublicLayout({
         <style dangerouslySetInnerHTML={{ __html: `:root{${tokenStyle}}` }} />
       )}
 
+      {/* Organisation + WebSite nodes on every page. The WebSite SearchAction is what
+          lets Google offer a search box under the brand result; the shared @id ties
+          every page back to one business entity — which matters here because an
+          unrelated company owns the .com under the same name. */}
       <JsonLd data={organizationLd(settings)} />
+      <JsonLd data={websiteLd(settings)} />
       {features.nursery && <TradePricingBanner />}
       <Header studioName={settings.studio_name} nav={visibleNav} />
       <main>{children}</main>

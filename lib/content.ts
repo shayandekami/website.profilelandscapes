@@ -52,12 +52,39 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     ...out,
     public_url: String(out.public_url || process.env.NEXT_PUBLIC_URL || "https://profilelandscapes.com.au").replace(/\/$/, ""),
     commerce_features: {
-      shop: true,
-      nursery: true,
+      // Default OFF for the two that need Stripe — a deployment without payment
+      // configured must not show a shop it cannot take money through. Turn them
+      // on per-site in site_settings.commerce_features once Stripe is live.
+      shop: false,
+      nursery: false,
       encyclopedia: true,
       ...((out.commerce_features as Partial<SiteSettings["commerce_features"]>) || {}),
     },
   } as unknown as SiteSettings;
+}
+
+/**
+ * Should this request see the real feature page?
+ *
+ * Public visitors get the FeatureUnavailable placeholder when a feature is off.
+ * A signed-in admin always sees the real page, so switched-off sections stay
+ * reviewable and editable without exposing a half-finished shop to the world.
+ * Returns `preview: true` when it is only visible because you are staff — use it
+ * to badge the page so nobody mistakes a hidden page for a live one.
+ */
+export async function featureAccess(
+  feature: keyof SiteSettings["commerce_features"],
+): Promise<{ visible: boolean; preview: boolean }> {
+  const settings = await getSiteSettings();
+  if (settings.commerce_features[feature]) return { visible: true, preview: false };
+  try {
+    const { auth } = await import("@/lib/auth");
+    const session = await auth();
+    if (session?.user) return { visible: true, preview: true };
+  } catch {
+    /* auth unavailable (build/prerender) — fall through to hidden */
+  }
+  return { visible: false, preview: false };
 }
 
 export async function getPublicSiteUrl(origin?: string): Promise<string> {

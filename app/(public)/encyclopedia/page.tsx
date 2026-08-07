@@ -3,7 +3,7 @@ import { db, encyclopediaEntries } from "@/lib/db";
 import { eq, and, or, ilike, sql } from "drizzle-orm";
 import { DefaultEncyclopediaPage } from "@/components/commerce/defaults/DefaultEncyclopediaPage";
 import { theme } from "@/themes/active";
-import { getSiteSettings } from "@/lib/content";
+import { featureAccess, getSiteSettings } from "@/lib/content";
 import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +19,8 @@ interface EncyclopediaPageProps {
 
 export default async function EncyclopediaPage({ searchParams }: EncyclopediaPageProps) {
   const settings = await getSiteSettings();
-  if (!settings.commerce_features.encyclopedia) {
+  const _gate = await featureAccess("encyclopedia");
+  if (!_gate.visible) {
     return <FeatureUnavailable eyebrow="Plant knowledge" title="The encyclopedia is being tended." body="We are reviewing the plant library and local guidance. Our resources remain available in the meantime." />;
   }
   const { tag: selectedTag, q: searchQuery } = await searchParams;

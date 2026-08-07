@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { QuoteCartClient } from "./QuoteCartClient";
-import { getSiteSettings } from "@/lib/content";
+import { featureAccess, getSiteSettings } from "@/lib/content";
 import { FeatureUnavailable } from "@/components/commerce/FeatureUnavailable";
 
 export const metadata: Metadata = {
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 
 export default async function QuoteCartPage() {
   const settings = await getSiteSettings();
-  if (!settings.commerce_features.nursery) {
+  const _gate = await featureAccess("nursery");
+  if (!_gate.visible) {
     return <FeatureUnavailable eyebrow="Trade nursery" title="Plant quote scheduling is currently paused." body="Contact our nursery team directly for stock availability, project schedules and trade pricing." />;
   }
   return (
