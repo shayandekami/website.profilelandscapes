@@ -29,6 +29,16 @@ export async function generateMetadata(): Promise<Metadata> {
     url: siteUrl,
   },
   twitter: { card: "summary_large_image", title: defaultTitle, description: defaultDescription },
+  // Search-console ownership tokens. Set the env var in Render, redeploy, click
+  // Verify — no code change needed. Google: Search Console → Add property →
+  // HTML tag, copy ONLY the content="..." value. Bing: Webmaster Tools → Add site.
+  // Both are public ownership proofs; safe to render in the page head.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
+      : undefined,
+  },
   };
 }
 

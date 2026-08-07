@@ -52,6 +52,13 @@ services:
         sync: false
       - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
         sync: false
+      # Search-console ownership tokens. Paste the value from Google Search
+      # Console (HTML tag method) / Bing Webmaster Tools, then redeploy and
+      # click Verify. Public proofs, not secrets — but left unset by default.
+      - key: GOOGLE_SITE_VERIFICATION
+        sync: false
+      - key: BING_SITE_VERIFICATION
+        sync: false
       - key: RESEND_API_KEY
         sync: false
       - key: QUOTE_FROM_EMAIL
