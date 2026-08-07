@@ -34,7 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
   // HTML tag, copy ONLY the content="..." value. Bing: Webmaster Tools → Add site.
   // Both are public ownership proofs; safe to render in the page head.
   verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    // Default is the live token for profilelandscapes.com.au (Search Console
+    // property owned by shawn@profilelandscapes.com.au). Safe to commit — it is
+    // a public ownership proof rendered into the page head, not a secret. Google
+    // requires it to STAY in place; removing it un-verifies the property.
+    // The env var still wins, so a different deployment can supply its own.
+    google: process.env.GOOGLE_SITE_VERIFICATION || "kUa8hPIxjZreyvJKB6gPlBowfl6rOok66tj0Yuu5JBY",
     other: process.env.BING_SITE_VERIFICATION
       ? { "msvalidate.01": process.env.BING_SITE_VERIFICATION }
       : undefined,
