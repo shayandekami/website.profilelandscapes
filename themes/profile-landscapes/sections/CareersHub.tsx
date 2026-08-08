@@ -25,6 +25,7 @@ type Props = {
   body?: string;
   roles?: Role[];
   benefits?: Benefit[];
+  showBenefits?: boolean; // gated on the careers_perks setting (default off)
   pathway?: PathStage[];
   jobs?: Array<{
     id: number;
@@ -81,6 +82,11 @@ export function CareersHub({ props }: { props: Record<string, unknown> }) {
   const jobs = p.jobs;
   const pathway = p.pathway ?? defaultPathway;
   const benefits = p.benefits ?? defaultBenefits;
+  // Employee perks/benefits are HIDDEN until approved: the current copy claims perks
+  // PL doesn't actually offer (employee/nursery discount, paid TAFE, etc.). The
+  // careers page only passes showBenefits=true when the `careers_perks` site setting
+  // is on — so this stays gated until Carlo reviews + corrects the wording.
+  const showBenefits = p.showBenefits === true;
 
   return (
     <>
@@ -199,7 +205,9 @@ export function CareersHub({ props }: { props: Record<string, unknown> }) {
         </div>
       </section>
 
-      {/* Benefits grid */}
+      {/* Benefits grid — gated behind the `careers_perks` setting (default OFF)
+          until Carlo approves accurate wording. */}
+      {showBenefits && (
       <section style={{ padding: "80px 0" }}>
         <div className="wrap">
           <div style={{ marginBottom: 44 }}>
@@ -219,6 +227,7 @@ export function CareersHub({ props }: { props: Record<string, unknown> }) {
           </div>
         </div>
       </section>
+      )}
     </>
   );
 }

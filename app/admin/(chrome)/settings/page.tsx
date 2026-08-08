@@ -45,6 +45,7 @@ export default async function SettingsPage() {
       shop: true,
       nursery: true,
       encyclopedia: true,
+      careers_perks: false, // off until the perks copy is reviewed/approved
       ...((map.commerce_features as Record<string, boolean>) || {}),
     },
   };

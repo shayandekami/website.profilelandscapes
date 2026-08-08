@@ -17,6 +17,7 @@ type Settings = {
     shop: boolean;
     nursery: boolean;
     encyclopedia: boolean;
+    careers_perks: boolean;
   };
 };
 
@@ -193,6 +194,7 @@ export function SettingsEditor({
             ["shop", "Online shop", "Products, cart entry points and the Shop navigation item."],
             ["nursery", "Nursery stock", "Live plant stock, trade pricelist entry points and nursery links."],
             ["encyclopedia", "Plant encyclopedia", "Botanical profiles and encyclopedia navigation links."],
+            ["careers_perks", "Careers — employee perks", "The 'What we offer' benefits grid on the careers page. Keep OFF until the perks copy is reviewed and approved (it currently lists benefits not offered)."],
           ] as const).map(([key, label, description]) => (
             <label className={`feature-switch ${s.commerce_features[key] ? "is-on" : ""}`} key={key}>
               <span className="feature-switch-copy"><strong>{label}</strong><small>{description}</small></span>

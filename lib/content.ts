@@ -41,6 +41,7 @@ export type SiteSettings = {
     shop: boolean;
     nursery: boolean;
     encyclopedia: boolean;
+    careers_perks: boolean; // employee perks/benefits block on the careers page
   };
 };
 
@@ -58,6 +59,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       shop: false,
       nursery: false,
       encyclopedia: true,
+      // Employee perks/benefits block: OFF until Carlo reviews + corrects the copy
+      // (it currently lists perks PL doesn't offer). Staff still see it in preview.
+      careers_perks: false,
       ...((out.commerce_features as Partial<SiteSettings["commerce_features"]>) || {}),
     },
   } as unknown as SiteSettings;
