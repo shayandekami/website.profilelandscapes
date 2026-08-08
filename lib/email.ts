@@ -80,15 +80,46 @@ export async function notifyOrder(opts: { orderNumber: string; name: string; ema
   if (staff) await sendEmail({ to: staff, subject: `New order ${opts.orderNumber} — $${(opts.totalCents / 100).toFixed(2)}`, html });
 }
 
+/**
+ * Acknowledge a new trade-account application. Accounts are created PENDING and a
+ * staff member sets the pricing tier, so this must not claim the account is live.
+ */
 export async function notifyTradeWelcome(opts: { email: string; company?: string | null; origin?: string }) {
   const base = await getPublicSiteUrl(opts.origin);
   await sendEmail({
     to: opts.email,
-    subject: "Your Profile Landscapes trade account",
-    html: shell("Welcome to trade", `
-      <p>Your trade account${opts.company ? ` for <strong>${esc(opts.company)}</strong>` : ""} is active.</p>
-      <p>Trade rates now apply across the nursery, pricelist and checkout when you're logged in.
-      <a href="${base}/plants/pricelist">Browse the pricelist →</a></p>`),
+    subject: "We've received your Profile Landscapes trade application",
+    html: shell("Trade application received", `
+      <p>Thanks — we've received your trade account application${opts.company ? ` for <strong>${esc(opts.company)}</strong>` : ""}.</p>
+      <p>Our team reviews new accounts (usually within one business day) and sets your
+      pricing tier. We'll email you as soon as it's approved, and your rates will apply
+      automatically at the pricelist and checkout when you log in.</p>
+      <p>In the meantime you can <a href="${base}/plants">browse the range</a> or
+      <a href="${base}/quote">request a quote</a>.</p>`),
+  });
+}
+
+/** Alert staff that a trade account is waiting for approval. */
+export async function notifyTradeApplicationStaff(opts: {
+  email: string; company?: string | null; contactName?: string | null; phone?: string | null; origin?: string;
+}) {
+  const staff = process.env.TRADE_NOTIFY_EMAIL || process.env.ORDER_NOTIFY_EMAIL || process.env.QUOTE_NOTIFY_EMAIL;
+  if (!staff) return;
+  const base = await getPublicSiteUrl(opts.origin);
+  await sendEmail({
+    to: staff,
+    replyTo: opts.email,
+    subject: `Trade account application — ${opts.company || opts.email}`,
+    html: shell("New trade application", `
+      <p>A new trade account is <strong>pending approval</strong>.</p>
+      <ul>
+        <li><strong>Company:</strong> ${esc(opts.company || "—")}</li>
+        <li><strong>Contact:</strong> ${esc(opts.contactName || "—")}</li>
+        <li><strong>Email:</strong> ${esc(opts.email)}</li>
+        <li><strong>Phone:</strong> ${esc(opts.phone || "—")}</li>
+      </ul>
+      <p>Verify the business, then approve and set their pricing tier:
+      <a href="${base}/admin/trade-accounts">Review trade accounts →</a></p>`),
   });
 }
 

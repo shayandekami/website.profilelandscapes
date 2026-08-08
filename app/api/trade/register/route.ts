@@ -53,10 +53,16 @@ export async function POST(req: Request) {
     .returning();
 
   try {
-    const { notifyTradeWelcome } = await import("@/lib/email");
-    await notifyTradeWelcome({ email: acct.email, company: acct.company });
+    const { notifyTradeWelcome, notifyTradeApplicationStaff } = await import("@/lib/email");
+    const origin = new URL(req.url).origin;
+    await notifyTradeWelcome({ email: acct.email, company: acct.company, origin });
+    // Alert staff so pending applications don't sit unnoticed.
+    await notifyTradeApplicationStaff({
+      email: acct.email, company: acct.company,
+      contactName: acct.contactName, phone: acct.phone, origin,
+    });
   } catch (e) {
-    console.error("[trade register] welcome email failed", e);
+    console.error("[trade register] notification failed", e);
   }
 
   return NextResponse.json({
