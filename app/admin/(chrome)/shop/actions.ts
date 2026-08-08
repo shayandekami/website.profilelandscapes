@@ -7,6 +7,7 @@ import { db, products, productCategories, auditLog } from "@/lib/db";
 import { eq, count } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { nanoid } from "nanoid";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 
 // ---------- helpers ----------
 function toCents(val: string | null | undefined): number {
@@ -83,7 +84,7 @@ export async function createProduct(formData: FormData): Promise<void> {
       compareAtCents: d.compareAtDollars ? toCents(d.compareAtDollars) : null,
       badge: d.badge || null,
       shortDescription: d.shortDescription || null,
-      description: d.description || null,
+      description: d.description ? sanitizeHtml(d.description) : null,
       stockQty: d.stockQty,
       featured: d.featured,
       status: d.status,
@@ -136,7 +137,7 @@ export async function updateProduct(
       compareAtCents: d.compareAtDollars ? toCents(d.compareAtDollars) : null,
       badge: d.badge || null,
       shortDescription: d.shortDescription || null,
-      description: d.description || null,
+      description: d.description ? sanitizeHtml(d.description) : null,
       stockQty: d.stockQty,
       featured: d.featured,
       status: d.status,

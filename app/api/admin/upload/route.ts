@@ -6,17 +6,21 @@ import { auth } from "@/lib/auth";
 import { db, media, auditLog } from "@/lib/db";
 
 const MAX = 10 * 1024 * 1024; // 10 MB
+// NOTE: SVG is deliberately excluded — an uploaded .svg is served from our own
+// origin and can carry <script>, i.e. stored XSS. Only raster formats (which
+// cannot execute) are accepted.
 const ALLOWED = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
   "image/gif",
-  "image/svg+xml",
 ]);
 
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (session.user.role !== "owner" && session.user.role !== "editor")
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const form = await req.formData();
   const file = form.get("file");

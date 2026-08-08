@@ -22,6 +22,9 @@ export async function updateOrderStatus(
 ): Promise<void> {
   const session = await auth();
   if (!session?.user) throw new Error("Not signed in");
+  // Changing order status (mark paid / refunded / fulfilled) is owner/editor only.
+  if (session.user.role !== "owner" && session.user.role !== "editor")
+    throw new Error("Not authorised");
 
   const statusRaw = formData.get("status");
   const parsed = OrderStatusEnum.safeParse(statusRaw);

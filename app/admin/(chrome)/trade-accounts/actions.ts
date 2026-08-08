@@ -17,6 +17,9 @@ export type Result = { ok: true } | { ok: false; error: string };
 export async function updateTradeAccount(input: unknown): Promise<Result> {
   const session = await auth();
   if (!session?.user) return { ok: false, error: "Not signed in" };
+  // Approving accounts / setting the price tier is owner/editor only.
+  if (session.user.role !== "owner" && session.user.role !== "editor")
+    return { ok: false, error: "Not authorised" };
   const parsed = Input.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Invalid input" };
 

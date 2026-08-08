@@ -27,7 +27,8 @@ import { aboutSections as carloAboutSections, servicesSections as carloServicesS
 
 /**
  * Seeds the database with:
- *  - an owner account (admin@profilelandscapes.com.au / password: pl-admin-2026)
+ *  - an owner account (admin@profilelandscapes.com.au; password from SEED_ADMIN_PASSWORD
+ *    or randomly generated and printed once during seeding)
  *  - site settings (brand, contact)
  *  - the home page rendered as theme-agnostic sections
  *  - the about, services, contact pages
@@ -47,9 +48,14 @@ async function main() {
     }
   }
 
-  // Owner user
-  const passwordHash = await bcrypt.hash("pl-admin-2026", 10);
-  await db
+  // Owner user — never ship a hardcoded password. Use SEED_ADMIN_PASSWORD if set,
+  // otherwise generate a random one and print it ONCE below. onConflictDoNothing
+  // means an already-seeded admin keeps its existing password (rotate that manually).
+  const { randomBytes } = await import("node:crypto");
+  const seedAdminPassword =
+    process.env.SEED_ADMIN_PASSWORD || randomBytes(15).toString("base64url");
+  const passwordHash = await bcrypt.hash(seedAdminPassword, 12);
+  const [insertedAdmin] = await db
     .insert(users)
     .values({
       email: "admin@profilelandscapes.com.au",
@@ -58,7 +64,13 @@ async function main() {
       role: "owner",
       avatarInitials: "CC",
     })
-    .onConflictDoNothing({ target: users.email });
+    .onConflictDoNothing({ target: users.email })
+    .returning({ id: users.id });
+  if (insertedAdmin && !process.env.SEED_ADMIN_PASSWORD) {
+    console.log(
+      `\n   ⚠  NEW admin password (shown once — save it now):\n      admin@profilelandscapes.com.au / ${seedAdminPassword}\n`
+    );
+  }
 
   // Site settings — these are the brand-level fields the admin can edit
   // and any theme can read.
@@ -1771,7 +1783,7 @@ async function main() {
   }
 
   console.log("✓ seed complete");
-  console.log("   admin login: admin@profilelandscapes.com.au / pl-admin-2026");
+  console.log("   admin login: admin@profilelandscapes.com.au (password shown above if newly created)");
   process.exit(0);
 }
 

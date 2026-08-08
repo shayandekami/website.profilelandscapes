@@ -9,16 +9,23 @@ import { authConfig } from "@/lib/auth.config";
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  const isAdminPath = req.nextUrl.pathname.startsWith("/admin");
-  const isLoginPath = req.nextUrl.pathname === "/admin/login";
-  const isSetupPath = req.nextUrl.pathname === "/admin/setup";
+  const path = req.nextUrl.pathname;
+  const isAdminPage = path.startsWith("/admin");
+  const isAdminApi = path.startsWith("/api/admin");
+  const isLoginPath = path === "/admin/login";
+  const isSetupPath = path === "/admin/setup";
   // /admin/setup is public: the zero-users check + redirect lives in the
   // setup/login pages (Node runtime — the edge middleware has no DB access).
   const isPublicAuthPath = isLoginPath || isSetupPath;
 
-  if (isAdminPath && !isPublicAuthPath && !req.auth) {
+  // Backstop for admin APIs: unauthenticated calls get 401 JSON here, so a route
+  // that forgets its own auth() check is never silently exposed.
+  if (isAdminApi && !req.auth) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (isAdminPage && !isPublicAuthPath && !req.auth) {
     const url = new URL("/admin/login", req.nextUrl.origin);
-    url.searchParams.set("from", req.nextUrl.pathname);
+    url.searchParams.set("from", path);
     return Response.redirect(url);
   }
   if (isLoginPath && req.auth) {
@@ -27,5 +34,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

@@ -10,11 +10,31 @@ async function hasAnyUser(): Promise<boolean> {
   return Number(rows[0]?.n ?? 0) > 0;
 }
 
+// Open-redirect guard: only allow same-origin internal paths (single leading /).
+function safeFrom(raw: string): string {
+  return raw.startsWith("/") && !raw.startsWith("//") ? raw : "/admin";
+}
+
 async function loginWithCredentials(formData: FormData) {
   "use server";
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
-  const from = String(formData.get("from") || "/admin");
+  const from = safeFrom(String(formData.get("from") || "/admin"));
+
+  // Brute-force guard: throttle by IP and by email. In-memory (per instance) —
+  // move to Redis if PL ever runs multi-instance.
+  const { headers } = await import("next/headers");
+  const { rateLimit } = await import("@/lib/rate-limit");
+  const h = await headers();
+  const ip =
+    h.get("x-forwarded-for")?.split(",")[0].trim() ||
+    h.get("x-real-ip") ||
+    "unknown";
+  const okIp = rateLimit(`admin-login:ip:${ip}`, 10, 60_000);
+  const okEmail = rateLimit(`admin-login:em:${email.toLowerCase()}`, 8, 300_000);
+  if (!okIp || !okEmail) {
+    redirect(`/admin/login?error=rate&from=${encodeURIComponent(from)}`);
+  }
 
   try {
     await signIn("credentials", {
@@ -23,14 +43,14 @@ async function loginWithCredentials(formData: FormData) {
       redirect: false,
     });
   } catch {
-    redirect(`/admin/login?error=1${from ? `&from=${encodeURIComponent(from)}` : ""}`);
+    redirect(`/admin/login?error=1&from=${encodeURIComponent(from)}`);
   }
   redirect(from);
 }
 
 async function loginWithMicrosoft(formData: FormData) {
   "use server";
-  const from = String(formData.get("from") || "/admin");
+  const from = safeFrom(String(formData.get("from") || "/admin"));
   await signIn("microsoft-entra-id", { redirectTo: from });
 }
 
@@ -149,7 +169,9 @@ export default async function AdminLogin({
                 color: "#8a4d10",
               }}
             >
-              Email or password not recognised.
+              {error === "rate"
+                ? "Too many attempts. Please wait a minute and try again."
+                : "Email or password not recognised."}
             </div>
           )}
 

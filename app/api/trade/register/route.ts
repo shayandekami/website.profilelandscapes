@@ -5,7 +5,6 @@ import { db } from "@/lib/db";
 import { tradeAccounts } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { rateLimit } from "@/lib/rate-limit";
-import { makeToken, SESSION_COOKIE, TIER_COOKIE_NAME, SESSION_MAX_AGE, tierLabel } from "@/lib/tradeAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -36,9 +35,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "An account with that email already exists. Try logging in." }, { status: 409 });
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
-  // Demo: auto-approve to the 'trade' tier. In production this would be 'pending'
-  // until a staff member verifies the business and sets the correct tier.
+  const passwordHash = await bcrypt.hash(password, 12);
+  // New self-registrations are PENDING at RETAIL pricing. A staff member verifies
+  // the business and sets the correct tier via admin → trade-accounts. No trade
+  // session is issued on signup, so registering never grants discounted pricing.
   const [acct] = await db
     .insert(tradeAccounts)
     .values({
@@ -47,8 +47,8 @@ export async function POST(req: Request) {
       company: company || null,
       contactName: contactName || null,
       phone: phone || null,
-      status: "approved",
-      priceTier: "trade",
+      status: "pending",
+      priceTier: "retail",
     })
     .returning();
 
@@ -59,9 +59,10 @@ export async function POST(req: Request) {
     console.error("[trade register] welcome email failed", e);
   }
 
-  const token = makeToken({ id: acct.id, email: acct.email, tier: "trade", company: acct.company });
-  const res = NextResponse.json({ ok: true, tier: "trade", tierLabel: tierLabel("trade") });
-  res.cookies.set(SESSION_COOKIE, token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: SESSION_MAX_AGE });
-  res.cookies.set(TIER_COOKIE_NAME, "trade", { httpOnly: false, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: SESSION_MAX_AGE });
-  return res;
+  return NextResponse.json({
+    ok: true,
+    pending: true,
+    message:
+      "Thanks — your trade account is pending review. We'll email you once it's approved and your pricing is set.",
+  });
 }

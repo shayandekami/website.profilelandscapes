@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { orders } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,15 @@ export async function GET(
   const { number } = await params;
   const { searchParams } = new URL(req.url);
   const email = searchParams.get("email");
+
+  // Throttle to blunt order-number enumeration (numbers are sequential).
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+    req.headers.get("x-real-ip") ||
+    "unknown";
+  if (!rateLimit(`order-lookup:${ip}`, 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   if (!email) {
     return NextResponse.json(
@@ -27,15 +37,10 @@ export async function GET(
       .where(eq(orders.orderNumber, number))
       .limit(1);
 
-    if (!order) {
+    // Identical 404 for "no such order" AND "email doesn't match" — no oracle
+    // that reveals which order numbers exist.
+    if (!order || order.customerEmail.toLowerCase() !== email.toLowerCase()) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
-    }
-
-    if (order.customerEmail.toLowerCase() !== email.toLowerCase()) {
-      return NextResponse.json(
-        { error: "Email address does not match this order" },
-        { status: 403 }
-      );
     }
 
     return NextResponse.json({

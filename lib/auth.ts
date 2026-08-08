@@ -48,10 +48,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const u = await db.query.users.findFirst({
           where: eq(users.email, email),
         });
-        if (!u) return null;
-
-        const ok = await bcrypt.compare(password, u.passwordHash);
-        if (!ok) return null;
+        // Constant-time: always run a bcrypt compare (against a fixed dummy hash
+        // when the user is unknown) so response timing can't be used to enumerate
+        // which admin emails exist.
+        const DUMMY_HASH =
+          "$2a$12$C6UzMDM.H6dfI/f/IKcEeO3sRlXW8oQ0Q0Q0Q0Q0Q0Q0Q0Q0Q0Qy";
+        const ok = await bcrypt.compare(password, u?.passwordHash ?? DUMMY_HASH);
+        if (!u || !ok) return null;
 
         await db
           .update(users)

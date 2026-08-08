@@ -26,10 +26,9 @@ export async function GET(
       .where(eq(quotes.referenceCode, ref))
       .limit(1);
 
-    if (!quote) {
-      return NextResponse.json({ error: "Quote not found" }, { status: 404 });
-    }
-    if (quote.accessToken && token !== quote.accessToken) {
+    // Require a matching access token ALWAYS — a quote with no token (legacy rows)
+    // is not trackable via this public endpoint, so it can't be enumerated by ref.
+    if (!quote || !quote.accessToken || token !== quote.accessToken) {
       return NextResponse.json({ error: "Quote not found" }, { status: 404 });
     }
 
