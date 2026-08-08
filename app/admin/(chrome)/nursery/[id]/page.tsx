@@ -4,6 +4,7 @@ import { db, plants } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import type { PlantCare, PlantSeasons } from "@/lib/db/schema";
 import { updatePlant, deletePlant } from "../actions";
+import { RefreshPriceButton } from "@/components/admin/RefreshPriceButton";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -168,6 +169,50 @@ export default async function EditPlantPage({ params }: Params) {
                   step="1"
                   defaultValue={plant.stockQty}
                 />
+              </div>
+            </div>
+
+            {/* ── Price source ─────────────────────────────────────────────── */}
+            <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid var(--line-2, #e6e1d5)" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Price source</div>
+              <p style={{ fontSize: 12.5, color: "#6b7280", margin: "0 0 12px", lineHeight: 1.5 }}>
+                Keep <b>Manual</b> to type the price yourself. Choose a <b>supplier</b> to price this
+                plant from their current cost in the price database × your markup — then hit Refresh.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+                <div>
+                  <label className="field-label">Source</label>
+                  <select className="field" name="priceSource" defaultValue={plant.priceSource ?? "manual"}>
+                    <option value="manual">Manual (type the price)</option>
+                    <option value="supplier">Supplier cost × markup</option>
+                    <option value="evergreen">Evergreen (live rate)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="field-label">Supplier</label>
+                  <select className="field" name="sourceSupplier" defaultValue={plant.sourceSupplier ?? ""}>
+                    <option value="">—</option>
+                    <option value="andreasens">Andreasens Green</option>
+                    <option value="alpine">Alpine Nurseries</option>
+                    <option value="downes">Downes Wholesale</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="field-label">Markup %</label>
+                  <input className="field" name="markupPct" type="number" min="0" max="1000" step="1"
+                         defaultValue={plant.markupPct ?? 50} />
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 12, flexWrap: "wrap" }}>
+                <RefreshPriceButton id={plant.id} />
+                <span style={{ fontSize: 12.5, color: "#6b7280" }}>
+                  {plant.costCents != null
+                    ? `Last cost ${formatPrice(plant.costCents)} → sell ${formatPrice(plant.priceCents)}`
+                    : "No supplier cost fetched yet."}
+                  {plant.priceSyncedAt
+                    ? ` · synced ${new Date(plant.priceSyncedAt).toLocaleDateString("en-AU")}`
+                    : ""}
+                </span>
               </div>
             </div>
           </div>

@@ -7,6 +7,12 @@ import { db, plants, auditLog } from "@/lib/db";
 import type { PlantCare, PlantSeasons } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import {
+  fetchSupplierPrice,
+  applyMarkup,
+  nurserySourceConfigured,
+  type NurserySupplier,
+} from "@/lib/nurserySource";
 
 // ---------- helpers ----------
 function toCents(val: string | null | undefined): number {
@@ -87,6 +93,12 @@ const PlantInput = z.object({
   featured: z.preprocess((v) => v === "on" || v === "true" || v === true, z.boolean()),
   status: z.enum(["draft", "live"]),
   imagesJson: z.string().optional().or(z.literal("")),
+  // Price source (nursery integration)
+  priceSource: z.enum(["manual", "supplier", "evergreen"]).optional(),
+  sourceSupplier: z.string().max(60).optional().or(z.literal("")),
+  markupPct: z
+    .preprocess((v) => (v == null || v === "" ? 50 : Number(v)), z.number().int().min(0).max(1000))
+    .optional(),
 });
 
 // ---------- create ----------
@@ -121,6 +133,9 @@ export async function createPlant(formData: FormData): Promise<void> {
       featured: d.featured,
       status: d.status,
       images: parseImages(d.imagesJson),
+      priceSource: d.priceSource || "manual",
+      sourceSupplier: d.sourceSupplier || null,
+      markupPct: d.markupPct ?? 50,
     })
     .returning({ id: plants.id });
 
@@ -179,6 +194,9 @@ export async function updatePlant(
       featured: d.featured,
       status: d.status,
       images: parseImages(d.imagesJson),
+      priceSource: d.priceSource || "manual",
+      sourceSupplier: d.sourceSupplier || null,
+      markupPct: d.markupPct ?? 50,
       updatedAt: new Date(),
     })
     .where(eq(plants.id, id));
@@ -194,6 +212,55 @@ export async function updatePlant(
   revalidatePath("/admin/nursery");
   revalidatePath(`/admin/nursery/${id}`);
   revalidatePath("/nursery");
+}
+
+// ---------- refresh price from a supplier source ----------
+export async function refreshPlantPrice(
+  id: number
+): Promise<{ ok: boolean; error?: string; priceCents?: number; costCents?: number }> {
+  const session = await auth();
+  if (!session?.user) throw new Error("Not signed in");
+
+  const [plant] = await db.select().from(plants).where(eq(plants.id, id)).limit(1);
+  if (!plant) return { ok: false, error: "Plant not found" };
+  if (plant.priceSource !== "supplier" || !plant.sourceSupplier) {
+    return { ok: false, error: "This plant isn't linked to a supplier price source." };
+  }
+  if (!nurserySourceConfigured()) {
+    return { ok: false, error: "Price integration not configured (set WEBAPP_API_URL + WEBAPP_API_TOKEN)." };
+  }
+
+  const found = await fetchSupplierPrice({
+    botanical: plant.latinName,
+    size: plant.size,
+    supplier: plant.sourceSupplier as NurserySupplier,
+  });
+  if (!found) return { ok: false, error: `No ${plant.sourceSupplier} price found for "${plant.latinName}"${plant.size ? ` (${plant.size})` : ""}.` };
+
+  const priceCents = applyMarkup(found.costCents, plant.markupPct);
+  await db
+    .update(plants)
+    .set({
+      costCents: found.costCents,
+      priceCents,
+      sourceRef: `${found.botanicalName || plant.latinName}|${found.size || ""}`,
+      priceSyncedAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(plants.id, id));
+
+  await db.insert(auditLog).values({
+    userId: Number(session.user.id),
+    action: "plant.price_refresh",
+    resource: "plant",
+    resourceId: String(id),
+    meta: { supplier: plant.sourceSupplier, costCents: found.costCents, priceCents, markupPct: plant.markupPct },
+  });
+
+  revalidatePath("/admin/nursery");
+  revalidatePath(`/admin/nursery/${id}`);
+  revalidatePath("/nursery");
+  return { ok: true, priceCents, costCents: found.costCents };
 }
 
 // ---------- delete ----------

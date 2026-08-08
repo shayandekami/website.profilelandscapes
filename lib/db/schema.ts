@@ -420,6 +420,16 @@ export const plants = pgTable(
     featured: boolean("featured").notNull().default(false),
     status: publishStatusEnum("status").notNull().default("live"),
     encyclopediaSlug: varchar("encyclopedia_slug", { length: 200 }), // link to encyclopedia entry
+    // ── Price source (nursery integration) ─────────────────────────────────────
+    // Where this plant's price comes from. 'manual' = staff-set (current behaviour,
+    // unchanged default). 'supplier' = cost pulled from the webapp pricelist for
+    // sourceSupplier, × markupPct. 'evergreen' = cost from the Evergreen live feed.
+    priceSource: varchar("price_source", { length: 20 }).notNull().default("manual"),
+    sourceSupplier: varchar("source_supplier", { length: 60 }), // 'andreasens' | 'alpine' | 'downes'
+    sourceRef: varchar("source_ref", { length: 250 }), // match key used on refresh (botanical|size or supplier item code)
+    costCents: integer("cost_cents"), // last fetched supplier cost (ex our markup)
+    markupPct: integer("markup_pct").notNull().default(50), // resale markup applied to cost
+    priceSyncedAt: timestamp("price_synced_at"), // last time cost was refreshed from the source
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
